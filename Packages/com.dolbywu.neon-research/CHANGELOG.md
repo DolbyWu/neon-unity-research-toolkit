@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0-preview.2 — 2026-11-06
+
+- Integrated the updated EscapeRoom offline review workflow without adding a game dependency or changing acquisition defaults.
+- Video pause is authoritative; scrubbing stays paused. Mark a decoded frame with paired video/experiment clocks and retain its timing provenance in annotation JSON/CSV.
+- Added quick labels, description-only notes and Add another annotation here. Consecutive additions retain existing records; editing an existing record remains explicit.
+- Placed Manual annotations directly below the eye-data timeline, interval exports next, and Game log last. The video stays beside the annotation form on desktop.
+- Kept legacy annotation JSON import, interval annotations, English-only UI, offline operation and the standalone decoder's pupil-mm columns/validation warnings.
+- Expanded synthetic browser regression coverage. No real-device acquisition or cloud transcription is added by this update.
+
 ## 0.1.0-preview.1 — 2026-11-06
 
 - Extracted research-only source into independent Runtime/Editor assemblies with project-local settings and inert defaults.

@@ -5,6 +5,8 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
 (async()=>{
  const root=path.resolve(__dirname,'..'),out=path.resolve(root,'../../Artifacts/offline-replay');fs.mkdirSync(out,{recursive:true});
  const template=fs.readFileSync(path.join(root,'Runtime/Resources/NeonResearchOfflineReplay.txt'),'utf8');
+ assert.ok(template.includes("read('pupil_left_mm')")&&template.includes("read('pupil_right_mm')"),'Standalone pupil-mm schema is retained.');
+ assert.ok(!template.includes('sdk_units')&&template.includes('this receiver has not been physically validated'),'Do not relabel original SDK data or remove the device-validation warning.');
  const header=['sample_id','connection_epoch','receive_session_time_s','aligned_session_time_s','time_alignment_status','sample_quality','eye_state_available','pupil_left_mm','pupil_right_mm','gaze_x_px','gaze_y_px'];
  const gaze=[header];for(let i=0;i<1200;i++){const t=i/100;gaze.push([String(i),'1',String(t+.02),String(t),'time_echo_estimated','basic_valid_not_full_eye_quality_assessment','True',String(.003+.0002*Math.sin(t*2)),String(.0032+.00015*Math.cos(t*2)),String(500+100*Math.sin(t)),String(350+50*Math.cos(t))]);}
  gaze.push(['unsynced','2','4.1','','unavailable','basic_valid_not_full_eye_quality_assessment','False','','','','']);

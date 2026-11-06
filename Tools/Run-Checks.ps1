@@ -10,7 +10,9 @@ $standaloneRoot=Split-Path -Parent $PSScriptRoot
 $hostProject=(Get-Item -LiteralPath (Join-Path $standaloneRoot 'VerificationProject')).FullName
 $arguments='-batchmode -nographics -projectPath "'+$hostProject+'" -runTests -testPlatform editmode -testFilter "NeonResearch.Tests" -testResults "'+$hostProject+'\standalone-tests.xml" -logFile "'+$hostProject+'\standalone-tests.log"'
 Write-Output 'Testing only the separate VerificationProject. No original project is opened or closed.'
-$process=Start-Process -FilePath $UnityExecutable -ArgumentList $arguments -PassThru -WindowStyle Hidden -Wait
+$process=Start-Process -FilePath $UnityExecutable -ArgumentList $arguments -PassThru -WindowStyle Hidden
+# Wait for this Editor only, not its persistent licensing helper descendants.
+$process.WaitForExit()
 if ($process.ExitCode -ne 0) { throw "Independent Unity tests exited $($process.ExitCode). Inspect VerificationProject/standalone-tests.log." }
 $env:STUDY_PLAYWRIGHT=$PlaywrightModule
 if (-not [string]::IsNullOrWhiteSpace($FfmpegExecutable)) { $env:STUDY_FFMPEG=$FfmpegExecutable }

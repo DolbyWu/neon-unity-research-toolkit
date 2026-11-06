@@ -26,6 +26,8 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
   const upload=async bundle=>{await page.locator('#annotationsImport').setInputFiles({name:'synthetic-annotations.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(bundle))});};
   const exportJson=async()=>{const pending=page.waitForEvent('download');await page.locator('#annotationsExport').click();const file=await pending;return JSON.parse(fs.readFileSync(await file.path(),'utf8'));};
   await page.goto(pathToFileURL(report).href);assert.equal(await page.locator('#error').innerText(),'');assert.equal(await count(),0);
+  assert.deepEqual(await page.locator('.review-data > .panel').evaluateAll(panels=>panels.map(p=>p.id)),['timelinePanel','annotationPanel','intervalExportPanel','gameLogPanel'],'Annotations immediately follow eye data; game log stays last.');
+  await page.locator('#annotationAdvanced').evaluate(e=>{e.open=true;});
   // Missing required fields and invalid bounds cannot create a record.
   await page.locator('#annotationSave').click();await message('required');assert.equal(await count(),0);
   await page.locator('#annotationLabel').fill('Confusion');await page.locator('#annotationAuthor').fill('R001');
@@ -73,6 +75,39 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
   await timingUpload(data.session);await page.waitForFunction(()=>document.getElementById('videoOffset').value==='2');
   await page.locator('#videoFile').setInputFiles(videoPath);await page.waitForFunction(()=>document.getElementById('sessionVideo').readyState>=1);assert.match(await page.locator('#sessionVideo').getAttribute('src'),/^blob:/);
   await seek(4);await page.waitForFunction(()=>Math.abs(document.getElementById('sessionVideo').currentTime-2)<.12);
+  // User-pause is authoritative: neither RAF nor seeking may implicitly restart playback.
+  await page.waitForFunction(()=>{const v=document.getElementById('sessionVideo');return !v.seeking&&v.readyState>=2;});
+  await page.locator('#videoTogglePlay').click();await page.waitForTimeout(200);
+  const nativePaused=await page.locator('#sessionVideo').evaluate(v=>{v.pause();return v.currentTime;});
+  await page.waitForTimeout(400);assert.equal(await page.locator('#sessionVideo').evaluate(v=>v.paused),true);
+  assert.ok(Math.abs(await page.locator('#sessionVideo').evaluate(v=>v.currentTime)-nativePaused)<.05,'Native pause stays paused.');
+  await page.locator('#videoTogglePlay').click();await page.waitForTimeout(200);await page.locator('#videoTogglePlay').click();
+  const explicitPaused=await page.locator('#sessionVideo').evaluate(v=>v.currentTime);await page.waitForTimeout(300);
+  assert.equal(await page.locator('#sessionVideo').evaluate(v=>v.paused),true);assert.ok(Math.abs(await page.locator('#sessionVideo').evaluate(v=>v.currentTime)-explicitPaused)<.05);
+  await page.locator('#annotationAdvanced').evaluate(e=>{e.open=false;});
+  const scrub=async t=>{await page.locator('#videoReviewSeek').evaluate((e,time)=>{e.value=time;e.dispatchEvent(new Event('input',{bubbles:true}));},String(t));await page.waitForFunction(()=>{const v=document.getElementById('sessionVideo');return !v.seeking&&v.readyState>=2;});};
+  await scrub(3.456);assert.equal(await page.locator('#sessionVideo').evaluate(v=>v.paused),true);
+  assert.match(await page.locator('#reviewClocks').innerText(),/Video 00:03\.456 → Experiment 00:05\.456/);
+  await page.locator('#stampVideo').click();assert.equal(await page.locator('#annotationStart').inputValue(),'5.456');assert.equal(await page.locator('#annotationEnd').inputValue(),'5.456');
+  assert.match(await page.locator('#annotationDraftTime').innerText(),/00:05\.456.*Video 00:03\.456/);
+  await page.locator('#annotationQuickLabel').selectOption('Insight');await page.locator('#annotationNotes').fill('Synthetic frame-linked insight');await page.locator('#annotationSave').click();
+  const frameLabel=await exportJson();assert.equal(frameLabel.annotations[1].video_time_s,3.456);assert.equal(frameLabel.annotations[1].video_offset_s,2);assert.equal(frameLabel.annotations[1].label,'Insight');
+  await scrub(4.125);await page.locator('#stampVideo').click();await page.locator('#annotationNotes').fill('Description only: synthetic player inspects the cup.');await page.locator('#annotationSave').click();
+  const frameNotes=await exportJson();assert.equal(frameNotes.annotations[2].label,'Unlabeled');assert.equal(frameNotes.annotations[2].start_s,6.125);assert.equal(frameNotes.annotations[2].video_time_s,4.125);
+  await upload(frameNotes);await message('Loaded 3 annotations');assert.equal(await count(),3);
+  const legacy=JSON.parse(JSON.stringify(original));for(const a of legacy.annotations){delete a.video_time_s;delete a.video_offset_s;}
+  await upload(legacy);await message('Loaded 1 annotations');assert.equal(await count(),1);
+  await upload({...original,annotations:[{...original.annotations[0],start_s:4,end_s:4,video_time_s:3,video_offset_s:2}]});await message('Import rejected');assert.equal(await count(),1);
+  // Save several new points consecutively WITHOUT exporting in between; never replace the first.
+  for(const [time,label]of [[1.1,'Confusion'],[2.2,'Engagement'],[3.3,'Insight']]){
+   await scrub(time);await page.locator('#annotationNext').click();assert.match(await page.locator('#annotationMode').innerText(),/NEW annotation/);
+   await page.locator('#annotationQuickLabel').selectOption(label);await page.locator('#annotationSave').click();
+  }
+  assert.equal(await count(),4);const consecutive=await exportJson();assert.equal(consecutive.annotations[0].id,firstId);assert.equal(consecutive.annotations[0].notes,original.annotations[0].notes);
+  assert.equal(new Set(consecutive.annotations.map(a=>a.id)).size,4);assert.deepEqual(consecutive.annotations.slice(1).map(a=>a.label),['Confusion','Engagement','Insight']);
+  await first.getByRole('button',{name:'Edit',exact:true}).click();assert.match(await page.locator('#annotationMode').innerText(),/EDITING/);
+  await scrub(4.4);await page.locator('#annotationNext').click();await page.locator('#annotationNotes').fill('New note after leaving edit mode');await page.locator('#annotationSave').click();
+  assert.equal(await count(),5);const afterEdit=await exportJson();assert.equal(afterEdit.annotations[0].notes,original.annotations[0].notes);assert.equal(afterEdit.annotations[4].label,'Unlabeled');
   // No browser cache required: reload loses the in-memory list; JSON restores it and the offset.
   await page.reload();assert.equal(await count(),0);await upload(timingSaved);await message('Loaded 1 annotations');assert.equal(await page.locator('#videoOffset').inputValue(),'3');
   assert.equal(await page.locator('#sessionVideo').getAttribute('src'),null);assert.match(await first.innerText(),/interpretation remains provisional/);
@@ -86,7 +121,7 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
   await page.setViewportSize({width:390,height:844});
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),'Mobile layout does not overflow horizontally.');
   await page.locator('#annotationPanel').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(root,'annotated-video-review-mobile.png')});
-  console.log('PASS: local video paths/picker, bidirectional seeking, shared playback, partial coverage, adjustable/imported offsets, point/interval CRUD, provenance, JSON reload, replacement cancellation, wrong-session rejection, malformed/duplicate rejection, literal text, CSV escaping, no network.');
+  console.log('PASS: consecutive additions without export, five independent IDs/records, first annotation preserved, explicit exit from edit mode, authoritative pause, paused scrubbing, frame-linked clocks/labels, description-only notes, legacy import, local video, JSON reload, validation, CSV escaping, no network.');
   console.log('Synthetic preview: '+report);
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

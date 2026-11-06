@@ -1,6 +1,8 @@
 # Neon Unity Research Toolkit — independent extraction preview
 
-Version **0.1.0-preview.1**, created 6 November 2026. Unofficial research tooling, not a Pupil Labs or Unity product. This is a separately compiled development preview, **not a participant-study or public-release certification**.
+Version **0.1.0-preview.2**, updated 6 November 2026. Unofficial research tooling, not a Pupil Labs or Unity product. This is a development preview, **not a participant-study or public-release certification**.
+
+This update integrates the latest EscapeRoom replay UI: reliable pause/seek, frame-linked video/experiment clocks, quick labels or descriptions, multiple annotations, and the order **eye timeline → manual annotations → interval export → Game log**. It does not add cloud transcription or change the independent Neon decoder/recording configuration. The original game is not modified by this integration. See the package changelog and validation report for scope and evidence.
 
 **Start here:** [features, setup, Neon connection and 60-second acceptance checklist](QUICKSTART.md). Measured tests and remaining limits are in [VALIDATION.md](VALIDATION.md).
 
@@ -11,7 +13,7 @@ Personal repository: [DolbyWu/neon-unity-research-toolkit](https://github.com/Do
 - The working `EscapeRoom-Neon-Publish-20261014` project was read only. Nothing in it was re-wired to this package.
 - This directory has its own package, blank verification host, settings and default output folder. It contains no participant recordings/profiles, live phone address, credentials, original `.git` history, game scenes/assets or third-party native SDK binaries.
 - Do not install this preview into the working EscapeRoom yet. Test the sibling verification project or another disposable project first.
-- The extraction manifest records hashes of the 24 selected source files. The validation report includes a final comparison with the originals.
+- The extraction manifest records the original extraction-time hashes of 24 selected source files. Later authorized changes in the EscapeRoom project can differ from that historical baseline; it is not overwritten to hide those changes.
 
 ## What is here
 

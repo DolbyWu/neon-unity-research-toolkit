@@ -1,10 +1,21 @@
 # Independent preview validation — 6 November 2026
 
-## Scope
+## 0.1.0-preview.2 replay integration
+
+- Updated only the independent package's offline replay template, tests, version and documentation. Existing runtime/Editor acquisition code and defaults were not changed. The working EscapeRoom was read only during this integration.
+- **18 / 18 Unity EditMode cases passed**, 0 failures, in the separate VerificationProject at **2026-11-06 23:43:26 UTC**. The actual completed-session export test additionally checks the loaded resource has the new video controls/multi-annotation action, resolved data marker, correct panel order and independent pupil-mm column names.
+- **Both offline Edge/Playwright suites passed** against the integrated package template. Coverage includes authoritative native/custom pause, paused scrubbing, video/experiment clocks and frame provenance, five independent annotation records with the first preserved, explicit exit from editing, description-only notes, legacy JSON import, save/resume, interval/raw exports, no HTTP requests, and desktop/mobile layout.
+- **14 / 14 synthetic Python archive/capture tests passed**, including localhost access boundaries and generated video/audio finalization. The first sandboxed run blocked a localhost socket; the permission-approved rerun passed. No real microphone or headset was recorded.
+- The complete `Tools/Run-Checks.ps1` run exited **0**. Its wait now follows only the test Editor process, avoiding a wait on persistent licensing-helper descendants. No working Editor or licensing service was stopped.
+- Created local `Artifacts/com.dolbywu.neon-research-0.1.0-preview.2.tgz`, SHA-256 `7feb39f5d8f8a8732f0d1cd45ed607129ca9bd9c0bec8ca8d005c18490f0f071`. The archived manifest, replay resource and Unity integration test match the current source exactly. Archive inventory checks exclude generated data/configuration. Generated Artifacts are not committed with the source update, and no new GitHub Release is created by pushing source. Install-from-tarball and physical-device checks remain separate acceptance steps.
+- The plugin's wire-protocol pupil-mm fields and physical-validation warnings were retained; EscapeRoom's SDK-unit labels were not copied over them. No real participant archive was read by these tests, no audio was uploaded, and no new acquisition/cloud feature was introduced.
+- Original extraction-time hashes below are historical evidence, not a claim that later user-authorized EscapeRoom changes still equal that old baseline. The original manifest has not been rewritten.
+
+## Original extraction scope
 
 Local package: `com.dolbywu.neon-research` **0.1.0-preview.1**. Verification host: the sibling **VerificationProject**, Unity **6000.3.23f1**, Windows Editor. The package was not installed into the working EscapeRoom and that Editor was not closed or switched to this host. Batch tests used a separate Editor process and explicit separate logs.
 
-## Results
+## Historical 0.1.0-preview.1 results
 
 - **18 / 18 independent Unity EditMode tests passed**, 0 failures, including defaults off, independent settings/output, head-pose and explicit grab/custom event CSV export, closed-session replay generation, participant snapshots/path boundaries, generic regions without EscapeRoom types, six documented wire payload lengths, unknown-packet/missing-pupil handling, namespaced participant approval, finished replay resolution and basic RTP/time mapping rejection.
 - **Two offline Edge/Playwright suites passed** against the extracted HTML, covering existing interval/raw-data exports, display precision, no-network load, and local video/offsets/manual annotation CRUD/JSON save-import/CSV escaping and desktop/mobile layouts. Synthetic fixture outputs are under **Artifacts**, not the original project or participant archive.

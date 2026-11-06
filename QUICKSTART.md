@@ -1,6 +1,6 @@
 # Features, setup and Neon acceptance checklist
 
-**Unofficial Windows Unity Editor preview, 0.1.0-preview.1.** Independently compiled/tested on Unity 6000.3.23f1, not yet validated with a real Neon/headset in the extracted version. Keep the working EscapeRoom unchanged until device validation passes. No automatic cognitive-state or gaze-to-VR-object claims.
+**Unofficial Windows Unity Editor preview, 0.1.0-preview.2.** Separate verification host on Unity 6000.3.23f1; not yet validated with a real Neon/headset in the extracted version. Keep the working EscapeRoom unchanged until device validation passes. No automatic cognitive-state or gaze-to-VR-object claims.
 
 ## What the plugin does
 

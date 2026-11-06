@@ -43,6 +43,12 @@ namespace NeonResearch.Tests
                 Assert.That(JObject.Parse(File.ReadAllText(Path.Combine(folder,"export_manifest.json"))).Value<bool>("closed"),Is.True);
                 string html=File.ReadAllText(Path.Combine(folder,"Replay/study-replay.html"));
                 Assert.That(html,Does.Contain("annotationsImport"));Assert.That(html,Does.Contain("Choose local video"));
+                Assert.That(html,Does.Contain("Add another annotation here"));Assert.That(html,Does.Contain("Pause &amp; mark this frame"));
+                Assert.That(html,Does.Contain("reviewClocks"));Assert.That(html,Does.Not.Contain("__STUDY_DATA__"));
+                int timeline=html.IndexOf("id=\"timelinePanel\"",StringComparison.Ordinal),annotations=html.IndexOf("id=\"annotationPanel\"",StringComparison.Ordinal);
+                int interval=html.IndexOf("id=\"intervalExportPanel\"",StringComparison.Ordinal),gameLog=html.IndexOf("id=\"gameLogPanel\"",StringComparison.Ordinal);
+                Assert.That(timeline,Is.GreaterThan(0));Assert.That(annotations,Is.GreaterThan(timeline));Assert.That(interval,Is.GreaterThan(annotations));Assert.That(gameLog,Is.GreaterThan(interval));
+                Assert.That(html,Does.Contain("pupil_left_mm"));Assert.That(html,Does.Not.Contain("pupil_left_sdk_units"));
                 Assert.That(Directory.GetDirectories(folder,"Neon-*").Length,Is.Zero,"No real or fabricated eye stream is started by this synthetic test.");
             }
             finally{UnityEngine.Object.DestroyImmediate(go);}

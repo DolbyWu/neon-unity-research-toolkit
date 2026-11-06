@@ -1,6 +1,6 @@
 {
   "name": "com.dolbywu.neon-research",
-  "version": "0.1.0-preview.1",
+  "version": "0.1.0-preview.2",
   "displayName": "Neon Research Toolkit (Unofficial Preview)",
   "description": "Independent Unity + Neon study recording, participant intake, raw events/head pose, offline video review and manual annotations. Windows Editor preview; opt-in acquisition.",
   "unity": "6000.3",

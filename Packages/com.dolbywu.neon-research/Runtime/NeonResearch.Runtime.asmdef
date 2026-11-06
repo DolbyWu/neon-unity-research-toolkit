@@ -1,0 +1,10 @@
+{
+  "name": "NeonResearch.Runtime",
+  "rootNamespace": "NeonResearch",
+  "references": [],
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "Newtonsoft.Json.dll"
+  ],
+  "autoReferenced": true
+}

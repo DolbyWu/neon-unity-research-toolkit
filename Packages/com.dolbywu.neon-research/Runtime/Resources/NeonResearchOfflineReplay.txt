@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; media-src 'self' file: blob:; img-src data:; base-uri 'none'; form-action 'none'">
+<title>Neon Research · Standalone Preview Replay</title>
+<style>
+:root{color-scheme:dark;font:15px system-ui,sans-serif;background:#101923;color:#e9f1f5}body{max-width:1250px;margin:auto;padding:30px}h1{font-size:28px;margin:8px 0}h2{font-size:17px}p{line-height:1.6}.muted{color:#a7bac7}.tag{color:#70e1c6;letter-spacing:2px;font-size:12px}.panel{background:#192633;border:1px solid #304454;border-radius:12px;padding:18px;margin:16px 0}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}button,select,input{font:inherit;background:#263a4a;color:#edf6fa;border:1px solid #506577;border-radius:6px;padding:8px}button{cursor:pointer}button:hover{background:#375369}button:disabled{opacity:.45;cursor:default}input[type=number]{width:100px}input[type=range]{flex:1;min-width:160px}.primary{background:#236b62}canvas{display:block;width:100%;height:330px;touch-action:none;cursor:crosshair}#status{white-space:pre-wrap;line-height:1.7}#events{max-height:250px;overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:8px;border-bottom:1px solid #304454;overflow-wrap:anywhere}tr[data-time]{cursor:pointer}tr[data-time]:hover{background:#263f51}.warn{color:#ffce86}#error{color:#ffc3bb}small{line-height:1.7}a{color:#70e1c6}
+body{max-width:1600px}.review-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:start}.review-data{min-width:0}.video-panel{position:sticky;top:12px}.review-data>.panel:first-child{margin-top:16px}textarea{font:inherit;background:#101923;color:#edf6fa;border:1px solid #506577;border-radius:6px;padding:8px;box-sizing:border-box;width:100%;min-height:70px}.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.fields label{display:grid;gap:6px}.fields input{width:auto}video{width:100%;max-height:45vh;background:#080e14;margin-top:12px}#annotationList{max-height:420px;overflow:auto}.annotationText{white-space:pre-wrap}.notice{border-left:3px solid #ffce86;padding-left:12px}#annotationMessage,#videoStatus{white-space:pre-wrap}#annotationList button{font-size:12px;padding:5px;margin:2px}.fileLabel{display:inline-block;border:1px solid #506577;border-radius:6px;padding:8px;cursor:pointer}.fileLabel input{display:block;max-width:250px;margin-top:6px}#annotationCount{color:#70e1c6}.editing{outline:2px solid #70e1c6}input[type=text]{min-width:0}@media(max-width:1050px){.review-layout{display:block}.video-panel{position:static}body{padding:15px}}@media(max-height:800px) and (min-width:1051px){.video-panel{max-height:calc(100vh - 60px);overflow:auto}}
+</style></head><body>
+<div class="tag">NEON / OFFLINE STUDY REPLAY</div><h1>Replay a study, one moment at a time</h1>
+<p class="muted" id="session">Loading local data…</p><p id="error" role="alert"></p>
+<div class="panel"><div class="row"><button id="play" class="primary">Play</button><label>Speed <select id="speed"><option>1</option><option>2</option><option>4</option></select> ×</label><input id="cursor" type="range" min="0" value="0" step="0.01" aria-label="Replay time"><output id="clock"></output></div>
+<p id="status"></p><small class="muted">The timeline replays recorded data. Optionally load the local session video below. A recent event does not imply continuous activity; missing interaction logs do not imply inactivity.</small></div>
+<div class="review-layout"><div class="panel video-panel"><h2>Session video and synchronized review</h2>
+<div class="row"><button id="loadSessionVideo">Load session video</button><label class="fileLabel">Choose local video<input id="videoFile" type="file" accept="video/*,.mp4,.webm"></label><label class="fileLabel">Load capture timing (optional)<input id="videoMetadata" type="file" accept=".json,application/json"></label></div>
+<video id="sessionVideo" controls playsinline preload="metadata" hidden></video>
+<div class="row"><label>Video starts at session second <input id="videoOffset" type="number" step="0.001" value="0"></label><button id="applyVideoOffset">Apply offset</button></div>
+<p id="videoStatus" class="muted" role="status">No video loaded. The data timeline and annotations work without video.</p>
+<small class="muted">Session time = video time + offset. Load session video uses ../Video/quest-view.mp4 beside this Replay folder. If it is missing, still finalizing, or your browser blocks local paths, choose the file manually after recording finishes. Video is linked, not embedded: copy the complete session folder. Capture offsets are launch-time estimates, not hardware synchronization; verify against a spoken or visible marker. Outside video coverage, no synchronized video frame is available.</small></div>
+<div class="review-data"><div class="panel"><div class="row"><h2>Shared session timeline</h2><label>Eye-data time <select id="basis"><option value="aligned">Corrected time (analysis)</option><option value="receive">Receive time (diagnostics only)</option></select></label><button id="zoom">Zoom to selection</button><button id="all">Show full session</button></div>
+<p class="muted">Region bands / event ticks / manual labels / left and right pupil / gaze X and Y. Drag on the chart to select an interval; click to seek. Cyan: left pupil or X. Orange: right pupil or Y. Purple: manual annotation.</p>
+<canvas id="chart" aria-label="Session regions, events, pupil and gaze timeline"></canvas><p id="quality" class="warn"></p>
+<small class="muted">Pupil values use documented Neon wire-protocol millimetres; this receiver has not been physically validated. Gaze uses scene-image pixels, not VR targets. No fixation, saccade or cognitive-state detection. Display traces are pixel-decimated and may miss brief peaks. Invalid samples, connection changes and gaps over 0.1 s break the trace. Vertical scales adapt to the visible interval.</small></div>
+<div class="panel"><h2>Select and export an interval</h2><div class="row"><label>Start (seconds) <input id="start" type="number" min="0" step="0.001" value="0"></label><label>End (seconds) <input id="end" type="number" min="0" step="0.001"></label><button id="bundle" class="primary">Export interval JSON (complete bundle)</button><button id="gazeCsv">Gaze CSV</button><button id="eventCsv">Game events CSV</button><button id="regionCsv">Regions CSV</button></div>
+<p id="selection"></p><small class="muted">Intervals use [start, end); events at the end are separate boundary context. Corrected mode extracts aligned samples only. Unaligned samples are counted by receive time, not mixed into corrected traces. JSON includes methods, original columns, regions and boundary events. CSV text is formula-escaped; original recordings are unchanged. Your browser controls download location.</small></div>
+<div class="panel"><h2>Region visits (click to select an interval)</h2><div id="regions" class="row"></div><h2>Selected game events (click to seek)</h2><div id="events"></div></div>
+<div class="panel" id="annotationPanel"><h2>Manual annotations <span id="annotationCount"></span></h2>
+<p class="muted">Add a point or interval on the shared SESSION timeline. Labels are human interpretations, not automatic cognitive-state detection. Keep participant quotations separate from observations and interpretation.</p>
+<div class="row"><button id="annotationUseSelection">Use selected interval</button><button id="annotationUseCursor">Use current time (point)</button><button id="annotationNew">New annotation</button></div>
+<div class="fields">
+<label>Start (session seconds)<input id="annotationStart" type="number" min="0" step="0.001" value="0"></label>
+<label>End (same as start for a point)<input id="annotationEnd" type="number" min="0" step="0.001" value="0"></label>
+<label>Label *<input id="annotationLabel" type="text" list="annotationLabels" maxlength="120" placeholder="Confusion, Engagement, Insight, or your own code"></label>
+<label>Annotator ID *<input id="annotationAuthor" type="text" maxlength="120" placeholder="Anonymous researcher / participant code"></label>
+<label>Evidence source<select id="annotationSource"><option value="researcher_observation">Researcher observation</option><option value="participant_self_report">Participant self-report</option><option value="retrospective_interview">Retrospective interview</option><option value="researcher_interpretation">Researcher interpretation</option><option value="other">Other</option></select></label>
+<label>Confidence (optional)<select id="annotationConfidence"><option value="unspecified">Unspecified</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label>
+<label>Participant quotation (optional)<textarea id="annotationQuote" maxlength="10000"></textarea></label>
+<label>Observed evidence / behavior (optional)<textarea id="annotationEvidence" maxlength="10000"></textarea></label>
+<label>Interpretation / notes / uncertainty (optional)<textarea id="annotationNotes" maxlength="10000"></textarea></label>
+</div><datalist id="annotationLabels"><option value="Confusion"><option value="Engagement"><option value="Insight"><option value="Frustration"><option value="Uncertainty"><option value="Other"></datalist>
+<div class="row"><button id="annotationSave" class="primary">Add annotation</button><button id="annotationCancel" disabled>Cancel edit</button></div>
+<p id="annotationMessage" role="status">No annotations yet. Changes stay in this tab until you export them.</p>
+<div id="annotationList"></div>
+<div class="row"><button id="annotationsExport" class="primary">Export annotations JSON (save / resume)</button><button id="annotationsCsv">Export annotations CSV</button><label class="fileLabel">Import annotations JSON<input id="annotationsImport" type="file" accept=".json,application/json"></label></div>
+<p class="notice muted">Export JSON before closing this page, and save it in this session folder. Reopen the HTML and import that JSON to continue. CSV is for analysis, not re-import. Import replaces the current annotation list only after validation and confirmation. Browser downloads do not silently update the HTML, original data or a previous JSON file. Do not rely on browser cache. No data is uploaded.</p></div>
+</div></div><p class="muted">Recorded timeline data is embedded; video and exported annotation JSON remain separate local files. No external resources, server or network requests. Copy the complete session folder to another computer and open the HTML in Edge or Chrome. It contains research data: store securely, retain the original session, and do not publish it on GitHub.</p>
+<script type="application/json" id="data">__STUDY_DATA__</script>
+<script>
+'use strict';
+try {
+const D=JSON.parse(document.getElementById('data').textContent), $=id=>document.getElementById(id);
+const number=v=>v==null||String(v).trim()===''?NaN:Number(v), rows=t=>t.slice(1), get=(t,r,k)=>r[t[0].indexOf(k)], finite=Number.isFinite;
+const duration=Math.max(0,number(D.duration)||0), fmt=t=>finite(t)?t.toFixed(3)+' s':'N/A';
+const events=rows(D.events).map(r=>({t:number(get(D.events,r,'session_time_s')),r})).filter(e=>finite(e.t)).sort((a,b)=>a.t-b.t);
+const regions=rows(D.regions).map(r=>({a:number(r[0]),b:number(r[1]),name:r[2],r})).filter(r=>finite(r.a)&&finite(r.b)&&r.b>r.a).sort((a,b)=>a.a-b.a);
+const samples=[];
+for(const source of D.gaze){const table=source.table;for(const r of rows(table)){const read=k=>get(table,r,k);samples.push({source:source.source,table,r,receive:number(read('receive_session_time_s')),aligned:read('time_alignment_status')==='time_echo_estimated'?number(read('aligned_session_time_s')):NaN,valid:read('sample_quality')==='basic_valid_not_full_eye_quality_assessment',eyes:String(read('eye_state_available')).toLowerCase()==='true',epoch:source.source+':'+read('connection_epoch'),x:number(read('gaze_x_px')),y:number(read('gaze_y_px')),l:number(read('pupil_left_mm')),rr:number(read('pupil_right_mm'))});}}
+let basis='aligned',ordered=[],viewA=0,viewB=Math.max(duration,.001),cursor=0,playing=false,lastFrame=0,dragStart=null;
+let annotations=[],editingAnnotation=null,annotationsDirty=false,annotationRevision=0;
+let annotationsCreatedUtc=new Date().toISOString();const video=$('sessionVideo');
+let videoOffset=finite(D.media?.video_offset_s)?D.media.video_offset_s:0,videoTimingMethod=finite(D.media?.video_offset_s)?'capture_launch_estimate':'unverified_default_zero',videoName='',videoReferenceName='',videoObjectUrl=null;
+const videoReady=()=>video.readyState>=1&&finite(video.duration)&&video.duration>0;
+const videoCovers=t=>videoReady()&&t>=videoOffset&&t<videoOffset+video.duration;
+const lower=(list,t,key)=>{let a=0,b=list.length;while(a<b){const m=(a+b)>>>1;if(key(list[m])<t)a=m+1;else b=m;}return a;};
+function rebuild(){ordered=samples.filter(s=>finite(s[basis])).sort((a,b)=>a[basis]-b[basis]);}
+function bounds(){const a=number($('start').value),b=number($('end').value);return finite(a)&&finite(b)&&a>=0&&b>a&&b<=duration+1e-6?{a,b}:null;}
+function chosen(){const b=bounds();if(!b)return[];return ordered.slice(lower(ordered,b.a,s=>s[basis]),lower(ordered,b.b,s=>s[basis]));}
+function selectedEvents(b){return events.filter(e=>e.t>=b.a&&e.t<b.b).map(e=>e.r);}
+function regionAt(t){return regions.find(r=>t>=r.a&&t<r.b)?.name||'Unknown / outside region log';}
+function describe(e){return ['event_type','puzzle','object_id','outcome','detail'].map(k=>get(D.events,e.r,k)).filter(Boolean).join(' · ');}
+function select(a,b){$('start').value=Math.max(0,a);$('end').value=Math.min(duration,b);updateSelection();draw();}
+function updateSelection(){const b=bounds();for(const id of ['bundle','gazeCsv','eventCsv','regionCsv','zoom'])$(id).disabled=!b;if(!b){$('selection').textContent='Enter a valid range: 0 <= start < end <= session duration.';$('events').replaceChildren();return;}
+const selected=chosen(),ev=selectedEvents(b),unaligned=samples.filter(s=>!finite(s.aligned)&&s.receive>=b.a&&s.receive<b.b).length;
+$('selection').textContent=`Interval ${fmt(b.a)} — ${fmt(b.b)} · ${selected.length} gaze samples · ${ev.length} game events · ${unaligned} unaligned samples (counted by receive time)`;
+const table=document.createElement('table');const head=document.createElement('tr');for(const label of ['Time (seconds)','Event / object / outcome']){const th=document.createElement('th');th.textContent=label;head.append(th);}table.append(head);
+const visible=events.filter(e=>e.t>=b.a&&e.t<b.b);for(const e of visible.slice(0,1000)){const tr=document.createElement('tr');tr.dataset.time=e.t;const td=document.createElement('td'),desc=document.createElement('td');td.textContent=fmt(e.t);desc.textContent=describe(e);tr.append(td,desc);tr.onclick=()=>setCursor(e.t);table.append(tr);}$('events').replaceChildren(table);if(visible.length>1000){const p=document.createElement('p');p.textContent='Showing the first 1,000 events only; exports include all selected events. Narrow the interval to see later events.';$('events').append(p);}}
+function setCursor(t,fromVideo=false){cursor=Math.max(0,Math.min(duration,t));$('cursor').value=cursor;$('clock').textContent=fmt(cursor)+' / '+fmt(duration);if(!fromVideo)syncVideo();videoStatus();let i=lower(events,cursor+1e-9,e=>e.t)-1;const sampleIndex=lower(ordered,cursor,s=>s[basis]);const candidates=[ordered[sampleIndex-1],ordered[sampleIndex]].filter(Boolean).sort((a,b)=>Math.abs(a[basis]-cursor)-Math.abs(b[basis]-cursor));const s=candidates[0],near=s&&Math.abs(s[basis]-cursor)<=.1;
+const val=v=>finite(v)&&v>0?v.toFixed(6):'N/A';$('status').textContent=`Region: ${regionAt(cursor)}\nMost recent event: ${i>=0?fmt(events[i].t)+' · '+describe(events[i]):'No logged event yet'}\nNearby sample (+/-0.1 s): ${near?'Left pupil '+(s.valid&&s.eyes?val(s.l):'N/A')+' / Right pupil '+(s.valid&&s.eyes?val(s.rr):'N/A'):'No data'} · ${basis==='aligned'?'Corrected time':'Receive time, diagnostic only'}`;draw();}
+const canvas=$('chart'),ctx=canvas.getContext('2d');
+function draw(){const w=canvas.clientWidth,h=330,dpr=window.devicePixelRatio||1;canvas.width=w*dpr;canvas.height=h*dpr;ctx.scale(dpr,dpr);ctx.fillStyle='#101923';ctx.fillRect(0,0,w,h);const left=85,right=w-12,span=viewB-viewA,x=t=>left+(t-viewA)/span*(right-left);ctx.font='12px system-ui';
+for(let i=0;i<=5;i++){const t=viewA+span*i/5,px=x(t);ctx.strokeStyle='#304454';ctx.beginPath();ctx.moveTo(px,18);ctx.lineTo(px,300);ctx.stroke();ctx.fillStyle='#a7bac7';ctx.fillText(t.toFixed(2)+'s',Math.min(px,right-42),320);}
+ctx.save();ctx.beginPath();ctx.rect(left,0,right-left,301);ctx.clip();for(let i=0;i<regions.length;i++){const r=regions[i];if(r.b<=viewA||r.a>=viewB)continue;ctx.fillStyle=['#315e65','#465174','#516343'][i%3];ctx.fillRect(x(Math.max(viewA,r.a)),15,x(Math.min(viewB,r.b))-x(Math.max(viewA,r.a)),27);ctx.save();ctx.beginPath();ctx.rect(x(Math.max(viewA,r.a)),15,x(Math.min(viewB,r.b))-x(Math.max(viewA,r.a)),27);ctx.clip();ctx.fillStyle='#fff';ctx.fillText(r.name,x(Math.max(viewA,r.a))+4,33);ctx.restore();}
+for(const e of events){if(e.t<viewA||e.t>viewB)continue;ctx.strokeStyle='#869daa';ctx.beginPath();ctx.moveTo(x(e.t),47);ctx.lineTo(x(e.t),64);ctx.stroke();}ctx.restore();
+ctx.save();ctx.beginPath();ctx.rect(left,66,right-left,14);ctx.clip();ctx.fillStyle='#ce9bff';for(const a of annotations){if(a.end_s<viewA||a.start_s>viewB)continue;if(a.start_s===a.end_s){ctx.beginPath();ctx.moveTo(x(a.start_s),67);ctx.lineTo(x(a.start_s)-4,77);ctx.lineTo(x(a.start_s)+4,77);ctx.fill();}else ctx.fillRect(x(Math.max(viewA,a.start_s)),68,Math.max(2,x(Math.min(viewB,a.end_s))-x(Math.max(viewA,a.start_s))),8);}ctx.restore();ctx.fillStyle='#a7bac7';ctx.fillText('Labels',3,78);
+const visible=ordered.slice(lower(ordered,viewA,s=>s[basis]),lower(ordered,viewB,s=>s[basis]));
+function plot(keys,top,height,pupil){const ok=(s,k)=>s.valid&&(!pupil||s.eyes)&&finite(s[k])&&(!pupil||s[k]>0);let min=Infinity,max=-Infinity;for(const s of visible)for(const k of keys)if(ok(s,k)){min=Math.min(min,s[k]);max=Math.max(max,s[k]);}if(!finite(min)){ctx.fillStyle='#a7bac7';ctx.fillText('No valid data in this interval',left+15,top+height/2);return;}if(max===min){const padding=pupil?Math.max(Math.abs(max)*.01,.000001):.5;min=pupil?Math.max(0,min-padding):min-padding;max+=padding;}ctx.fillStyle='#a7bac7';ctx.fillText(max.toFixed(pupil?6:2),3,top+10);ctx.fillText(min.toFixed(pupil?6:2),3,top+height);for(let k=0;k<keys.length;k++){ctx.strokeStyle=k?'#ffbc75':'#6fdcd6';ctx.lineWidth=1.5;ctx.beginPath();let prev=null,lastX=-Infinity;for(const s of visible){if(!ok(s,keys[k])){prev=null;lastX=-Infinity;continue;}const px=x(s[basis]),py=top+height-(s[keys[k]]-min)/(max-min)*height;const gap=!prev||s.epoch!==prev.epoch||s[basis]-prev[basis]>.1;if(gap){ctx.moveTo(px,py);lastX=px;}else if(px-lastX>=1){ctx.lineTo(px,py);lastX=px;}prev=s;}ctx.stroke();}}
+ctx.fillStyle='#a7bac7';ctx.fillText('Regions',3,33);ctx.fillText('Events',3,61);ctx.fillText('Pupil',3,87);plot(['l','rr'],91,80,true);ctx.fillStyle='#a7bac7';ctx.fillText('Gaze X/Y',3,199);plot(['x','y'],207,85,false);
+const b=bounds();if(b){ctx.fillStyle='#7edcc517';ctx.fillRect(x(Math.max(viewA,Math.min(viewB,b.a))),0,Math.max(0,x(Math.min(viewB,b.b))-x(Math.max(viewA,b.a))),300);}if(cursor>=viewA&&cursor<=viewB){ctx.strokeStyle='#fff';ctx.beginPath();ctx.moveTo(x(cursor),0);ctx.lineTo(x(cursor),300);ctx.stroke();}}
+function timeAt(e){const rect=canvas.getBoundingClientRect();return Math.max(viewA,Math.min(viewB,viewA+(e.clientX-rect.left-85)/(rect.width-97)*(viewB-viewA)));}
+canvas.onpointerdown=e=>{dragStart=timeAt(e);canvas.setPointerCapture(e.pointerId);};canvas.onpointerup=e=>{if(dragStart===null)return;const end=timeAt(e);if(Math.abs(end-dragStart)<(viewB-viewA)*.005)setCursor(end);else select(Math.min(end,dragStart),Math.max(end,dragStart));dragStart=null;};canvas.onpointercancel=()=>dragStart=null;
+function download(name,text,type){const url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
+function csv(table){return '\ufeff'+table.map(r=>r.map(v=>{let s=String(v??'');if(/^[\s]*[=+@-]/.test(s)&&!finite(number(s)))s="'"+s;return '"'+s.replaceAll('"','""')+'"';}).join(',')).join('\r\n');}
+function fragment(){const b=bounds();if(!b)throw Error('Invalid selection');const selected=chosen(),grouped=D.gaze.map(g=>({source:g.source,table:[g.table[0],...selected.filter(s=>s.source===g.source).map(s=>s.r)]}));return {schema:'study-offline-selection-v1',session:D.session,start_s:b.a,end_s:b.b,interval:'[start,end)',time_basis:basis,method:basis==='aligned'?'time_echo_estimated; excludes unaligned samples':'receive_time_diagnostic_only_not_corrected',unaligned_receive_count:samples.filter(s=>!finite(s.aligned)&&s.receive>=b.a&&s.receive<b.b).length,limitations:'No fixation/saccade/cognitive labels. Pupil wire-protocol units; not physically validated. Raw region intervals retained; overlap selection. End boundary events are context, not within interval.',events:[D.events[0],...selectedEvents(b)],end_boundary_events:[D.events[0],...events.filter(e=>Math.abs(e.t-b.b)<1e-9).map(e=>e.r)],regions:[D.regions[0],...regions.filter(r=>r.a<b.b&&r.b>b.a).map(r=>r.r)],gaze:grouped};}
+function exportPart(kind){const f=fragment(),name=`selection-${f.start_s.toFixed(3)}-${f.end_s.toFixed(3)}-${basis}`;if(kind==='bundle')download(name+'.json',JSON.stringify(f), 'application/json');else if(kind==='gaze'){const columns=[...new Set(f.gaze.flatMap(g=>g.table[0]||[]))];const table=[['source_neon_folder',...columns]];for(const g of f.gaze)for(const r of rows(g.table))table.push([g.source,...columns.map(c=>get(g.table,r,c)??'')]);download(name+'-gaze.csv',csv(table),'text/csv;charset=utf-8');}else download(name+'-'+kind+'.csv',csv(f[kind]),'text/csv;charset=utf-8');}
+// Local video: no upload, fetch, embedded media bytes or automatic recording.
+function videoStatus(){
+ if(!videoName)return;
+ const range=videoReady()?`${fmt(videoOffset)} — ${fmt(videoOffset+video.duration)}`:'waiting for playable metadata';
+ $('videoStatus').textContent=`${videoName} · Video coverage: ${range}\nOffset: ${fmt(videoOffset)} (${videoTimingMethod}). ${videoReady()?(videoCovers(cursor)?'Video and timeline linked.':'NO VIDEO COVERAGE at the current session time; the visible image is not a synchronized observation.'):'If loading fails, wait for finalization and choose a local video file.'}`;
+}
+function syncVideo(){
+ if(!videoReady())return;
+ if(!videoCovers(cursor)){if(!video.paused)video.pause();return;}
+ const target=cursor-videoOffset;
+ if(Math.abs(video.currentTime-target)>.08)video.currentTime=target;
+ video.playbackRate=number($('speed').value);
+ if(playing&&video.paused)video.play().catch(()=>{playing=false;$('play').textContent='Play';$('videoStatus').textContent='Playback was blocked. Press Play on the video to continue.';});
+}
+function loadVideo(src,name){
+ playing=false;video.pause();$('play').textContent='Play';
+ if(videoObjectUrl){URL.revokeObjectURL(videoObjectUrl);videoObjectUrl=null;}
+ videoName=name;video.hidden=false;video.src=src;video.load();videoStatus();
+}
+$('videoOffset').value=videoOffset;
+$('loadSessionVideo').onclick=()=>{if(location.protocol!=='file:'){$('videoStatus').textContent='Choose a local video file. This page does not load videos over the network.';return;}loadVideo(new URL('../Video/quest-view.mp4',location.href).href,'Video/quest-view.mp4');};
+$('videoFile').onchange=()=>{const file=$('videoFile').files[0];if(!file)return;const url=URL.createObjectURL(file);loadVideo(url,file.name);videoObjectUrl=url;$('videoFile').value='';};
+video.onloadedmetadata=()=>{syncVideo();videoStatus();};
+video.onerror=()=>{$('videoStatus').textContent='Video cannot be loaded or decoded. It may be missing, incomplete, or blocked as a local path. Choose the finalized MP4 manually. Data and annotation tools remain available.';};
+video.onplay=()=>{playing=true;$('play').textContent='Pause';video.playbackRate=number($('speed').value);setCursor(video.currentTime+videoOffset,true);};
+video.onpause=()=>{if(videoCovers(cursor)&&!video.ended){playing=false;$('play').textContent='Play';}};
+video.onseeked=()=>{if(!videoCovers(cursor)&&Math.abs(video.currentTime-Math.max(0,Math.min(video.duration,cursor-videoOffset)))<.1)return;setCursor(video.currentTime+videoOffset,true);};
+video.ontimeupdate=()=>{if(!video.paused)setCursor(video.currentTime+videoOffset,true);};
+video.onended=()=>{playing=false;$('play').textContent='Play';setCursor(videoOffset+video.duration,true);};
+const annotationMessage=(text,warn=false)=>{$('annotationMessage').textContent=text;$('annotationMessage').className=warn?'warn':'';};
+function applyOffset(value,method){if(!finite(value)||Math.abs(value)>Math.max(duration,1))throw Error('Video offset must be a finite number within the session duration.');videoOffset=value;videoTimingMethod=method;$('videoOffset').value=value;syncVideo();videoStatus();annotationsDirty=true;annotationRevision++;annotationMessage('Video timing changed. Export annotations JSON to retain this offset.');}
+$('applyVideoOffset').onclick=()=>{try{applyOffset(number($('videoOffset').value),'operator_adjusted_not_hardware_verified');}catch(e){$('videoStatus').textContent=e.message;}};
+$('videoMetadata').onchange=async()=>{try{
+ const file=$('videoMetadata').files[0];if(!file)return;if(file.size>1024*1024)throw Error('Capture timing file is too large.');
+ const metadata=JSON.parse(await file.text());if(metadata.sessionId!==D.session)throw Error('Capture timing belongs to a different session.');
+ applyOffset(metadata.channels?.video?.estimatedSessionStartSeconds,'capture_launch_estimate');
+}catch(e){$('videoStatus').textContent='Timing not loaded: '+e.message;}finally{$('videoMetadata').value='';}};
+$('speed').onchange=()=>{if(videoReady())video.playbackRate=number($('speed').value);};
+
+// Annotation data is deliberately separate from raw samples and never inferred automatically.
+const annotationSources=['researcher_observation','participant_self_report','retrospective_interview','researcher_interpretation','other'];
+const annotationConfidences=['unspecified','low','medium','high'];
+const annotationFields={label:'annotationLabel',annotator_id:'annotationAuthor',source:'annotationSource',confidence:'annotationConfidence',quote:'annotationQuote',evidence:'annotationEvidence',notes:'annotationNotes'};
+let annotationDraftDirty=false;
+const safeFilename=String(D.session).replace(/[^A-Za-z0-9_-]/g,'_').slice(0,100)||'session';
+function validateAnnotation(a){
+ if(!a||typeof a!=='object'||Array.isArray(a))throw Error('Invalid annotation record.');
+ if(typeof a.id!=='string'||!/^[A-Za-z0-9_-]{1,100}$/.test(a.id))throw Error('Invalid annotation ID.');
+ if(!finite(a.start_s)||!finite(a.end_s)||a.start_s<0||a.end_s<a.start_s||a.end_s>duration)throw Error('Use 0 <= start <= end <= session duration; equal times define a point.');
+ const result={id:a.id,start_s:a.start_s,end_s:a.end_s};
+ for(const key of Object.keys(annotationFields)){
+  if(typeof a[key]!=='string'||a[key].length>(['quote','evidence','notes'].includes(key)?10000:120))throw Error('Invalid or oversized annotation text: '+key);
+  result[key]=a[key];
+ }
+ if(!a.label.trim()||!a.annotator_id.trim())throw Error('Label and annotator ID are required.');
+ if(!annotationSources.includes(a.source)||!annotationConfidences.includes(a.confidence))throw Error('Unknown evidence source or confidence.');
+ for(const key of ['created_utc','updated_utc']){if(typeof a[key]!=='string'||a[key].length>40||!finite(Date.parse(a[key])))throw Error('Invalid annotation date.');result[key]=a[key];}
+ if(Date.parse(a.updated_utc)<Date.parse(a.created_utc))throw Error('Annotation update precedes creation.');
+ return result;
+}
+function annotationChanged(message){annotationsDirty=true;annotationRevision++;renderAnnotations();draw();annotationMessage(message+' Export JSON to save these changes.');}
+const cursorPoint=()=>Math.min(duration,Math.round(cursor*1000)/1000);
+function resetAnnotationForm(){editingAnnotation=null;annotationDraftDirty=false;for(const key of ['label','quote','evidence','notes'])$(annotationFields[key]).value='';$('annotationStart').value=cursorPoint();$('annotationEnd').value=cursorPoint();$('annotationSave').textContent='Add annotation';$('annotationCancel').disabled=true;$('annotationPanel').classList.remove('editing');}
+function mayDiscardDraft(){return !annotationDraftDirty||confirm('Discard unapplied annotation form changes? They are not included in exports.');}
+function renderAnnotations(){
+ $('annotationCount').textContent=`(${annotations.length})`;
+ const table=document.createElement('table'),head=document.createElement('tr');
+ for(const text of ['Session time / label','Evidence and notes','Actions']){const th=document.createElement('th');th.textContent=text;head.append(th);}table.append(head);
+ for(const a of [...annotations].sort((x,y)=>x.start_s-y.start_s||x.end_s-y.end_s)){
+  const tr=document.createElement('tr');tr.dataset.annotationId=a.id;
+  const title=document.createElement('td'),detail=document.createElement('td'),actions=document.createElement('td');
+  title.className=detail.className='annotationText';title.textContent=`${fmt(a.start_s)}${a.end_s===a.start_s?' (point)':' — '+fmt(a.end_s)}\n${a.label}\n${a.annotator_id} · ${a.source} · ${a.confidence}`;
+  detail.textContent=[a.quote&&'Quotation: '+a.quote,a.evidence&&'Observed evidence: '+a.evidence,a.notes&&'Interpretation / notes: '+a.notes].filter(Boolean).join('\n');
+  const button=(text,action)=>{const b=document.createElement('button');b.textContent=text;b.onclick=action;actions.append(b);};
+  button('Seek',()=>{setCursor(a.start_s);if(a.end_s>a.start_s)select(a.start_s,a.end_s);});
+  button('Edit',()=>{if(!mayDiscardDraft())return;editingAnnotation=a.id;for(const [key,id]of Object.entries(annotationFields))$(id).value=a[key];$('annotationStart').value=a.start_s;$('annotationEnd').value=a.end_s;annotationDraftDirty=false;$('annotationSave').textContent='Save annotation changes';$('annotationCancel').disabled=false;$('annotationPanel').classList.add('editing');setCursor(a.start_s);annotationMessage('Editing '+a.id+'. Save annotation changes before exporting.');});
+  button('Delete',()=>{if(!confirm('Delete this manual annotation? Original recordings are never changed.'))return;annotations=annotations.filter(x=>x.id!==a.id);if(editingAnnotation===a.id)resetAnnotationForm();annotationChanged('Annotation deleted.');});
+  tr.append(title,detail,actions);table.append(tr);
+ }
+ $('annotationList').replaceChildren(table);
+}
+for(const id of ['annotationStart','annotationEnd',...Object.values(annotationFields)])$(id).addEventListener('input',()=>{annotationDraftDirty=true;annotationMessage('Unapplied form changes. Click Add annotation or Save annotation changes before exporting.',true);});
+$('annotationUseSelection').onclick=()=>{const b=bounds();if(!b){annotationMessage('Select a valid interval on the shared timeline first.',true);return;}$('annotationStart').value=b.a;$('annotationEnd').value=b.b;annotationDraftDirty=true;};
+$('annotationUseCursor').onclick=()=>{$('annotationStart').value=cursorPoint();$('annotationEnd').value=cursorPoint();annotationDraftDirty=true;};
+$('annotationNew').onclick=$('annotationCancel').onclick=()=>{if(mayDiscardDraft()){resetAnnotationForm();annotationMessage('New point annotation at the current session time.');}};
+$('annotationSave').onclick=()=>{try{
+ if(!editingAnnotation&&annotations.length>=10000)throw Error('Maximum 10,000 annotations per file.');
+ const old=annotations.find(a=>a.id===editingAnnotation),now=new Date().toISOString();
+ const a={id:old?.id||('label-'+(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2))),start_s:number($('annotationStart').value),end_s:number($('annotationEnd').value),created_utc:old?.created_utc||now,updated_utc:now};
+ for(const [key,id]of Object.entries(annotationFields))a[key]=$(id).value;
+ const validated=validateAnnotation(a);
+ const candidate=old?annotations.map(x=>x.id===old.id?validated:x):[...annotations,validated];
+ if(new Blob([JSON.stringify({...annotationBundle(),annotations:candidate},null,2)]).size>10*1024*1024-4096)throw Error('Annotation file would exceed the save/resume size limit. Shorten notes before adding this record.');
+ annotations=candidate;
+ resetAnnotationForm();annotationChanged(old?'Annotation updated.':'Annotation added.');
+}catch(e){annotationMessage(e.message,true);}};
+function annotationBundle(){return{schema:'neon-study-annotations-v1',session:D.session,participant_id:D.participant||'',duration_s:duration,time_base:'session_seconds',interval_convention:'[start,end); equal start/end denotes a point',revision:annotationRevision,created_utc:annotationsCreatedUtc,exported_utc:new Date().toISOString(),video:{file_name:videoName||videoReferenceName,offset_s:videoOffset,timing_method:videoTimingMethod},method:'Manual human coding only. Sources and interpretations are not automatic cognitive-state diagnoses. Raw recordings unchanged.',annotations:annotations.map(a=>({...a}))};}
+function canExportAnnotations(){if(annotationDraftDirty){annotationMessage('Save or cancel unapplied annotation form changes before exporting.',true);return false;}return true;}
+$('annotationsExport').onclick=()=>{if(!canExportAnnotations())return;download(safeFilename+'-annotations-r'+annotationRevision+'.json',JSON.stringify(annotationBundle(),null,2),'application/json');annotationsDirty=false;annotationMessage('JSON download requested. Keep the file in this session folder and import it to resume. If you cancel the download, export again. The HTML and earlier exports were not overwritten.');};
+$('annotationsCsv').onclick=()=>{if(!canExportAnnotations())return;const keys=['id','start_s','end_s',...Object.keys(annotationFields),'created_utc','updated_utc'];download(safeFilename+'-annotations-r'+annotationRevision+'.csv',csv([['session','time_base',...keys],...annotations.map(a=>[D.session,'session_seconds',...keys.map(k=>a[k])])]),'text/csv;charset=utf-8');annotationMessage('Analysis CSV download requested. Export JSON as well to resume editing; CSV is not a save/resume format.');};
+$('annotationsImport').onchange=async()=>{try{
+ const file=$('annotationsImport').files[0];if(!file)return;if(file.size>10*1024*1024)throw Error('Annotation JSON exceeds the 10 MiB limit.');
+ const bundle=JSON.parse(await file.text());
+ if(bundle.schema!=='neon-study-annotations-v1'||bundle.session!==D.session||bundle.time_base!=='session_seconds'||!finite(bundle.duration_s)||Math.abs(bundle.duration_s-duration)>1e-6)throw Error('Incompatible annotations: schema, session or duration does not match this replay.');
+ if(D.participant&&bundle.participant_id!==D.participant)throw Error('Participant does not match this replay.');
+ if(!Array.isArray(bundle.annotations)||bundle.annotations.length>10000||!Number.isSafeInteger(bundle.revision)||bundle.revision<0||typeof bundle.created_utc!=='string'||bundle.created_utc.length>40||!finite(Date.parse(bundle.created_utc)))throw Error('Invalid annotation list, revision or creation date.');
+ const validated=bundle.annotations.map(validateAnnotation),ids=new Set(validated.map(a=>a.id));if(ids.size!==validated.length)throw Error('Duplicate annotation IDs.');
+ const timing=bundle.video;if(!timing||!finite(timing.offset_s)||Math.abs(timing.offset_s)>Math.max(duration,1)||typeof timing.file_name!=='string'||timing.file_name.length>255||!['capture_launch_estimate','unverified_default_zero','operator_adjusted_not_hardware_verified'].includes(timing.timing_method))throw Error('Invalid saved video timing.');
+ if(new Blob([JSON.stringify({...annotationBundle(),annotations:validated,video:timing},null,2)]).size>10*1024*1024-4096)throw Error('Normalized annotation file would exceed the save/resume size limit.');
+ if((annotations.length||annotationsDirty||annotationDraftDirty)&&!confirm('Replace the current annotation list and video offset with this JSON? Export current annotations first if you need to keep them.'))return;
+ annotations=validated;annotationRevision=bundle.revision;annotationsCreatedUtc=bundle.created_utc;videoReferenceName=timing.file_name;videoOffset=timing.offset_s;videoTimingMethod=timing.timing_method;$('videoOffset').value=videoOffset;annotationsDirty=false;resetAnnotationForm();renderAnnotations();setCursor(cursor);
+ annotationMessage(`Loaded ${annotations.length} annotations and saved video offset. Raw recordings unchanged. Video files are not embedded; load the matching video separately.${videoReferenceName?' Saved video reference: '+videoReferenceName:''}`);
+}catch(e){annotationMessage('Import rejected; existing annotations retained. '+e.message,true);}finally{$('annotationsImport').value='';}};
+window.addEventListener('beforeunload',e=>{if(annotationsDirty||annotationDraftDirty){e.preventDefault();e.returnValue='';}});
+renderAnnotations();
+$('bundle').onclick=()=>exportPart('bundle');$('gazeCsv').onclick=()=>exportPart('gaze');$('eventCsv').onclick=()=>exportPart('events');$('regionCsv').onclick=()=>exportPart('regions');
+for(const id of ['start','end'])$(id).onchange=()=>{updateSelection();draw();};$('zoom').onclick=()=>{const b=bounds();if(b){viewA=b.a;viewB=b.b;draw();}};$('all').onclick=()=>{viewA=0;viewB=Math.max(duration,.001);draw();};
+$('basis').onchange=()=>{basis=$('basis').value;rebuild();updateSelection();setCursor(cursor);};$('cursor').oninput=()=>setCursor(number($('cursor').value));
+$('play').onclick=()=>{playing=!playing;if(playing&&cursor>=duration)setCursor(0);$('play').textContent=playing?'Pause':'Play';lastFrame=performance.now();if(!playing)video.pause();else syncVideo();};
+function frame(now){if(playing){if(videoCovers(cursor)&&!video.paused&&!video.ended)setCursor(video.currentTime+videoOffset,true);else setCursor(cursor+(now-lastFrame)/1000*number($('speed').value));if(cursor>=duration){playing=false;video.pause();$('play').textContent='Play';}}lastFrame=now;requestAnimationFrame(frame);}requestAnimationFrame(frame);
+for(const r of regions){const b=document.createElement('button');b.textContent=`${r.name} · ${fmt(r.a)}–${fmt(r.b)}`;b.onclick=()=>{select(r.a,r.b);setCursor(r.a);};$('regions').append(b);}
+$('session').textContent=`Session ${D.session} · Duration ${fmt(duration)} · ${samples.length} gaze samples · ${events.length} events`;
+const aligned=samples.filter(s=>finite(s.aligned)).length;$('quality').textContent=`Session: time-aligned ${aligned} / ${samples.length}; unaligned ${samples.length-aligned}. ${samples.length?'Alignment is estimated; inspect the original quality columns.':'No eye data recorded: regions and game events are still available.'} Manifest publication failures: ${D.manifestPublishFailures||0}. A closed session is not proof of complete data; review any recording errors.`;
+if(D.recordingError)$('quality').textContent+=' RECORDING ERROR: '+D.recordingError;
+for(const source of D.gaze)$('quality').textContent+=` ${source.source}: queue drops ${source.queueDropped||0}, status ${source.status||'unknown'}.`;
+$('cursor').max=duration;$('play').disabled=duration<=0;$('end').value=duration;rebuild();updateSelection();setCursor(0);window.addEventListener('resize',draw);
+}catch(e){document.getElementById('error').textContent='Unable to load report: '+e.message+'. Preserve the original data and regenerate the report in Unity.';}
+</script></body></html>

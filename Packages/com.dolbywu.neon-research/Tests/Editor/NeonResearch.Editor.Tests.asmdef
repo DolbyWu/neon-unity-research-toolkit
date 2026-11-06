@@ -1,0 +1,20 @@
+{
+  "name": "NeonResearch.Editor.Tests",
+  "rootNamespace": "NeonResearch.Tests",
+  "references": [
+    "NeonResearch.Runtime",
+    "NeonResearch.Editor"
+  ],
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll",
+    "Newtonsoft.Json.dll"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "autoReferenced": false
+}

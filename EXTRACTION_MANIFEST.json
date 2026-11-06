@@ -1,0 +1,130 @@
+{
+  "version": "0.1.0-preview.1",
+  "sourceFolder": "EscapeRoom-Neon-Publish-20261014",
+  "sourceCommit": "f06e9c6ca5ec914540d415b7963f1fdf5f898ce3",
+  "includesUncommittedFeatures": true,
+  "createdDate": "2026-11-06",
+  "scope": "Selected research source only; no original project writes, participant data, live settings, assets, SDK binaries or Git history copied.",
+  "files": [
+    {
+      "path": "Assets/Scripts/StudyAtomicFile.cs",
+      "sha256": "2A2AE2E4F4419ECE11BFF7F2EBEFBAAF6519D7D6B8B0CBB3323EC6B1915DE098",
+      "length": 892
+    },
+    {
+      "path": "Assets/Scripts/StudyArchivePaths.cs",
+      "sha256": "73FD82C43EB5E860826F885392070E826C29386E0E4015F1446AC74247873832",
+      "length": 2847
+    },
+    {
+      "path": "Assets/Scripts/StudyParticipantProfiles.cs",
+      "sha256": "E3FDDFAB875C587C5A1344A7A07BF4102C8508AE605ABFCC5B18A17767CF9D7B",
+      "length": 9972
+    },
+    {
+      "path": "Assets/Scripts/StudySequence.cs",
+      "sha256": "FB47583B7ACD8CE0637FF2B87845BC2666405092430956796A0805922E86DAF3",
+      "length": 5258
+    },
+    {
+      "path": "Assets/Scripts/StudyMonitorData.cs",
+      "sha256": "3D87CFD823B3B25E8F07B295A94DF1E970C37C5E348AA0FD996EF7B11AA74AA7",
+      "length": 2644
+    },
+    {
+      "path": "Assets/Scripts/StudyExportSession.cs",
+      "sha256": "5CF1B82906A7BD6F0C0A9A9467FB78B51A5D94A834CBDBDD5A9BAF2150C7E7A1",
+      "length": 12627
+    },
+    {
+      "path": "Assets/Scripts/StudyOfflineReplay.cs",
+      "sha256": "CBFE91ACF038B353AC48F510174D8D6A1FED331DB7F773C44744B2DA6E33B9BA",
+      "length": 7266
+    },
+    {
+      "path": "Assets/Scripts/StudyEpisodes.cs",
+      "sha256": "AE4D27838A2039FE959F7AE782490A0394413CB276F8A60E37E595E030C384DF",
+      "length": 9720
+    },
+    {
+      "path": "Assets/Scripts/StudySequenceAnalysis.cs",
+      "sha256": "CA1FF7E8BC3C32E69883786B10304DCAC9BEE864A7FCF8147C5F6402844CAC91",
+      "length": 9835
+    },
+    {
+      "path": "Assets/Scripts/NeonStudySettings.cs",
+      "sha256": "3E12322413DEA341F1D2DE21AA4E5C773F68B95969F1A5EB411A755BC1392B0D",
+      "length": 2648
+    },
+    {
+      "path": "Assets/Scripts/NeonClockSync.cs",
+      "sha256": "A2505BE4A75DF04AA5127CBB45B3E7706100B16A4885A44E53C96921774E997B",
+      "length": 6130
+    },
+    {
+      "path": "Assets/Scripts/NeonTcpGazeClient.cs",
+      "sha256": "A697481C3A969245E0443F27FE0A6BF3ADF2C36F5AF5C71DBB0673A28A69DADD",
+      "length": 13743
+    },
+    {
+      "path": "Assets/Editor/StudyArchiveEditor.cs",
+      "sha256": "2072BB791856D5546291C95AD26653E8ACC01C29352A692360CED202F5CADE97",
+      "length": 5745
+    },
+    {
+      "path": "Assets/Editor/StudyMediaEditor.cs",
+      "sha256": "6E2D158B2ECD8CB186F74D4998F221495158CE1E3E8A932D368BB424B1A89073",
+      "length": 7627
+    },
+    {
+      "path": "Assets/Editor/StudyParticipantStartWindow.cs",
+      "sha256": "60C992F1654BB5C6AEB802F23B441682FF902048534236012F818CC55F4A796D",
+      "length": 10765
+    },
+    {
+      "path": "Assets/Editor/StudyLiveMonitor.cs",
+      "sha256": "719214EE1AAF376864E449AFDF7C56A0645CE24B05BBDC71A15D287AC35C41C7",
+      "length": 10412
+    },
+    {
+      "path": "Tools/StudyArchive/study_archive.py",
+      "sha256": "4BE5ACF80A1A340A8F5620B13194A6BB2D3D700DE9D6D870E1CB5AA26CC17E3C",
+      "length": 24546
+    },
+    {
+      "path": "Assets/Resources/StudyOfflineReplay.txt",
+      "sha256": "8E667E0E4389098F36285FE5C8F9B99BBB8FAAA575B07E0FEAAD57F527ECA091",
+      "length": 39790
+    },
+    {
+      "path": "Tools/StudyArchive/test_study_archive.py",
+      "sha256": "12F6D49D19CC41FEE40D7C87A133EB4F8269F09354FD0DC945C8737C246D93EB",
+      "length": 5794
+    },
+    {
+      "path": "Tools/StudyArchive/archive.html",
+      "sha256": "8011B9E2F7F118205FC0FCEB5F5F9BF93BF25E77401EB661C9EF33B86DFE1654",
+      "length": 13614
+    },
+    {
+      "path": "Tools/StudyArchive/study_capture.py",
+      "sha256": "C24E0CA67C1D630EB0320958B8F292771B71C645427B9D800AFDC53E86066038",
+      "length": 17292
+    },
+    {
+      "path": "Tools/StudyArchive/test_study_capture.py",
+      "sha256": "918063182640A51CD6F60AC35EB7341C9190E8097AC09D666A08C25B74A20B99",
+      "length": 7743
+    },
+    {
+      "path": "Tools/Test-OfflineReplay.cjs",
+      "sha256": "13EF3870B415B4F476CE55CB7AEDD26451D4412B6CA89012757A8471C41E591F",
+      "length": 6015
+    },
+    {
+      "path": "Tools/Test-ReplayAnnotations.cjs",
+      "sha256": "205EB8D9A3CDEB7E0DEF7113BB3784A1B4E76375C6B57F30C323718608AA503D",
+      "length": 11610
+    }
+  ]
+}

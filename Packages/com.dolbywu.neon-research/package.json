@@ -1,0 +1,23 @@
+{
+  "name": "com.dolbywu.neon-research",
+  "version": "0.1.0-preview.1",
+  "displayName": "Neon Research Toolkit (Unofficial Preview)",
+  "description": "Independent Unity + Neon study recording, participant intake, raw events/head pose, offline video review and manual annotations. Windows Editor preview; opt-in acquisition.",
+  "unity": "6000.3",
+  "author": {
+    "name": "DolbyWu"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "files": ["Runtime", "Runtime.meta", "Editor", "Editor.meta", "Tests", "Tests.meta", "Samples~", "Tools", "Tools.meta", "Documentation~", "README.md", "CHANGELOG.md", "LICENSE.md", "Third Party Notices.md"],
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.2"
+  },
+  "samples": [
+    {
+      "displayName": "Minimal event integration sample",
+      "description": "No EscapeRoom or headset SDK required. Synthetic event sample; no fabricated eye data.",
+      "path": "Samples~/MinimalStudy"
+    }
+  ]
+}

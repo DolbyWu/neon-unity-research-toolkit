@@ -1,0 +1,15 @@
+{
+  "name": "NeonResearch.Editor",
+  "rootNamespace": "NeonResearch",
+  "references": [
+    "NeonResearch.Runtime"
+  ],
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "Newtonsoft.Json.dll"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "autoReferenced": true
+}

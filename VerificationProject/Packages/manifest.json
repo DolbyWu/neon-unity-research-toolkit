@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "com.dolbywu.neon-research": "file:../../Packages/com.dolbywu.neon-research",
+    "com.unity.test-framework": "1.6.0",
+    "com.unity.nuget.newtonsoft-json": "3.2.2",
+    "com.unity.modules.imgui": "1.0.0",
+    "com.unity.modules.physics": "1.0.0"
+  },
+  "testables": [
+    "com.dolbywu.neon-research"
+  ]
+}

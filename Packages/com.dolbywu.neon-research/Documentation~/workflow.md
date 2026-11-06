@@ -1,0 +1,44 @@
+# Integration and experimental workflow
+
+## Install and configure
+
+Use Package Manager's local package-from-disk function and select this package's `package.json`. Supported verification target: Windows Editor, Unity 6000.3.23f1. Other platforms, standalone player builds and older Unity versions are untested. Core/runtime and Editor assemblies are separate; only Unity JSON is a registry dependency. Python/FFmpeg are not required to compile, collect basic events/head data or review the offline HTML.
+
+Open Setup from **Tools > Neon Research**. New project defaults disable Record on Play, Neon reception and media. Choose a fresh output folder. Enable Record on Play, save and then use Unity Play. Participant intake is only intercepted when recording is explicitly armed. Profiles and sessions use anonymous IDs with immutable per-session snapshots; a returning participant must be explicitly selected. Never use real names as IDs or treat optional background fields as inferred ethnicity/cognitive state.
+
+## Head, regions and interactions
+
+Assign a **Head Pose Source** component to the head/camera Transform. Otherwise a tagged Main Camera is used. `head_pose.csv` stores Unity WORLD position in project distance units and quaternion rotation; verify the host's metre scale and coordinate conventions. A head movement is not an eye fixation. Head pose is raw CSV, not a newly added head chart in the replay.
+
+Add **Study Region** components with colliders and explicit IDs. Multiple overlapping matches are labelled Ambiguous. Unconfigured areas are Unknown/In-between, not attention targets.
+
+Add **Interaction Adapter** and wire GrabLeft/ReleaseLeft/GrabRight/ReleaseRight to the host framework's actual grab/release events. Set a stable object ID or use the provided fallback identity. Alternatively call on Unity's main thread:
+
+```csharp
+using NeonResearch;
+StudyEvents.Record("attempt", "door_lock", "failure", "Observed game event only", "TaskA");
+StudyEvents.Grab("Left", objectTransform, "stable_object_id");
+StudyEvents.Release("Left");
+```
+
+These calls do nothing outside an active session and do not start recording. They do not automatically discover every action in every game. Never run two independent recorders against the same participant archive.
+
+## Neon
+
+Enable reception separately and configure the Companion IPv4, API and WEBSOCKET gaze port on an approved device-to-device local network. Native RTSP/Live555 and the original Pupil Labs Unity SDK are not bundled or started. Managed RTP/RTCP over the Companion WebSocket and Time Echo logic are extracted; a new documented-wire decoder is used. It supports the documented payload lengths and retains raw base64 payloads, quality flags and queue/unsupported counts. Pupil fields use the documented raw wire unit (mm); real-device and physical-unit validation remain required. Original EscapeRoom SDK-unit files are not changed.
+
+Check recent samples, data availability, supported payloads, quality and clock alignment. No automatic phone-side backup recording is started. No gaze-object raycast, fixation/saccade classification, cognitive-state classifier or validated synchronization is provided.
+
+## Optional media
+
+Python/FFmpeg executables and microphone/window configuration must be separately installed/configured. Nothing is downloaded, launched or recorded by installing this package. Per-session operator confirmation remains required before capture. Whole-desktop recording has a separate explicit opt-in. The existing Quest Mirror preview helper uses the conventional Windows Oculus installation location; other installs require operator adaptation. Generic video-window capture can use another configured window title.
+
+The copied scripts tolerate brief metadata contention and retain finalization evidence. This is not a full task-length hardware validation; complete media coverage, microphone intelligibility and DPI/cropping must be verified. No speech or old missing video can be reconstructed. External-process capture/redistribution is not certified for Asset Store submission.
+
+## Offline review and annotation
+
+After successful raw finalization, Stop opens the session folder and generated HTML when enabled. The independent media agent may still be muxing: wait for its finalized file. The HTML can load `../Video/quest-view.mp4` or a manually selected local video and use a capture/manual offset. Video and session time seek together. Verify the offset using an actual marker; it is not hardware-synchronized. Out-of-coverage video is explicitly marked.
+
+Use current time for a point, or select a timeline interval. Enter label, anonymous annotator, evidence source and optional quotation/evidence/interpretation. Add/edit/delete labels. **Export annotations JSON** is required to retain work; **Import annotations JSON** resumes it, validating the session/participant and asking before replacement. CSV is for analysis only. Downloaded JSON and video remain separate files; copy the whole session folder. No browser cache, cloud upload or local web server is needed for this HTML. No raw records are modified by annotation.
+
+The separately callable Participant Archive Python service is optional and not automatically opened after Stop. The acquisition/preflight UI, setup, live settings, data and SessionState keys are independent of the working EscapeRoom version.

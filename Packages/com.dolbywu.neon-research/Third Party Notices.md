@@ -1,12 +1,18 @@
 # Dependency and provenance review
 
-This is a private development preview, not a completed legal clearance.
+## Licensing scope
 
-- The implementation includes pre-existing research source contributions. Historical source hashes are retained outside the installable package in EXTRACTION_MANIFEST.json for maintainers. Source/contributor redistribution rights must be confirmed before publication.
+Plugin code and accompanying software documentation authored and owned by Michelle Binyan Xu are provided under the MIT License in LICENSE.md. Copyright (c) 2026 Michelle Binyan Xu.
+
+The MIT grant covers only material the copyright holder has authority to license. Third-party components and independently owned contributions retain their respective licenses; this notice does not relicense them. Demonstration photos, videos, participant recordings and research datasets are excluded from the software license and require separate permission for reuse. These materials are not included in the installable UPM package.
+
+## Dependencies and provenance
+
+- Historical research-source extraction hashes are retained outside the installable package in EXTRACTION_MANIFEST.json for maintainers. Provenance metadata is not a license grant for independently owned material. Preserve any applicable contributor notices.
 - Unity JSON is declared as `com.unity.nuget.newtonsoft-json` 3.2.2 and resolved by Unity Package Manager. Its own package notices/licenses remain authoritative; DLLs are not copied into this package.
 - Unity Test Framework/NUnit are development-only verification dependencies of the blank host, not bundled third-party executables.
 - Neon wire layout documentation: https://pupil-labs.github.io/pl-realtime-api/dev/guides/under-the-hood/ . The preview decoder implements documented field order and big-endian numeric facts, not the original SDK's converted representation. Pupil Labs Unity SDK/native binaries are not redistributed. Physical and real-device validation remain pending.
 - Python and FFmpeg are optional operator-installed executables, not included. If a future release redistributes them, their exact builds, licenses and store-policy implications require separate review. The copied capture/archive helpers are project research source, not these external tools.
 - No Meta SDK/game assets, OpenAI client, MCP plugin, fonts, participant recordings or identities are bundled.
 
-Using a protocol or declaring a dependency does not itself establish rights to publish this whole derivative package. Resolve this review before any public GitHub/Asset Store release.
+The project is unofficial. Neither the MIT license nor protocol compatibility implies endorsement by Unity or Pupil Labs. Future third-party additions require their own license review and attribution.

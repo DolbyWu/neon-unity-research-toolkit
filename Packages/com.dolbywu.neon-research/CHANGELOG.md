@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0-preview.3 — 2026-11-06
+
+- Licensed plugin code and software documentation authored and owned by Michelle Binyan Xu under MIT; included matching repository and package license texts.
+- Set package license metadata to MIT and removed private-package metadata.
+- Clarified third-party license preservation and exclusions for demonstration media and research data.
+- Corrected outdated private/unlicensed documentation. Acquisition and recording behavior are unchanged; historical device validation status is unchanged.
+
 ## 0.1.0-preview.2 — 2026-11-06
 
 - Added a beginner-first installation, recording, Neon connection, media and review guide; clarified project-local Setup/monitor wording without changing recording behavior.

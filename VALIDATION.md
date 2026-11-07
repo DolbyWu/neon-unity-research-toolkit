@@ -15,6 +15,10 @@ Package `com.dolbywu.neon-research`, version **0.1.0-preview.2**. Tested on Wind
 - Beginner documentation checks passed for **10 Markdown files and 18 local links**, including installation/recording milestones and current standalone menu wording. Setup/monitor text was clarified without changing acquisition behavior. A later full Unity/browser/Python rerun also exited 0 after these wording updates.
 - A local `0.1.0-preview.2` tarball was generated and its manifest, replay resource and Unity integration test matched the source at packaging time. Generated Artifacts are not committed; later documentation-only updates do not rewrite existing archives. Consult the source/changelog when choosing a version.
 
+## Licensing-only preview update
+
+Version **0.1.0-preview.3** updates licensing and package metadata without changing acquisition code. The Unity, browser and hardware-related evidence above remains the historical preview.2 baseline, not a new preview.3 device validation.
+
 ## Run the checks yourself
 
 The script requires your own Unity, Node, Playwright, Python and FFmpeg paths. It does not install them. In PowerShell, from the repository root:
@@ -43,4 +47,4 @@ Not implemented: gaze-to-object mapping, fixation/saccade analysis, automatic co
 
 Windows Editor is the tested target; standalone players, Quest Android, macOS/Linux and older Unity versions remain unverified. This is not an approved Asset Store submission.
 
-Use a new local test output folder, anonymous IDs and informed consent. Keep participant archives/credentials out of GitHub. Review the [license](Packages/com.dolbywu.neon-research/LICENSE.md) and [dependency notices](<Packages/com.dolbywu.neon-research/Third Party Notices.md>) before redistribution. Repository access is private; no public distribution rights or vendor endorsement are claimed.
+Use a new local test output folder, anonymous IDs and informed consent. Keep participant archives/credentials out of GitHub. Review the [license](Packages/com.dolbywu.neon-research/LICENSE.md) and [dependency notices](<Packages/com.dolbywu.neon-research/Third Party Notices.md>) before redistribution. The repository is public. Plugin code and software documentation authored and owned by Michelle Binyan Xu are MIT-licensed; third-party materials retain their own licenses, and demonstration media/research data are excluded. No vendor endorsement is claimed.

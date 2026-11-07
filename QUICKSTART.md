@@ -2,7 +2,7 @@
 
 This guide takes you from a fresh download to your first saved session. All menu and button names below are in English.
 
-**Supported verification environment:** Windows and Unity **6000.3.23f1**. Version **0.1.0-preview.2** is a development preview. Validate your hardware before collecting participant data.
+**Supported verification environment:** Windows and Unity **6000.3.23f1**. Version **0.1.0-preview.3** is a development preview. Validate your hardware before collecting participant data.
 
 ## 1. What to prepare
 
@@ -164,7 +164,7 @@ Do not use participant data to diagnose installation problems: use an anonymous 
 
 ## 10. Optional installation methods and next steps
 
-**Git URL (advanced):** requires a Git client and authenticated access to this private repository. In Package Manager choose install from Git URL:
+**Git URL (advanced):** requires a Git client. This repository is publicly accessible. In Package Manager choose install from Git URL:
 
 ```text
 https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.dolbywu.neon-research
@@ -172,4 +172,4 @@ https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.do
 
 **Tarball:** if you have a matching `.tgz`, choose Package Manager's install-from-tarball option. Latest source on main and older Release assets may differ; check the version/changelog. Installation from tarball is not separately validated by the local-source tests.
 
-Next, follow the [integration guide](Packages/com.dolbywu.neon-research/Documentation~/workflow.md) for your own application's event wiring. Read [Validation](VALIDATION.md), the [license](Packages/com.dolbywu.neon-research/LICENSE.md) and [dependency notices](<Packages/com.dolbywu.neon-research/Third Party Notices.md>) before research deployment or redistribution. This repository is private and UNLICENSED; no public/Asset Store release or vendor endorsement is implied.
+Next, follow the [integration guide](Packages/com.dolbywu.neon-research/Documentation~/workflow.md) for your own application's event wiring. Read [Validation](VALIDATION.md), the [license](Packages/com.dolbywu.neon-research/LICENSE.md) and [dependency notices](<Packages/com.dolbywu.neon-research/Third Party Notices.md>) before research deployment or redistribution. Plugin code and software documentation authored and owned by Michelle Binyan Xu are MIT-licensed; third-party materials retain their own licenses, and demonstration media/research data are excluded. This is a development preview, not an approved Asset Store submission; no vendor endorsement is implied.

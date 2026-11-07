@@ -6,7 +6,7 @@ An unofficial Unity research plugin for researchers in psychology, neuroscience 
 
 The goal is to make multimodal VR research more accessible: configure recording in the Unity Editor, connect your experiment's events, and review sessions in a standalone HTML interface without reopening Unity.
 
-**Status:** `0.1.0-preview.2` · Development preview
+**Status:** `0.1.0-preview.3` · Development preview
 
 **Current development/test environment:** Windows, Unity `6000.3.23f1`
 
@@ -87,10 +87,10 @@ Unity resolves `com.unity.nuget.newtonsoft-json` through Package Manager. Keep t
 With Git installed, use **Install/Add package from Git URL**:
 
 ```text
-https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.dolbywu.neon-research#81c4ced034d4a9aa7e2d616bf5a93063987495bd
+https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.dolbywu.neon-research#main
 ```
 
-This pins the reviewed preview snapshot for reproducibility. Use a validated release tag for future releases. The Git installation route still needs a clean-project acceptance run; see [Validation](VALIDATION.md).
+This follows the current development branch. For reproducible studies, pin the exact commit you have validated or use a validated release tag. The Git installation route still needs a clean-project acceptance run; see [Validation](VALIDATION.md).
 
 ### Try the included verification project
 
@@ -197,4 +197,10 @@ These are planned capabilities, not current support claims.
 
 This is an independent, unofficial project, not affiliated with or endorsed by Pupil Labs or Unity.
 
-The repository is publicly accessible, but the current package is **UNLICENSED**. Public visibility does not grant an open-source redistribution license. An open-source release is a project goal; code ownership, contributor permissions and the distribution license must be resolved before that release.
+The plugin code and accompanying software documentation authored and owned by **Michelle Binyan Xu** are licensed under the [MIT License](LICENSE). Copyright (c) 2026 Michelle Binyan Xu.
+
+Third-party components retain their respective licenses; see the [dependency notices](<Packages/com.dolbywu.neon-research/Third Party Notices.md>). The MIT grant does not relicense third-party code, SDKs, game assets or other contributors' independently owned material.
+
+**Demonstration photos, videos and research data are excluded from the code's MIT license.** Public display does not grant permission to reuse, redistribute or extract these materials. See [media permissions](docs/media/README.md); request separate permission from the relevant rights holders.
+
+This licensing update does not change the development-preview status or imply vendor endorsement or validated research accuracy.

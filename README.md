@@ -180,6 +180,7 @@ Use anonymous IDs, obtain appropriate consent and keep identity mappings separat
 ## Documentation
 
 - [Quick Start](QUICKSTART.md)
+- [Neon hardware connection and recording notes](docs/neon-hardware-setup.md)
 - [Integration and review workflow](Packages/com.dolbywu.neon-research/Documentation~/workflow.md)
 - [Validation and known limitations](VALIDATION.md)
 - [Changelog](Packages/com.dolbywu.neon-research/CHANGELOG.md)

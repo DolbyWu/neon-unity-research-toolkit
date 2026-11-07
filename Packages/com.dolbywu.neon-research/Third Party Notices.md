@@ -2,7 +2,7 @@
 
 ## Licensing scope
 
-Plugin code and accompanying software documentation authored and owned by Michelle Binyan Xu are provided under the MIT License in LICENSE.md. Copyright (c) 2026 Michelle Binyan Xu.
+See LICENSE.md for the plugin's MIT software licensing terms.
 
 The MIT grant covers only material the copyright holder has authority to license. Third-party components and independently owned contributions retain their respective licenses; this notice does not relicense them. Demonstration photos, videos, participant recordings and research datasets are excluded from the software license and require separate permission for reuse. These materials are not included in the installable UPM package.
 

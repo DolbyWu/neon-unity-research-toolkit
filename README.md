@@ -206,7 +206,7 @@ These are planned capabilities, not current support claims.
 
 This is an independent, unofficial project, not affiliated with or endorsed by Pupil Labs or Unity.
 
-The plugin code and accompanying software documentation authored and owned by **Michelle Binyan Xu** are licensed under the [MIT License](LICENSE). Copyright (c) 2026 Michelle Binyan Xu.
+See the [MIT License](LICENSE) for the plugin's software licensing terms.
 
 Third-party components retain their respective licenses; see the [dependency notices](<Packages/com.dolbywu.neon-research/Third Party Notices.md>). The MIT grant does not relicense third-party code, SDKs, game assets or other contributors' independently owned material.
 

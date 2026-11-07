@@ -1,3 +1,5 @@
+![Neon Unity Research Toolkit — Democratizing Multimodal Research. Record. Review. Annotate.](docs/media/banner.jpg)
+
 # Neon Unity Research Toolkit
 
 **Bring Neon eye tracking into Unity VR studies—and return to the experience through offline video review and human annotation.**

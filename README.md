@@ -18,6 +18,12 @@ This preview fixes save/reopen serialization for Head Pose Source, Study Region 
 
 ## Demo: HTML review and annotation
 
+### Watch the introduction on YouTube
+
+[![Watch the Neon Unity Research Toolkit introduction on YouTube](https://img.youtube.com/vi/LUCue3x0qvk/hqdefault.jpg)](https://youtu.be/LUCue3x0qvk)
+
+[Watch the introduction video →](https://youtu.be/LUCue3x0qvk)
+
 The HTML workflow supports reviewing a recorded VR experience alongside eye and behavioral timelines, marking a video moment or selected interval, and adding human labels, descriptions and evidence sources.
 
 - Pause or scrub local video and inspect the corresponding experiment time.

@@ -2,7 +2,7 @@
 
 This guide takes you from a fresh download to your first saved session. All menu and button names below are in English.
 
-**Supported verification environment:** Windows and Unity **6000.3.23f1**. Version **0.1.0-preview.3** is a development preview. Validate your hardware before collecting participant data.
+**Supported verification environment:** Windows and Unity **6000.3.23f1**. Public preview **0.1.0-preview.4** includes the component-serialization fix and a tested signed tarball. Neon + Quest 3 core-function tests passed. Configure your own hardware and check the selected data sources before collecting participant data. See the [release notes](RELEASE_NOTES.md).
 
 ## 1. What to prepare
 
@@ -14,6 +14,7 @@ For eye data, additionally prepare Neon, its supported Companion phone/app and a
 
 1. On GitHub, select **Code → Download ZIP**.
 2. Extract the ZIP fully to a local writable folder. Do not open files from inside the ZIP.
+   On Windows, keep the project and data paths short (for example, a dedicated folder directly under C:) to avoid long-path errors in Unity/Mono. Do not debug first installation inside a deeply nested synced archive.
 3. In Unity Hub, select **Add/Open project from disk** and choose the extracted **VerificationProject** folder.
 4. Open it using **6000.3.23f1**. Allow the first import to finish and Unity to resolve its declared registry dependencies.
 5. Confirm that **Tools → Neon Research** appears in the Unity menu.

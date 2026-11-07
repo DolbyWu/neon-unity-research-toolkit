@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-preview.4 — Unreleased
+
+- Fixed scene serialization of Head Pose Source, Study Region and Interaction Adapter by placing each MonoBehaviour in its own matching source file with a stable metadata GUID. Namespaces, public fields and event APIs are unchanged.
+- Added three scene save/reopen regression cases, including head/collider references and region/object IDs.
+- Declared Unity JSON serialization, physics and IMGUI modules explicitly so a minimal host does not depend on another package pulling them in.
+- Fixed the tarball whitelist to include root-document and Tools/StudyArchive folder metadata; added an archive-stage check for every Unity-imported asset/folder so immutable-package imports cannot silently ignore missing-meta assets.
+- Existing Missing Script components from earlier previews are not automatically repaired. Back up the scene, remove only the broken component, re-add the matching component and restore its fields/callbacks.
+
 ## 0.1.0-preview.3 — 2026-11-06
 
 - Licensed plugin code and software documentation authored and owned by Michelle Binyan Xu under MIT; included matching repository and package license texts.

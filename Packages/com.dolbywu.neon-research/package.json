@@ -1,6 +1,6 @@
 {
   "name": "com.dolbywu.neon-research",
-  "version": "0.1.0-preview.3",
+  "version": "0.1.0-preview.4",
   "displayName": "Neon Research Toolkit (Unofficial Preview)",
   "description": "Independent Unity + Neon study recording, participant intake, raw events/head pose, offline video review and manual annotations. Windows Editor preview; opt-in acquisition.",
   "unity": "6000.3",
@@ -22,10 +22,18 @@
     "README.md",
     "CHANGELOG.md",
     "LICENSE.md",
-    "Third Party Notices.md"
+    "Third Party Notices.md",
+    "package.json.meta",
+    "README.md.meta",
+    "CHANGELOG.md.meta",
+    "LICENSE.md.meta",
+    "Third Party Notices.md.meta"
   ],
   "dependencies": {
-    "com.unity.nuget.newtonsoft-json": "3.2.2"
+    "com.unity.nuget.newtonsoft-json": "3.2.2",
+    "com.unity.modules.jsonserialize": "1.0.0",
+    "com.unity.modules.physics": "1.0.0",
+    "com.unity.modules.imgui": "1.0.0"
   },
   "samples": [
     {

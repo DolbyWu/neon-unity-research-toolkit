@@ -6,13 +6,15 @@ An unofficial Unity research plugin for researchers in psychology, neuroscience 
 
 The goal is to make multimodal VR research more accessible: configure recording in the Unity Editor, connect your experiment's events, and review sessions in a standalone HTML interface without reopening Unity.
 
-**Status:** `0.1.0-preview.3` · Development preview
+**Status:** `0.1.0-preview.4` · Public preview for pilot use
+
+This preview fixes save/reopen serialization for Head Pose Source, Study Region and Interaction Adapter. See the changelog before upgrading; existing Missing Script references need manual re-attachment and field/callback restoration. Download the tested signed archive from the [preview.4 release](https://github.com/DolbyWu/neon-unity-research-toolkit/releases/tag/v0.1.0-preview.4).
 
 **Current development/test environment:** Windows, Unity `6000.3.23f1`
 
 **Hardware scope:** Pupil Labs Neon; other Pupil Labs devices are not currently claimed as supported.
 
-> Neon has been connected and used in the author's original VR study project. Independent installation of the extracted package, device/version compatibility and quantitative synchronization accuracy still require dedicated validation. See [Validation](VALIDATION.md) for the currently documented software checks and limitations.
+> Independent installation and real Neon + Quest 3 tests passed core acquisition, head/interaction logging, media finalization and offline video review. See the [test results](docs/hardware-acceptance-2026-11-07.md) and [Validation](VALIDATION.md).
 
 ## Demo: HTML review and annotation
 
@@ -69,6 +71,10 @@ The plugin does not automatically detect all interactions, map Neon image gaze t
 
 ## Installation
 
+### Recommended: tested signed archive
+
+Download `com.dolbywu.neon-research-0.1.0-preview.4.tgz` and `SHA256SUMS.txt` from the [GitHub release](https://github.com/DolbyWu/neon-unity-research-toolkit/releases/tag/v0.1.0-preview.4). Keep the archive unchanged. In Unity Package Manager choose **Install/Add package from tarball** and select it. No Git installation is required. See the [release notes](RELEASE_NOTES.md) for tested scope and known issues. The signed package's embedded documentation preserves its pre-publication candidate wording; the release notes provide the subsequent test/publication record.
+
 ### Option A: install from disk
 
 1. Download and extract this repository using **Code → Download ZIP**.
@@ -87,10 +93,10 @@ Unity resolves `com.unity.nuget.newtonsoft-json` through Package Manager. Keep t
 With Git installed, use **Install/Add package from Git URL**:
 
 ```text
-https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.dolbywu.neon-research#main
+https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.dolbywu.neon-research#v0.1.0-preview.4
 ```
 
-This follows the current development branch. For reproducible studies, pin the exact commit you have validated or use a validated release tag. The Git installation route still needs a clean-project acceptance run; see [Validation](VALIDATION.md).
+This pins the preview.4 source tag. The signed tarball is the installation route exercised in the real-device trials; the preview.4 tagged Git route has not had a separate post-publication acceptance run. Validate the route and exact version you use in your own study; see [Validation](VALIDATION.md).
 
 ### Try the included verification project
 
@@ -179,6 +185,8 @@ Use anonymous IDs, obtain appropriate consent and keep identity mappings separat
 
 ## Documentation
 
+- [Preview.4 test results](docs/hardware-acceptance-2026-11-07.md)
+- [Release notes and installation](RELEASE_NOTES.md)
 - [Quick Start](QUICKSTART.md)
 - [Neon hardware connection and recording notes](docs/neon-hardware-setup.md)
 - [Preview.3 acceptance checklist and next steps](docs/preview-3-acceptance.md)
@@ -190,7 +198,7 @@ Use anonymous IDs, obtain appropriate consent and keep identity mappings separat
 
 ## Roadmap
 
-The next priorities are clean-project installation tests, a complete importable example scene, recorded real-device validation, reliable stream/finalization status and clearer module boundaries. Future work may add hardware providers, raw IMU sources, calibrated gaze-to-object mapping and improved video timing.
+Future work may add a complete importable XR example scene, additional hardware providers, raw IMU sources, calibrated gaze-to-object mapping and improved video timing.
 
 These are planned capabilities, not current support claims.
 

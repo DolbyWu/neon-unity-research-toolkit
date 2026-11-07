@@ -1,6 +1,8 @@
 # Neon Unity Research Toolkit
 
-**0.1.0-preview.3** · Unofficial Windows Unity Editor development preview.
+**0.1.0-preview.4 (unreleased)** · Unofficial Windows Unity Editor development preview.
+
+This local candidate fixes serialization of the three public scene components. Earlier previews may leave Missing Script references after saving/reopening a scene. Back up affected scenes, re-add only the broken component, and restore its fields/callbacks. Existing broken references are not automatically migrated.
 
 Record anonymous participant sessions, head/camera pose, explicitly connected interaction events and available Neon eye/pupil data. Review finished sessions in English offline HTML with linked local video and optional manual annotations.
 

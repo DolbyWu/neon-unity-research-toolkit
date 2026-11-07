@@ -4,6 +4,9 @@ using System.Reflection;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 namespace NeonResearch.Tests
 {
@@ -72,6 +75,44 @@ namespace NeonResearch.Tests
             finally{UnityEngine.Object.DestroyImmediate(go);}
         }
         private static void Float(byte[] bytes,int offset,float value){var data=BitConverter.GetBytes(value);if(BitConverter.IsLittleEndian)Array.Reverse(data);Buffer.BlockCopy(data,0,bytes,offset,4);}
+        [TestCase(typeof(StudyHeadPoseSource))]
+        [TestCase(typeof(StudyRegion))]
+        [TestCase(typeof(StudyInteractionAdapter))]
+        public void PublicComponentsHavePersistentScriptsAndRetainFieldsAfterSceneReopen(Type type)
+        {
+            if(!Application.isBatchMode)Assert.Ignore("Run serialization acceptance in an isolated batch test project, not an operator's open scenes.");
+            const string parent="Assets/NeonResearchSerializationTests";
+            if(!AssetDatabase.IsValidFolder(parent))AssetDatabase.CreateFolder("Assets","NeonResearchSerializationTests");
+            string testFolder=parent+"/test-"+Guid.NewGuid().ToString("N");
+            AssetDatabase.CreateFolder(parent,Path.GetFileName(testFolder));
+            string scenePath=testFolder+"/Roundtrip.unity";
+            var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
+            try
+            {
+                var go=new GameObject("Serialized component");
+                var component=(MonoBehaviour)go.AddComponent(type);
+                if(component is StudyRegion region){region.regionId="ROUNDTRIP-REGION";region.regionCollider=go.AddComponent<BoxCollider>();}
+                if(component is StudyHeadPoseSource head){head.head=go.transform;}
+                if(component is StudyInteractionAdapter interaction){interaction.objectId="ROUNDTRIP-OBJECT";}
+                var script=MonoScript.FromMonoBehaviour(component);
+                Assert.That(script,Is.Not.Null);Assert.That(script.GetClass(),Is.EqualTo(type));
+                string scriptPath=AssetDatabase.GetAssetPath(script);
+                Assert.That(scriptPath,Does.EndWith("/"+type.Name+".cs"),"Each attachable component must have its own matching source file.");
+                Assert.That(EditorSceneManager.SaveScene(scene,scenePath),Is.True);
+                EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
+                scene=EditorSceneManager.OpenScene(scenePath,OpenSceneMode.Single);
+                var restored=scene.GetRootGameObjects()[0].GetComponent(type);
+                Assert.That(restored,Is.Not.Null,"The component must not become Missing Script after reopening.");
+                if(restored is StudyRegion restoredRegion){Assert.That(restoredRegion.regionId,Is.EqualTo("ROUNDTRIP-REGION"));Assert.That(restoredRegion.regionCollider,Is.Not.Null);}
+                if(restored is StudyHeadPoseSource restoredHead){Assert.That(restoredHead.head,Is.EqualTo(restoredHead.transform));}
+                if(restored is StudyInteractionAdapter restoredInteraction){Assert.That(restoredInteraction.objectId,Is.EqualTo("ROUNDTRIP-OBJECT"));}
+            }
+            finally
+            {
+                EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
+                AssetDatabase.DeleteAsset(testFolder);
+            }
+        }
         [TestCase(9)][TestCase(17)][TestCase(25)][TestCase(65)][TestCase(89)][TestCase(105)]
         public void DocumentedPacketSizesDecodeWithoutNativeSdk(int size)
         {

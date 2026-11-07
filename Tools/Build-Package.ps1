@@ -23,14 +23,26 @@ try {
     }
     foreach ($name in @('package.json','README.md','CHANGELOG.md','LICENSE.md','Third Party Notices.md','Runtime.meta','Editor.meta','Tests.meta','Tools.meta')) {
         $source=Join-Path $packageRoot $name
-        if (Test-Path -LiteralPath $source) { Copy-Item -LiteralPath $source -Destination $payload }
+        if (Test-Path -LiteralPath $source) {
+            Copy-Item -LiteralPath $source -Destination $payload
+            if (-not $name.EndsWith('.meta') -and (Test-Path -LiteralPath ($source+'.meta'))) {
+                Copy-Item -LiteralPath ($source+'.meta') -Destination $payload
+            }
+        }
     }
     # Explicit source whitelist: no interpreter/FFmpeg binaries, pycache, live settings or generated data.
     $toolDestination=Join-Path $payload 'Tools/StudyArchive'
     New-Item -ItemType Directory -Path $toolDestination -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $packageRoot 'Tools/StudyArchive.meta') -Destination (Join-Path $payload 'Tools/StudyArchive.meta')
     Get-ChildItem -LiteralPath (Join-Path $packageRoot 'Tools/StudyArchive') -File |
         Where-Object { $_.Extension -in @('.py','.html','.meta') } |
         ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $toolDestination }
+    # Immutable UPM packages cannot create missing metadata during import.
+    foreach ($entry in Get-ChildItem -LiteralPath $payload -Recurse -Force) {
+        $relative=[IO.Path]::GetRelativePath($payload,$entry.FullName)
+        if ($entry.Name.EndsWith('.meta') -or $relative -match '(^|[\\/])[^\\/]+~([\\/]|$)') { continue }
+        if (-not (Test-Path -LiteralPath ($entry.FullName+'.meta'))) { throw "Missing import metadata: $relative" }
+    }
     $archive=Join-Path $artifacts ($package.name+'-'+$package.version+'.tgz')
     & tar -czf $archive -C $stage package
     if ($LASTEXITCODE -ne 0) { throw 'Package archive creation failed.' }

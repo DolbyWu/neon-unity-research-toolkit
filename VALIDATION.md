@@ -2,6 +2,14 @@
 
 This report describes measured software checks, not certification of a physical study setup.
 
+## Published preview.4 acceptance update — 7 November 2026
+
+The exact signed preview.4 archive passed independent installation and real Neon + Quest 3 core-function checks: acquisition, real head movement, explicit left/right grips, local video/microphone finalization and offline video pause/seek/frame timestamps. Quantitative pupil/clock calibration is separate from functional acceptance. Read the [test results](docs/hardware-acceptance-2026-11-07.md) and [release notes](RELEASE_NOTES.md). Earlier reports below are historical snapshots, not the final publication status.
+
+## Local preview.4 clean-install acceptance — 7 November 2026
+
+The candidate fixed component serialization and declared required built-in Unity modules and import metadata. A fresh minimal host compiled with no test-framework dependency; final unsigned tarball acceptance passed **26 / 26** checks. Data-only Play/Stop export, head rotation, observations and annotation JSON roundtrip passed. Browser suites and **14 / 14** synthetic Python cases passed. The subsequent signed-package hardware results are summarized above. Detailed local trial records are not distributed.
+
 ## Environment and scope
 
 Package `com.dolbywu.neon-research`, version **0.1.0-preview.2**. Tested on Windows using **Unity 6000.3.23f1** in the included **VerificationProject** with local-package installation. Other projects/platforms and install-from-tarball require their own acceptance checks.

@@ -1,0 +1,31 @@
+name: Package checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-checks:
+    name: Documentation and UPM packaging (no Unity execution)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check documentation
+        run: node Tools/Test-Documentation.cjs
+      - name: Build UPM archive
+        shell: pwsh
+        run: ./Tools/Build-Package.ps1
+      - name: Upload preview package
+        uses: actions/upload-artifact@v4
+        with:
+          name: upm-preview
+          path: Artifacts/*.tgz
+          if-no-files-found: error

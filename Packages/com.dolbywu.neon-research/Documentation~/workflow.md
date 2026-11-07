@@ -2,6 +2,8 @@
 
 ## Install and configure
 
+New to Unity research recording? Start with a 60-second data-only test before connecting hardware. Use the repository's Quick Start for ZIP download, Unity Hub and beginner troubleshooting. Nothing requires a completed game or headset for the first event-only recording.
+
 Use Package Manager's local package-from-disk function and select this package's `package.json`. Supported verification target: Windows Editor, Unity 6000.3.23f1. Other platforms, standalone player builds and older Unity versions are untested. Core/runtime and Editor assemblies are separate; only Unity JSON is a registry dependency. Python/FFmpeg are not required to compile, collect basic events/head data or review the offline HTML.
 
 Open Setup from **Tools > Neon Research**. New project defaults disable Record on Play, Neon reception and media. Choose a fresh output folder. Enable Record on Play, save and then use Unity Play. Participant intake is only intercepted when recording is explicitly armed. Profiles and sessions use anonymous IDs with immutable per-session snapshots; a returning participant must be explicitly selected. Never use real names as IDs or treat optional background fields as inferred ethnicity/cognitive state.
@@ -25,15 +27,15 @@ These calls do nothing outside an active session and do not start recording. The
 
 ## Neon
 
-Enable reception separately and configure the Companion IPv4, API and WEBSOCKET gaze port on an approved device-to-device local network. Native RTSP/Live555 and the original Pupil Labs Unity SDK are not bundled or started. Managed RTP/RTCP over the Companion WebSocket and Time Echo logic are extracted; a new documented-wire decoder is used. It supports the documented payload lengths and retains raw base64 payloads, quality flags and queue/unsupported counts. Pupil fields use the documented raw wire unit (mm); real-device and physical-unit validation remain required. Original EscapeRoom SDK-unit files are not changed.
+Enable reception separately and configure the Companion IPv4, API and WEBSOCKET gaze stream port on an approved device-to-device local network. Enter only the IPv4 in the address field; enter the API and gaze stream ports separately. The default ports are configuration defaults, not guaranteed discovery results. The gaze stream is not the API/status WebSocket. Native RTSP/Live555 and the Pupil Labs Unity SDK are not bundled or started. Managed RTP/RTCP over the Companion WebSocket and Time Echo provide the receiving/timing path. The documented-wire decoder retains raw base64 payloads, quality flags and queue/unsupported counts. Pupil fields use the documented raw wire unit (mm); real-device and physical-unit validation remain required.
 
-Check recent samples, data availability, supported payloads, quality and clock alignment. No automatic phone-side backup recording is started. No gaze-object raycast, fixation/saccade classification, cognitive-state classifier or validated synchronization is provided.
+Check recent samples, data availability, supported payloads, quality and clock alignment; Connected alone is not proof of a usable eye stream. Real-time Eye State must be available for pupil fields. Missing values remain unavailable. No automatic phone-side backup recording is started. No gaze-object raycast, fixation/saccade classification, cognitive-state classifier or hardware-verified synchronization is provided. Refer to the official [Real-Time API](https://docs.pupil-labs.com/neon/real-time-api/), [protocol details](https://pupil-labs.github.io/pl-realtime-api/dev/guides/under-the-hood/) and [data streams](https://docs.pupil-labs.com/neon/data-collection/data-streams/) for device-side behavior; vendor documentation does not certify this implementation.
 
 ## Optional media
 
 Python/FFmpeg executables and microphone/window configuration must be separately installed/configured. Nothing is downloaded, launched or recorded by installing this package. Per-session operator confirmation remains required before capture. Whole-desktop recording has a separate explicit opt-in. The existing Quest Mirror preview helper uses the conventional Windows Oculus installation location; other installs require operator adaptation. Generic video-window capture can use another configured window title.
 
-The copied scripts tolerate brief metadata contention and retain finalization evidence. This is not a full task-length hardware validation; complete media coverage, microphone intelligibility and DPI/cropping must be verified. No speech or old missing video can be reconstructed. External-process capture/redistribution is not certified for Asset Store submission.
+Capture helpers tolerate brief metadata contention and retain finalization evidence. This is not a full task-length hardware validation; complete media coverage, microphone intelligibility and DPI/cropping must be verified. Missing speech or video cannot be reconstructed. External-process capture/redistribution is not certified for Asset Store submission.
 
 ## Offline review and annotation
 
@@ -45,4 +47,4 @@ Pause the video or drag its position slider, then click **Pause & mark this fram
 
 **Export annotations JSON** is required to retain work; **Import annotations JSON** resumes it, validating the session/participant and asking before replacement. Import replaces the list, not appends; add multiple notes in the page before exporting. Older JSON without optional frame provenance still imports. Point notes marked from video retain the frame time/offset in JSON/CSV. CSV is for analysis only. Downloaded JSON and video remain separate files; copy the whole session folder. No browser cache, cloud upload or local web server is needed for this HTML. No raw records are modified by annotation. Newly generated HTML uses this template automatically; already exported pages do not silently update.
 
-The separately callable Participant Archive Python service is optional and not automatically opened after Stop. The acquisition/preflight UI, setup, live settings, data and SessionState keys are independent of the working EscapeRoom version.
+The separately callable Participant Archive Python service is optional and not automatically opened after Stop. The normal workflow opens the finished session folder and offline HTML when enabled. Profiles live under `Participants/<ID>` and each run has its own `Sessions/<session-ID>` folder. To review later, use **Tools > Neon Research > Regenerate Finished Session HTML** and select one completed session containing `export_manifest.json`. Export any open-page annotations to JSON before rebuilding HTML.

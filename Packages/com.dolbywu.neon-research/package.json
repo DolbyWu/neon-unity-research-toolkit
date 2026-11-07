@@ -16,7 +16,7 @@
   "samples": [
     {
       "displayName": "Minimal event integration sample",
-      "description": "No EscapeRoom or headset SDK required. Synthetic event sample; no fabricated eye data.",
+      "description": "Minimal event integration without a headset SDK. Synthetic event sample; no fabricated eye data.",
       "path": "Samples~/MinimalStudy"
     }
   ]

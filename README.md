@@ -1,51 +1,71 @@
-# Neon Unity Research Toolkit — independent extraction preview
+# Neon Unity Research Toolkit
 
-Version **0.1.0-preview.2**, updated 6 November 2026. Unofficial research tooling, not a Pupil Labs or Unity product. This is a development preview, **not a participant-study or public-release certification**.
+Record participant sessions in Unity, receive Pupil Labs Neon eye data, and review your study locally with video, timelines and manual annotations.
 
-This update integrates the latest EscapeRoom replay UI: reliable pause/seek, frame-linked video/experiment clocks, quick labels or descriptions, multiple annotations, and the order **eye timeline → manual annotations → interval export → Game log**. It does not add cloud transcription or change the independent Neon decoder/recording configuration. The original game is not modified by this integration. See the package changelog and validation report for scope and evidence.
+**Version:** 0.1.0-preview.2 · **Tested environment:** Windows, Unity 6000.3.23f1 · **Status:** development preview, real-device validation pending.
 
-**Start here:** [features, setup, Neon connection and 60-second acceptance checklist](QUICKSTART.md). Measured tests and remaining limits are in [VALIDATION.md](VALIDATION.md).
+New here? Start with [the step-by-step Quick Start](QUICKSTART.md). You can complete your first recording **without Neon, a headset, Git, Python or FFmpeg**. Add hardware and media after the basic recording works.
 
-Personal repository: [DolbyWu/neon-unity-research-toolkit](https://github.com/DolbyWu/neon-unity-research-toolkit) (**private preview**). This is separate from Ghostlab-Studios/EscapeRoom. Repository access is required for other users; no public release/license clearance is claimed.
+## What you can record
 
-## Your working EscapeRoom is preserved
+| Channel | What is saved | What you need to do |
+| --- | --- | --- |
+| Participants | Anonymous IDs, optional background information, per-session profile snapshots | Confirm the participant before Play |
+| Head / camera pose | World position and quaternion rotation in CSV | Provide the correct camera/head Transform; Main Camera is the fallback |
+| Interactions and events | Grab/release, object IDs, task outcomes and custom events | Connect your application's actual events using adapters or the API |
+| Regions | Time spent in explicitly configured areas | Configure region colliders and IDs |
+| Neon eye data | Available gaze/pupil fields, timestamps, quality flags and raw payloads | Connect a compatible Neon Companion stream and verify the data |
+| Optional media | Local video and continuous microphone audio | Configure your own Python/FFmpeg and approve capture |
+| Offline review | HTML timeline, linked local video, optional manual labels | Open the finished session HTML in Edge or Chrome |
 
-- The working `EscapeRoom-Neon-Publish-20261014` project was read only. Nothing in it was re-wired to this package.
-- This directory has its own package, blank verification host, settings and default output folder. It contains no participant recordings/profiles, live phone address, credentials, original `.git` history, game scenes/assets or third-party native SDK binaries.
-- Do not install this preview into the working EscapeRoom yet. Test the sibling verification project or another disposable project first.
-- The extraction manifest records the original extraction-time hashes of 24 selected source files. Later authorized changes in the EscapeRoom project can differ from that historical baseline; it is not overwritten to hide those changes.
+The plugin does not automatically detect every interaction, map gaze to Unity objects, classify cognitive states, or calculate fixations/saccades. Pupil availability depends on the actual eye-state stream. Missing data is not replaced with valid zeros.
 
-## What is here
+## Your first session
+
+1. Download this repository using **Code → Download ZIP**, then extract it to a writable folder.
+2. In Unity Hub, add the extracted **VerificationProject** folder and open it with **6000.3.23f1**. This is a minimal test project, not a finished experiment.
+3. Open **Tools → Neon Research → Setup and Recording Settings**.
+4. Choose a new output folder, enable **Record on Unity Play (opt-in)**, leave Neon/media off, and click **Save project settings**.
+5. Open **Tools → Neon Research → Open Live Monitor**. Press Unity **Play**, choose **New participant**, and confirm an anonymous ID such as `P001`.
+6. Run for about 60 seconds. Click **Mark observation** in the monitor to create a test event. If your scene has a tagged Main Camera, its pose can also be recorded.
+7. Press **Stop** normally. With **Open folder + HTML after Stop** enabled, the session folder and offline replay open automatically.
+
+**Success looks like:** a separate participant/session folder, a closed export manifest, event rows from your test, and a working replay HTML. No eye data is expected until Neon reception is enabled and receiving valid samples.
+
+For exact settings, file locations and troubleshooting, follow [Quick Start](QUICKSTART.md).
+
+## Install in your own Unity project
+
+First back up your project. In Unity's Package Manager, choose **Install/Add package from disk** and select:
 
 ```text
-Packages/com.dolbywu.neon-research/   installable local UPM source package
-VerificationProject/                separate, minimal Unity test project
-Artifacts/                          ignored, synthetic browser/media outputs
-EXTRACTION_MANIFEST.json             source provenance (no copied live configuration)
-VALIDATION.md                       measured checks and remaining limits
+Packages/com.dolbywu.neon-research/package.json
 ```
 
-The source package includes anonymous participant intake/profile snapshots, raw head pose, explicit grab/custom game events, generic region components, Neon transport/clock estimation, an English monitor, the offline video/manual-annotation HTML, and optional Python/FFmpeg capture helpers. Every user-facing menu starts with **Tools > Neon Research**. Runtime types and Editor state use the independent `NeonResearch` namespace/prefix.
+Select the file inside the extracted repository. Do not open the package directory as a Unity project. Git is not needed for this route. Unity needs registry access on first import to resolve dependencies.
 
-## Safest first opening
+The repository is currently **private**: other users need repository access to download it. Git-URL installation is an optional advanced route described in the guide. No public distribution license has been granted.
 
-1. In Unity Hub, add/open **VerificationProject**, using **Unity 6000.3.23f1**. This is not the old EscapeRoom project.
-2. Let the Unity registry restore JSON/test dependencies. No Meta, OpenAI, MCP, Pupil Labs Unity SDK or EscapeRoom dependency is required to compile this preview.
-3. Open **Tools > Neon Research > Setup and Recording Settings**, then **Open Live Monitor**. Installation defaults are inert: recording, Neon reception and media are all off.
-4. For a synthetic/manual event check, explicitly enable **Record on Unity Play**, choose an independent folder, leave Neon/media off, save, then Play. The participant form opens before recording.
-5. For actual head pose, assign your head/camera Transform using **Head Pose Source** (otherwise Main Camera is used). Configure **Study Region** colliders. Wire the **Interaction Adapter** methods to real grab/release UnityEvents, or call `StudyEvents` from your game. Grabs do not record automatically without an adapter.
-6. Stop normally. The finished session folder and HTML open. Load a corresponding finalized local video if available, annotate, export annotations JSON and import it later to resume. Raw head pose remains in CSV; it is not newly plotted in this HTML.
+## Review and label a recording
 
-For another disposable project, use **Package Manager > Install/Add package from disk** and select `Packages/com.dolbywu.neon-research/package.json`. Do not open the package directory itself as a Unity project. A separately generated `.tgz`, if provided, can be installed from tarball.
+The replay places **eye timeline → Manual annotations → interval export → Game log** beside a local video panel on desktop.
 
-## Actual Neon testing is still required
+Load the finished video, pause or drag to a frame, click **Pause & mark this frame**, select a label or enter a description, then **Add annotation**. Both video and experiment times are shown. Use **Add another annotation here** for more notes. Point and interval annotations are optional.
 
-This preview uses an independently implemented decoder for documented 9/17/25/65/89/105-byte Neon wire payloads, not the original SDK's converted representation. A raw payload CSV is retained for supported/unsupported packet inspection; queue drops and unsupported lengths are counted. Monocular-only packets are not turned into invented binocular gaze.
+**Export annotations JSON before closing the page.** Import that JSON to resume later. CSV is for analysis, not re-import. The HTML does not silently save edits back to itself. Video/audio and annotation JSON remain separate files: copy the complete session folder when moving computers.
 
-Wire pupil fields are labelled millimetres per the [official protocol](https://pupil-labs.github.io/pl-realtime-api/dev/guides/under-the-hood/), **not physically validated measurements from this preview**. This does not relabel or rescale any old EscapeRoom data. Real phone connection, Eye State availability, pupil magnitude, sample quality, reconnect/Stop behavior and full task duration must all be rechecked. No real device was connected for extraction tests.
+## Documentation
 
-No gaze-to-VR-object calibration, fixation detection or automatic cognitive-state inference is implemented. Time Echo and video offsets remain estimates, not hardware synchronization. Generic events must be explicitly connected to the host game's interaction framework. Optional capture still requires separately configured Python/FFmpeg and per-session confirmation; full desktop DPI/cropping and full-duration media remain unvalidated.
+- [Quick Start: installation, first recording, Neon, media and troubleshooting](QUICKSTART.md)
+- [Integration guide: head pose, regions, events and annotation workflow](Packages/com.dolbywu.neon-research/Documentation~/workflow.md)
+- [Validation: measured checks and remaining limitations](VALIDATION.md)
+- [Changelog](Packages/com.dolbywu.neon-research/CHANGELOG.md)
+- [License](Packages/com.dolbywu.neon-research/LICENSE.md) and [dependency notices](<Packages/com.dolbywu.neon-research/Third Party Notices.md>)
 
-## Privacy and release
+## Before collecting research data
 
-Do not point this preview at the working `C:\VRStudyData\PlayTests` archive during initial tests. Its defaults use **NeonResearchData under the new host project**; settings are under that host's **UserSettings/NeonResearch**. Do not publish test archives or credentials. License/ownership review and real-device verification are required before public distribution. The independent preview repository is intended for the personal **DolbyWu** account, not the original Ghostlab-Studios EscapeRoom repository; its private upload is separate from the original extraction.
+Run a short hardware trial and a full task-length trial. Verify recent eye samples, actual pupil availability, head source, event wiring, timing estimates, audio intelligibility, video coverage and normal Stop. Automated tests use synthetic fixtures; they do not certify a physical Neon setup.
+
+All acquisition is **off by default**. Settings belong to each host project under `UserSettings/NeonResearch`; the default data root is `NeonResearchData` under that project. Choose a dedicated local folder for research data, obtain consent, use anonymous IDs and keep archives private. Whole-desktop capture can include sensitive windows.
+
+This is unofficial software, not a Unity or Pupil Labs product. Real-device compatibility, physical pupil units and full-duration capture remain validation requirements. Other Unity versions, platforms and standalone/Quest builds are unverified. No automatic cloud upload or speech transcription is included.

@@ -14,7 +14,7 @@ namespace NeonResearch
         private void OnGUI()
         {
             scroll=EditorGUILayout.BeginScrollView(scroll);
-            EditorGUILayout.HelpBox("Independent preview. Installation does not start recording. Settings are project-local and do not use the existing EscapeRoom archive. Configure and verify before real participants.",MessageType.Info);
+            EditorGUILayout.HelpBox("Neon Research Toolkit. Installation does not start recording. Choose a new data folder, enable Record on Unity Play and save. Leave Neon and media off for your first test. Validate your setup before collecting participant data.",MessageType.Info);
             using(new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
             {
                 settings.recordOnPlay=EditorGUILayout.Toggle("Record on Unity Play (opt-in)",settings.recordOnPlay);

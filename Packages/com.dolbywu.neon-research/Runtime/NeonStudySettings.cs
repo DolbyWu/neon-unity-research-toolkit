@@ -1,4 +1,4 @@
-// Independently extracted preview. The working EscapeRoom project is not referenced.
+// Neon Research Toolkit: project-local research recording and review.
 namespace NeonResearch
 {
 using System;

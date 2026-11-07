@@ -1,7 +1,7 @@
-param([string]$SourceRoot)
+param([Parameter(Mandatory=$true)][string]$SourceRoot)
 $ErrorActionPreference='Stop'
 $standaloneRoot=Split-Path -Parent $PSScriptRoot
-if ([string]::IsNullOrWhiteSpace($SourceRoot)) { $SourceRoot=Join-Path (Split-Path -Parent $standaloneRoot) 'EscapeRoom-Neon-Publish-20261014' }
+if ([string]::IsNullOrWhiteSpace($SourceRoot)) { throw 'Maintainer audit requires an explicit source root. This is not a plugin installation step.' }
 $source=(Get-Item -LiteralPath $SourceRoot).FullName
 $manifest=Get-Content -LiteralPath (Join-Path $standaloneRoot 'EXTRACTION_MANIFEST.json') -Raw | ConvertFrom-Json
 $differences=@(foreach ($entry in $manifest.files) {

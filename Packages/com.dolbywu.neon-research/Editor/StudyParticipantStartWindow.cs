@@ -1,4 +1,4 @@
-// Independently extracted preview. The working EscapeRoom project is not referenced.
+// Neon Research Toolkit: project-local research recording and review.
 namespace NeonResearch
 {
 using System;
@@ -99,7 +99,7 @@ public sealed class StudyParticipantStartWindow : EditorWindow
 
     private void OnGUI()
     {
-        if (string.IsNullOrEmpty(root)) { EditorGUILayout.HelpBox("Reopen this form from Tools > Study > Participant Details Before Play.", MessageType.Info); return; }
+        if (string.IsNullOrEmpty(root)) { EditorGUILayout.HelpBox("Reopen this form from Tools > Neon Research > Participant Details Before Play.", MessageType.Info); return; }
         scroll = EditorGUILayout.BeginScrollView(scroll);
         EditorGUILayout.LabelField("Participant details", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox("Play is paused before entry. No game data, microphone or screen recording has started. Use an anonymous ID; keep names and contact details separately.", MessageType.Info);

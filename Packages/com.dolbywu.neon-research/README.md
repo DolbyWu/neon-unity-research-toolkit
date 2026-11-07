@@ -1,9 +1,29 @@
-# Neon Research Toolkit (Unofficial Preview)
+# Neon Unity Research Toolkit
 
-Local UPM package `com.dolbywu.neon-research`, version `0.1.0-preview.2`, with a separate blank Unity 6000.3.23f1 verification project. No existing EscapeRoom project dependency.
+**0.1.0-preview.2** · Unofficial Windows Unity Editor development preview.
 
-Offline replay uses the updated workflow: pause/scrub video, mark the current frame, choose a label or enter a description, and add multiple independent annotations. Video and experiment clocks are shown together. Manual annotations follow the eye-data timeline; Game log is last. Export annotation JSON before closing; import it to resume. Videos stay as separate local files, not embedded bytes.
+Record anonymous participant sessions, head/camera pose, explicitly connected interaction events and available Neon eye/pupil data. Review finished sessions in English offline HTML with linked local video and optional manual annotations.
 
-Open **Tools > Neon Research > Setup and Recording Settings**, choose an independent output folder and explicitly enable **Record on Unity Play**. Open **Tools > Neon Research > Open Live Monitor**. Participant information is confirmed before Play; completed sessions contain raw logs and an English offline video/annotation HTML.
+## Start here
 
-All acquisition is off by default. Real Neon hardware is not simulated or certified by synthetic tests. See `Documentation~/workflow.md` for integration, timing, optional external capture and validation limits. License is deliberately UNLICENSED/private until ownership and redistribution have been reviewed; this package is not an approved Asset Store submission.
+1. Install with Unity Package Manager **Install/Add package from disk** and select this `package.json`. The tested Unity version is **6000.3.23f1**.
+2. Open **Tools → Neon Research → Setup and Recording Settings**.
+3. Choose a fresh output folder, enable **Record on Unity Play (opt-in)**, leave Neon/media off for your first test, then **Save project settings**.
+4. Open **Tools → Neon Research → Open Live Monitor**. Press Play, confirm an anonymous participant and click **Mark observation** during a short test.
+5. Stop normally. The session folder and HTML open when auto-open is enabled.
+
+No Git, headset, Neon, Python or FFmpeg is needed for that first data-only check. Installation alone does not start acquisition.
+
+Read [the integration and workflow guide](Documentation~/workflow.md) for setup, eye-data acceptance, event wiring, optional media and annotation steps. The repository's Quick Start includes a full beginner walkthrough and troubleshooting.
+
+## Offline annotation
+
+Pause/drag video → mark current frame → choose a label or enter a description → add the annotation. Video and experiment clocks are shown together. **Add another annotation here** preserves previous records. The order is **eye timeline → Manual annotations → interval export → Game log**.
+
+Export annotation **JSON** before closing and import it to resume. CSV is for analysis only. Video and JSON remain separate local files; copy the whole session folder.
+
+## Research readiness
+
+Real-device compatibility, physical pupil units, timing and full-duration capture remain unvalidated. Gaze is not mapped to Unity objects; no fixation/saccade or cognitive-state classifier is included. Interactions require explicit callbacks. Optional capture requires separately configured Python/FFmpeg and per-session confirmation.
+
+Acquisition is off by default. Settings/data are project-local. This package is private and UNLICENSED; review [license](LICENSE.md) and [dependency notices](<Third Party Notices.md>) before redistribution. It is not an official vendor product or an approved Asset Store submission.

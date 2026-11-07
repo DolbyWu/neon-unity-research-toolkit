@@ -1,4 +1,4 @@
-// Independently extracted preview. The working EscapeRoom project is not referenced.
+// Neon Research Toolkit: project-local research recording and review.
 namespace NeonResearch
 {
 using System;
@@ -38,7 +38,7 @@ public sealed class StudyLiveMonitor : EditorWindow
     private void OnGUI()
     {
         scroll=EditorGUILayout.BeginScrollView(scroll);
-        GUILayout.Label("NEON RESEARCH  /  INDEPENDENT PREVIEW",EditorStyles.boldLabel);
+        GUILayout.Label("NEON RESEARCH TOOLKIT  /  LIVE MONITOR",EditorStyles.boldLabel);
         if (GUILayout.Button("Settings / enable recording for this project")) NeonResearchSetup.Open();
         bool running=EditorApplication.isPlaying;
         double now=StudyMonitorData.Stopped?StudyMonitorData.EndSeconds:StudyExportSession.Seconds;
@@ -56,13 +56,13 @@ public sealed class StudyLiveMonitor : EditorWindow
         GUILayout.Label("Last 5s: "+recent+" samples  |  basic valid "+Percent(valid,recent)+"  |  clock aligned "+Percent(synced,recent));
         if(points.Length>0) {
             var p=points[points.Length-1];
-            GUILayout.Label("Pupil L / R: "+Value(p.left)+" / "+Value(p.right)+"  (mm (documented wire units; not physically validated); not labelled mm)");
+            GUILayout.Label("Pupil L / R: "+Value(p.left)+" / "+Value(p.right)+"  (mm: documented wire units; not physically validated)");
         }
         if(!string.IsNullOrEmpty(StudyMonitorData.Error))EditorGUILayout.HelpBox(StudyMonitorData.Error,MessageType.Error);
         EditorGUILayout.HelpBox("Display uses PC receive-time (not corrected sample time). Event markers are approximate visual context only. Saved CSV retains corrected time and sync quality. Automatic fixation / saccade detection and cognitive-state inference are not implemented. Offline manual labels are supported.",MessageType.None);
         seconds=EditorGUILayout.Slider("Visible seconds",seconds,10,60);
         Plot("Gaze X / Y — scene-image pixels, not a VR target",now,false);
-        Plot("Pupil L / R — SDK raw units",now,true);
+        Plot("Pupil L / R — mm (wire units; not physically validated)",now,true);
         GUILayout.Label("Recent game events",EditorStyles.boldLabel);
         for(int i=events.Length-1;i>=Math.Max(0,events.Length-8);i--)
             EditorGUILayout.LabelField(events[i].time.ToString("F2")+"s",events[i].description,EditorStyles.wordWrappedLabel);
@@ -88,7 +88,7 @@ public sealed class StudyLiveMonitor : EditorWindow
                 if(!string.IsNullOrEmpty(selected)) { zipStatus="Packaging local data; no upload.";zipTask=Task.Run(()=>ZipSession(selected)); }
             }
         if(zipStatus.Length>0)EditorGUILayout.HelpBox(zipStatus,MessageType.Info);
-        EditorGUILayout.HelpBox("Recording and saving are automatic during Play. Stop normally, then copy the session folder or create a ZIP. ZIP includes research data and device settings: store privately. This monitor is for the Unity Editor; existing EXE is unchanged.",MessageType.None);
+        EditorGUILayout.HelpBox("Recording and saving run during an armed, approved Play session. Stop normally, then copy the session folder or create a ZIP. ZIP includes research data and device settings: store privately. This monitor is for the Unity Editor; standalone player builds are unverified.",MessageType.None);
         EditorGUILayout.EndScrollView();
     }
     private static string Percent(int n,int total)=>total==0?"N/A":(100.0*n/total).ToString("F1")+"%";

@@ -8,6 +8,8 @@ param(
 $ErrorActionPreference='Stop'
 $standaloneRoot=Split-Path -Parent $PSScriptRoot
 $hostProject=(Get-Item -LiteralPath (Join-Path $standaloneRoot 'VerificationProject')).FullName
+& $NodeExecutable (Join-Path $standaloneRoot 'Tools/Test-Documentation.cjs')
+if ($LASTEXITCODE -ne 0) { throw 'Beginner documentation checks failed.' }
 $arguments='-batchmode -nographics -projectPath "'+$hostProject+'" -runTests -testPlatform editmode -testFilter "NeonResearch.Tests" -testResults "'+$hostProject+'\standalone-tests.xml" -logFile "'+$hostProject+'\standalone-tests.log"'
 Write-Output 'Testing only the separate VerificationProject. No original project is opened or closed.'
 $process=Start-Process -FilePath $UnityExecutable -ArgumentList $arguments -PassThru -WindowStyle Hidden

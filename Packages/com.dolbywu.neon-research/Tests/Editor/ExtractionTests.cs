@@ -64,7 +64,7 @@ namespace NeonResearch.Tests
             Assert.Throws<InvalidDataException>(()=>StudyArchivePaths.ParticipantFolder(root,"../escape"));
             Assert.That(File.Exists(Path.Combine(folder,"participant_summary.txt")),Is.True);
         }
-        [Test]public void GenericZonesWorkWithoutAnyEscapeRoomTypes()
+        [Test]public void GenericZonesUseExplicitCollidersAndIds()
         {
             var go=new GameObject("Synthetic region");
             try{var box=go.AddComponent<BoxCollider>();box.size=Vector3.one*2;var zone=go.AddComponent<StudyRegion>();zone.regionCollider=box;zone.regionId="Test area";

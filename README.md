@@ -24,7 +24,31 @@ The HTML workflow supports reviewing a recorded VR experience alongside eye and 
 - Distinguish researcher observation, participant self-report and retrospective interview evidence.
 - Export annotation JSON to save/resume work, or CSV for analysis.
 
-**Demonstration video:** a walkthrough will be linked here when uploaded. The demonstration illustrates the review workflow; it does not establish hardware synchronization accuracy.
+### VR study setup
+
+![VR headset setup during an in-person study test](docs/media/vr-study-setup.jpg)
+
+A physical VR test setup from the author's original study.
+
+### Unity experiment and live eye-data monitor · 16 seconds
+
+[![Watch the Unity experiment and live eye-data monitor](docs/media/vr-test-preview.jpg)](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/main/docs/media/vr-test.mp4)
+
+[Watch the VR test and live monitor video](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/main/docs/media/vr-test.mp4). The recording shows the running Unity experiment alongside eye-data traces and logged interactions.
+
+### HTML replay and time-aligned data review
+
+![Offline HTML replay with video, eye-data traces, regions and behavioral events](docs/media/html-replay-photo.jpg)
+
+The standalone HTML review brings the recorded video, gaze/pupil traces, regions and behavioral events into one interface.
+
+### Video-linked reflection and manual annotation · 1 minute 49 seconds
+
+[![Watch the HTML video review and manual annotation walkthrough](docs/media/html-review-preview.jpg)](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/main/docs/media/html-review-annotation.mp4)
+
+[Watch the full HTML review and annotation walkthrough](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/main/docs/media/html-review-annotation.mp4): navigate the video, mark an experiment time, choose a label, record an interpretation/evidence source, and retain multiple annotations.
+
+These demonstrations show the author's original study workflow; UI and displayed units may differ from the extracted preview package. They illustrate working acquisition/review interactions, not independently measured synchronization accuracy. Pupil values displayed in the original study use its original SDK representation and must not be interpreted as validated millimetres. Videos are compressed MP4 copies of the supplied recordings; click a preview to open the video on GitHub, or download it if inline playback is unavailable.
 
 ## What the plugin provides
 

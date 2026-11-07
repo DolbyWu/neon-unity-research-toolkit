@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="76" viewBox="0 0 420 76" role="img" aria-labelledby="title desc">
+  <title id="title">Play introduction on YouTube</title>
+  <desc id="desc">Red play button. Click to watch the Neon Unity Research Toolkit introduction on YouTube.</desc>
+  <rect x="1" y="1" width="418" height="74" rx="16" fill="#df1525" stroke="#ff5865" stroke-width="2"/>
+  <rect x="18" y="16" width="66" height="44" rx="12" fill="#fff"/>
+  <path d="M44 25 L44 51 L65 38 Z" fill="#df1525"/>
+  <text x="103" y="34" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="700" fill="#fff">PLAY INTRODUCTION</text>
+  <text x="104" y="56" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#fff">Watch on YouTube ↗</text>
+</svg>

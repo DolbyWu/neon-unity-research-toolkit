@@ -1,6 +1,6 @@
-# GazeFlow - VR Eye-Tracking Research Toolkit
+# GazeFlow: Democratizing VR Eye-Tracking Research with Neon and Quest 3
 
-Free, unofficial research toolkit for **Pupil Labs Neon and Meta Quest 3**. Integrates quantitative eye-data recording with qualitative, video-based review and human annotation.
+Free, unofficial research toolkit for **Pupil Labs Neon and Meta Quest 3**, designed to democratize VR eye-tracking research. It technically integrates quantitative eye-data collection with qualitative video-based inquiry, participant reflection and human annotation, lowering barriers to hardware integration, multimodal data alignment and interpretation.
 
 This Asset Store edition records eye/pupil data when available, Unity head pose, explicitly connected behavioral events, participant/session snapshots and configured region intervals. It generates independent HTML review with local-video import, point/interval annotation and JSON/CSV export.
 

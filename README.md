@@ -1,12 +1,17 @@
 ![Neon Unity Research Toolkit — Democratizing Multimodal Research. Record. Review. Annotate.](docs/media/banner.jpg)
 
-# Neon Unity Research Toolkit
+# GazeFlow: Democratizing VR Eye-Tracking Research with Neon and Quest 3
 
-**Bring Neon eye tracking into Unity VR studies—and return to the experience through offline video review and human annotation.**
+**GazeFlow** is an unofficial research toolkit designed for **Pupil Labs Neon and Meta Quest 3**. It brings the technical workflows of quantitative eye-tracking and qualitative, video-based inquiry into a shared research environment—lowering the barriers to hardware integration, multimodal data alignment, and interpretation.
 
-An unofficial Unity research plugin for researchers in psychology, neuroscience and XR/HCI. It brings participant/session archives, available Neon eye data, head pose, explicitly connected interaction events and optional video/audio into a local research workflow.
+Designed for researchers in psychology, neuroscience, and XR/HCI, GazeFlow connects data collection with interactive review, participant reflection, and human annotation.
 
-The goal is to make multimodal VR research more accessible: configure recording in the Unity Editor, connect your experiment's events, and review sessions in a standalone HTML interface without reopening Unity.
+- **Record & Monitor**: Collect available gaze and pupil data alongside head pose, behavioral events, and optional session video, with real-time monitoring.
+- **Align & Explore**: Bring recordings into a shared session timeline to inspect eye-data traces, interaction events, and video together, with explicit timing offsets and alignment status.
+- **Reflect & Annotate**: Support researcher observation and participant retrospective reflection through point and interval annotations, custom labels, and documented evidence sources.
+- **Export for Analysis**: Export recorded data and human annotations for quantitative analysis and qualitative interpretation.
+
+The GitHub full edition includes optional external-tool media capture. The separate free Asset Store edition imports existing video and excludes external recording programs. This technical integration supports research protocols; it does not replace methodological validation or guarantee hardware synchronization.
 
 **Status:** `0.1.0-preview.4` · Public preview for pilot use
 

@@ -1,0 +1,11 @@
+# Licensing and third-party notices
+
+GazeFlow plugin code and accompanying software documentation owned by Binyan Michelle xu are MIT-licensed; see LICENSE.md. Copyright (c) 2026 Binyan Michelle xu. Third-party materials retain their respective licenses. Demonstration photos/videos and research data are excluded from the code license and are not bundled.
+
+- Newtonsoft JSON is resolved through Unity Package Manager as com.unity.nuget.newtonsoft-json 3.2.2; its package license/notices remain authoritative. No dependency DLL is copied into this package.
+- Unity module dependencies are resolved by Unity. Unity Test Framework/NUnit is used only by development verification hosts and test assemblies.
+- The managed decoder implements documented Neon wire layouts. Reference: https://pupil-labs.github.io/pl-realtime-api/dev/guides/under-the-hood/ . Pupil Labs SDK/native binaries are not redistributed. Protocol compatibility is not vendor endorsement or physical validation.
+- This store edition excludes Python archive/capture helpers, FFmpeg, local archive server launchers and automatic media capture. No external program dependency is required for the supplied features.
+- No Meta SDK, original experiment assets, participant recordings, device credentials or identifiable archives are bundled.
+
+Independent project, not affiliated with or endorsed by Pupil Labs, Meta or Unity.

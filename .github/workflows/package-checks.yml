@@ -23,9 +23,23 @@ jobs:
       - name: Build UPM archive
         shell: pwsh
         run: ./Tools/Build-Package.ps1
+      - name: Test isolated store edition
+        shell: pwsh
+        run: python Tools/Test-StorePackage.py -v
+      - name: Build isolated store candidate
+        shell: pwsh
+        run: python Tools/Build-StorePackage.py
       - name: Upload preview package
         uses: actions/upload-artifact@v4
         with:
           name: upm-preview
           path: Artifacts/*.tgz
+          if-no-files-found: error
+      - name: Upload unsigned store candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: gazeflow-store-candidate-UNVALIDATED
+          path: |
+            Artifacts/Store/*.tgz
+            Artifacts/Store/candidate-evidence.json
           if-no-files-found: error

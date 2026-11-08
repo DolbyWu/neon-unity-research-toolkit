@@ -1,0 +1,27 @@
+# GazeFlow recording and review workflow
+
+## Hardware and event setup
+
+Configure the host project's XR camera and real Meta Quest 3 interaction framework. Add Head Pose Source and assign the actual head Transform. Add Study Region to configured colliders with unique IDs. Add Interaction Adapter to objects, assign stable IDs and wire its grab/release/attempt/success callbacks to real UnityEvents. Custom events can use NeonResearch.StudyEvents.Record during an active recording session. Nothing automatically detects all participant behavior.
+
+Neon Companion must be reachable on an approved network. Enter its current IPv4, API and stream ports in **Tools > GazeFlow > Setup and Recording Settings**. Connection alone is not proof of useful eye data: check advancing sample counts, quality, eye-state/pupil availability and clock alignment in Live Monitor. Recheck after adjusting the mount or headset.
+
+## Participant and session archive
+
+Choose a dedicated local output folder. Use anonymous participant IDs and confirm intake before Play. Each new recording receives a separate session folder and participant snapshot. Existing sessions must not be overwritten. Recording remains opt-in and independent from whether Neon is enabled. Record test markers and verify actual head/event rows before collecting participant data.
+
+## Stop and export
+
+Stop Play normally. Inspect closure/error status and raw CSVs before using derived results. Regenerate a finished session HTML through the corresponding Tools > GazeFlow menu if needed. Interrupted recordings must not be made successful by manually editing completion flags.
+
+## Local video and human coding
+
+Open the generated Replay/study-replay.html in a supported local browser and choose a pre-existing video. This edition does not record media or invoke external capture programs. Check video coverage and offset using visible markers; review agreement at the beginning, middle and end. Native/receive/aligned eye times have different meanings and should not be silently interchanged.
+
+Pause and mark the current frame, or select an interval. Add a label/description, annotator ID and evidence source. Keep researcher observation, participant self-report and retrospective interview distinct. Add another annotation to retain earlier records. Export JSON to save and import it to resume; export CSV for analysis only. HTML, video and annotation JSON remain separate files. Copy the session folder and exported annotations together.
+
+## Limits and privacy
+
+Head-location regions are not gaze targets. Pupil fields retain documented wire units/provenance; physical accuracy and timing must be validated for the actual study. This tool does not diagnose psychological states or implement fixation/saccade analysis.
+
+No automatic cloud upload or speech transcription is included. Obtain appropriate consent, keep identity mappings separately and exclude participant archives from source control. Use a synthetic technical-test participant for installation debugging. This store candidate requires its own Unity validation despite sharing core code with the full GitHub edition.

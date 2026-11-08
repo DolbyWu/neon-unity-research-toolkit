@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.0-preview.5 — 2026-11-07
+
+- Unified package author, copyright holder and current documentation under the Publisher spelling Binyan Michelle xu.
+- Added unityRelease 23f1 to match the recorded 6000.3.23f1 environment.
+- Metadata/documentation update only; runtime code is unchanged from preview.4. This newly built candidate is not the previously tested Unity-signed archive and requires its own signing/import validation before store submission.
+
 ## 0.1.0-preview.4 — Unreleased
 
 - Fixed scene serialization of Head Pose Source, Study Region and Interaction Adapter by placing each MonoBehaviour in its own matching source file with a stable metadata GUID. Namespaces, public fields and event APIs are unchanged.

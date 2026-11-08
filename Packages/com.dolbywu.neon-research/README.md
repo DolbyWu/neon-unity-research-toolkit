@@ -1,8 +1,8 @@
 # Neon Unity Research Toolkit
 
-**0.1.0-preview.4 (unreleased)** · Unofficial Windows Unity Editor development preview.
+**0.1.0-preview.5 (submission candidate)** · Unofficial Windows Unity Editor development preview.
 
-This local candidate fixes serialization of the three public scene components. Earlier previews may leave Missing Script references after saving/reopening a scene. Back up affected scenes, re-add only the broken component, and restore its fields/callbacks. Existing broken references are not automatically migrated.
+This candidate standardizes Publisher/copyright metadata as Binyan Michelle xu. Runtime code is unchanged from preview.4, which fixed serialization of the three public scene components. The preview.4 hardware results do not constitute a fresh signing/import test of this candidate. Earlier previews may leave Missing Script references after saving/reopening a scene. Back up affected scenes, re-add only the broken component, and restore its fields/callbacks. Existing broken references are not automatically migrated.
 
 Record anonymous participant sessions, head/camera pose, explicitly connected interaction events and available Neon eye/pupil data. Review finished sessions in English offline HTML with linked local video and optional manual annotations.
 

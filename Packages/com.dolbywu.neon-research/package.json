@@ -1,6 +1,6 @@
 {
   "name": "com.dolbywu.neon-research",
-  "version": "0.1.0-preview.4",
+  "version": "0.1.0-preview.5",
   "displayName": "Neon Research Toolkit (Unofficial Preview)",
   "description": "Independent Unity + Neon study recording, participant intake, raw events/head pose, offline video review and manual annotations. Windows Editor preview; opt-in acquisition.",
   "unity": "6000.3",
@@ -41,5 +41,6 @@
       "description": "Minimal event integration without a headset SDK. Synthetic event sample; no fabricated eye data.",
       "path": "Samples~/MinimalStudy"
     }
-  ]
+  ],
+  "unityRelease": "23f1"
 }

@@ -24,7 +24,7 @@ class StoreProfileTests(unittest.TestCase):
             manifest = builder.prepare(package)
             builder.validate(package)
             self.assertEqual(manifest['name'], 'individual.binyan-xu.gazeflow')
-            self.assertEqual(manifest['author']['name'], 'Binyan Michelle xu')
+            self.assertEqual(manifest['author']['name'], 'Binyan Michelle Xu')
             self.assertEqual(manifest['license'], 'MIT')
             # Acquisition transport/decoder, replay and event algorithms remain identical.
             for name in ['NeonTcpGazeClient.cs','NeonClockSync.cs','NeonWireDecoder.cs','NeonStudyRecorder.cs','StudySequence.cs','StudyOfflineReplay.cs','StudyEpisodes.cs']:

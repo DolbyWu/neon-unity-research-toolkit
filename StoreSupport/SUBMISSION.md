@@ -4,7 +4,7 @@ Draft product: https://cloud.unity.com/assetstore/publisher/products/4418843
 
 Confirmed portal technical name: `individual.binyan-xu.gazeflow`. Single package, Free Product selected. Summary, description, tags and YouTube introduction have been saved in the draft. No package has been uploaded or submitted for review.
 
-Publisher spelling supplied by the owner: `Binyan Michelle xu`. Package author and current copyright statements match. Portal/Persona legal information must still agree with the publisher's actual identification; this repository cannot certify legal identity.
+Publisher spelling supplied by the owner: `Binyan Michelle Xu`. Package author and current copyright statements match. Portal/Persona legal information must still agree with the publisher's actual identification; this repository cannot certify legal identity.
 
 ## Separate edition
 

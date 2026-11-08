@@ -34,7 +34,7 @@ def prepare(destination):
     manifest.update(name=NAME, displayName='GazeFlow: Democratizing VR Eye-Tracking Research with Neon and Quest 3',
                     description='Democratizing Neon + Meta Quest 3 research through integrated quantitative data collection, qualitative video review and human annotation. No external recording programs. Windows Unity Editor.')
     manifest['files'] = [x for x in manifest['files'] if x not in ('Tools', 'Tools.meta')]
-    if manifest['author']['name'] != 'Binyan Michelle xu':
+    if manifest['author']['name'] != 'Binyan Michelle Xu':
         raise ValueError('Publisher identity mismatch')
     manifest_path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
 

@@ -1,0 +1,33 @@
+# Store preview validation
+
+Store package: `individual.binyan-xu.gazeflow`, `0.1.0-preview.6`.
+Environment: Unity 6000.3.23f1, macOS Apple Silicon.
+
+## Automated acceptance
+
+22 EditMode cases passed, with no failures or skipped cases. These include scene save/reopen for StudyHeadPoseSource, StudyRegion and StudyInteractionAdapter, script identity and serialized field/reference checks, export/replay generation, malformed/missing eye data, timestamp mapping, participant isolation, and session reset/file-handle/data isolation.
+
+Scene tests run only in batch mode, or in a disposable host explicitly opted in by a local `Library/NeonResearch.IsolatedSceneTests.txt` marker containing that host's absolute Assets path and with one untitled scene open. The marker is not distributed in the package. Do not opt an experiment into scene-destructive tests. Save/reopen assertions are identical in either mode.
+
+## Validator warnings reviewed
+
+The official UPM Publishing Tools 0.3.3 static-variable check reports the presence of writable static fields/properties or events. Its implementation does not inspect reset hooks. A remaining warning is not represented as a clean pass.
+
+- StudyExportSession has a SubsystemRegistration reset that disposes writers, closes sequence files, clears identifiers/counters/errors and resets monitor data. The reset regression proves exclusive file access and no old marker in a second session.
+- StudyMonitorData resets queues, sample counters, validity/stop/error state and last interaction. Reset regression checks these observable states.
+- StudySessionSettings.Condition is an intentionally persistent researcher setting, not an acquisition buffer. Set the condition explicitly for each study protocol.
+- StudyParticipantStartFlow is Editor-only. Its queued flag is cleared when the delayed form opens; its one Editor event registration persists for the domain lifetime. Participant approval is cleared/consumed across Play transitions. No duplicate registration runs on each Play.
+- StudyArchiveNotifications.SessionReady intentionally retains the Editor archive listener when domain reload is disabled. That listener is registered once by an InitializeOnLoad static constructor. Clearing this event at runtime would detach the Editor integration. Scene-owned subscribers must unsubscribe when disabled/destroyed.
+
+The supported acceptance configuration is Unity 6000.3.23f1 with normal domain reload. Full Fast Enter Play mode/disabled-domain-reload behavior is not claimed as acceptance-tested. Keep Reload Domain enabled for research acquisition.
+
+The dependency check reads assembly-definition references and compares them against manifest dependencies; it does not analyze C# API use or distinguish optional test assemblies.
+
+- NUnit is referenced only by the Editor test assembly, marked TestAssemblies and autoReferenced false. A test host supplies com.unity.test-framework (and its NUnit dependency) and opts this package into testables. Ordinary consumers need not install a test framework. No runtime NUnit dependency was added merely to silence this advisory.
+- com.unity.modules.jsonserialize is used by JsonUtility in NeonStudySettings; physics by Collider/BoxCollider and region containment; imgui by the Editor setup and monitor. These built-in modules remain declared because minimal hosts need them. Their apparent unused-dependency warning is an assembly-reference detection limitation, not evidence that the APIs are unused.
+
+## Hardware evidence and edition scope
+
+On 2026-11-07, the signed GitHub preview.4 passed real Neon/Companion and Meta Quest 3 Link trials on Windows/Unity 6000.3.23f1, including gaze/pupils, head pose, explicit grabs/releases, media finalization and HTML review. The store edition retains the same acquisition/clock/decoder and HTML algorithms. The owner additionally reported the store workflow and video receipt/loading working. This is owner-reported functional evidence, not independent calibration or hardware timing validation.
+
+preview.6 changes verification tests and documentation from preview.5; recording/runtime behavior is unchanged. This store edition imports existing video and does not record video/audio or launch Python/FFmpeg. The full GitHub edition remains separate. Quest standalone APK support and a distinct device-disconnection recovery trial are not established by the Quest Link evidence and are not advertised as verified capabilities.

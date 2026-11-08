@@ -56,3 +56,12 @@ Not implemented: gaze-to-object mapping, fixation/saccade analysis, automatic co
 Windows Editor is the tested target; standalone players, Quest Android, macOS/Linux and older Unity versions remain unverified. This is not an approved Asset Store submission.
 
 Use a new local test output folder, anonymous IDs and informed consent. Keep participant archives/credentials out of GitHub. Review the [license](Packages/com.dolbywu.neon-research/LICENSE.md) and [dependency notices](<Packages/com.dolbywu.neon-research/Third Party Notices.md>) before redistribution. The repository is public. Plugin code and software documentation authored and owned by Binyan Michelle Xu are MIT-licensed; third-party materials retain their own licenses, and demonstration media/research data are excluded. No vendor endorsement is claimed.
+
+
+## Separate store edition: preview.6 acceptance
+
+On 2026-11-07, individual.binyan-xu.gazeflow@0.1.0-preview.6 passed **22/22 EditMode cases**, zero failures/skips, on Unity 6000.3.23f1 / macOS Apple Silicon. The three attachable-component scene save/reopen tests passed; a new session-reset regression confirms file-handle release and no cross-session event/monitor leakage. Scene tests preserve their original assertions and run in batch mode or an explicitly opted-in disposable host with one untitled scene. Never enable this opt-in in a research experiment.
+
+Official UPM Publishing Tools 0.3.3: **45 passed, 2 reviewed warnings, zero errors**. Warning analysis and the supported domain-reload configuration are documented in [store validation notes](StoreSupport/validation.template.txt), also shipped as Documentation~/validation.md. Static-field presence does not indicate absence of existing reset hooks; the dependency scanner does not model optional tests or actual built-in module API usage. These warnings remain visible and are not called zero warnings.
+
+The signed preview.4 real Neon + Quest 3 Link baseline above remains valid evidence. The owner additionally reported the store workflow/video check working. preview.6 changes tests/docs only from preview.5; acquisition/runtime code remains unchanged. The GitHub full edition and store edition have separate version streams.

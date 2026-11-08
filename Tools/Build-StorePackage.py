@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'Packages/com.dolbywu.neon-research'
 SUPPORT = ROOT / 'StoreSupport'
 NAME = 'individual.binyan-xu.gazeflow'
+STORE_VERSION = '0.1.0-preview.6'
 
 
 def replace_once(path, old, new):
@@ -31,7 +32,7 @@ def prepare(destination):
             target.unlink()
     manifest_path = destination / 'package.json'
     manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
-    manifest.update(name=NAME, displayName='GazeFlow: Democratizing VR Eye-Tracking Research with Neon and Quest 3',
+    manifest.update(name=NAME, version=STORE_VERSION, displayName='GazeFlow: Democratizing VR Eye-Tracking Research with Neon and Quest 3',
                     description='Democratizing Neon + Meta Quest 3 research through integrated quantitative data collection, qualitative video review and human annotation. No external recording programs. Windows Unity Editor.')
     manifest['files'] = [x for x in manifest['files'] if x not in ('Tools', 'Tools.meta')]
     if manifest['author']['name'] != 'Binyan Michelle Xu':
@@ -73,6 +74,7 @@ def prepare(destination):
 
     shutil.copyfile(SUPPORT / 'README.template.txt', destination / 'README.md')
     shutil.copyfile(SUPPORT / 'workflow.template.txt', destination / 'Documentation~/workflow.md')
+    shutil.copyfile(SUPPORT / 'validation.template.txt', destination / 'Documentation~/validation.md')
     shutil.copyfile(SUPPORT / 'Third-Party-Notices.template.txt', destination / 'Third Party Notices.md')
     sample_readme = destination / 'Samples~/MinimalStudy/README.md'
     sample_readme.write_text('''# Minimal Study\n\nUse a blank scene with Main Camera, or assign a Head Pose Source. Add a box collider and Study Region with a unique region ID. Add Interaction Adapter and explicitly wire real UnityEvents to its public methods. The example methods emit synthetic behavioral events only, never fabricated eye data.\n\nOpen Tools > GazeFlow > Setup and Recording Settings, select a dedicated output folder and opt into recording. For a first trial leave Neon off. Confirm an anonymous participant, mark observations and Stop normally. Inspect CSVs and the finished HTML. Import an existing video for review; this edition does not capture media or run external programs.\n''')
@@ -134,6 +136,7 @@ def main():
         shutil.copytree(package, embedded)
         project = output / 'StoreValidationProject'
         (project / 'Assets').mkdir(exist_ok=True)
+        (project / 'Assets/.gitkeep').touch()
         (project / 'ProjectSettings').mkdir(exist_ok=True)
         shutil.copyfile(ROOT / 'VerificationProject/ProjectSettings/ProjectVersion.txt', project / 'ProjectSettings/ProjectVersion.txt')
         (project / 'Packages/manifest.json').write_text(json.dumps({'dependencies':dict(manifest['dependencies'], **{'com.unity.test-framework':'1.6.0'}),'testables':[NAME]}, indent=2)+'\n', encoding='utf-8')

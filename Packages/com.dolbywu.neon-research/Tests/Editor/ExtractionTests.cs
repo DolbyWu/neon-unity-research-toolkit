@@ -14,6 +14,14 @@ namespace NeonResearch.Tests
     {
         private string root;
         private static void ResetSession()=>typeof(StudyExportSession).GetMethod("Reset",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,null);
+        // Explicitly opt in only a disposable verification host. Never create this marker in an experiment.
+        private static bool IsIsolatedSceneTestHost()
+        {
+            const string marker="Library/NeonResearch.IsolatedSceneTests.txt";
+            return File.Exists(marker) &&
+                string.Equals(File.ReadAllText(marker).Trim(),Path.GetFullPath(Application.dataPath),StringComparison.Ordinal) &&
+                SceneManager.sceneCount==1 && string.IsNullOrEmpty(SceneManager.GetSceneAt(0).path);
+        }
         [SetUp]public void Before()
         {
             root=Path.Combine(Path.GetFullPath("Library/StandaloneVerification"),"test-"+Guid.NewGuid().ToString("N"));
@@ -80,7 +88,8 @@ namespace NeonResearch.Tests
         [TestCase(typeof(StudyInteractionAdapter))]
         public void PublicComponentsHavePersistentScriptsAndRetainFieldsAfterSceneReopen(Type type)
         {
-            if(!Application.isBatchMode)Assert.Ignore("Run serialization acceptance in an isolated batch test project, not an operator's open scenes.");
+            if(!Application.isBatchMode && !IsIsolatedSceneTestHost())
+                Assert.Ignore("Use batch mode or an explicitly marked disposable host with one untitled scene; never run against experiment scenes.");
             const string parent="Assets/NeonResearchSerializationTests";
             if(!AssetDatabase.IsValidFolder(parent))AssetDatabase.CreateFolder("Assets","NeonResearchSerializationTests");
             string testFolder=parent+"/test-"+Guid.NewGuid().ToString("N");
@@ -145,6 +154,30 @@ namespace NeonResearch.Tests
             int offset,length;Assert.That(NeonTcpGazeClient.TryGetGazePayload(new byte[5],out offset,out length),Is.False);
             var clock=new NeonRtpClock();long timestamp;Assert.That(clock.TryMap(new byte[12],out timestamp),Is.False);
             Assert.That(NeonClockSync.Map(1000250,1000000,8),Is.EqualTo(8.25));
+        }
+        [Test]public void SessionResetReleasesFilesAndPreventsPriorSessionDataLeakingIntoTheNextSession()
+        {
+            string first=StudyExportSession.EnsureStarted(root);
+            StudyEvents.Record("old_session_marker");
+            StudyMonitorData.Sample(1,10,20,4,4,true,true,true,1);
+            StudyMonitorData.Error="old error";
+            StudyMonitorData.Stop(2);
+            ResetSession();
+            Assert.That(StudyExportSession.Folder,Is.Null);
+            Assert.That(StudyEvents.Record("must_not_autostart"),Is.False);
+            Assert.That(StudyMonitorData.Samples,Is.Zero);
+            Assert.That(StudyMonitorData.Points,Is.Empty);
+            Assert.That(StudyMonitorData.Events,Is.Empty);
+            Assert.That(StudyMonitorData.Error,Is.Empty);
+            Assert.That(StudyMonitorData.Stopped,Is.False);
+            // Exclusive access proves stale session writers were disposed, including with no domain reload.
+            using(var stream=new FileStream(Path.Combine(first,"head_pose.csv"),FileMode.Open,FileAccess.ReadWrite,FileShare.None)){}
+            string second=StudyExportSession.EnsureStarted(root);
+            StudyEvents.Record("new_session_marker");StudyExportSession.Finish();
+            Assert.That(second,Is.Not.EqualTo(first));
+            string events=File.ReadAllText(Path.Combine(second,"game_events.csv"));
+            Assert.That(events,Does.Contain("new_session_marker"));
+            Assert.That(events,Does.Not.Contain("old_session_marker"));
         }
     }
 }

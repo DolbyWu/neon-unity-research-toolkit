@@ -183,6 +183,7 @@ public static class StudyExportSession
         {
             if (closed || folder == null) return;
             Event("session_end", "Normal Unity shutdown or Play stop; does not prove puzzle completion.");
+            StudyTargetCatalog.Snapshot();
             StudySequence.Close();
             StudyGazeTargetLog.Close();
             closed = true;

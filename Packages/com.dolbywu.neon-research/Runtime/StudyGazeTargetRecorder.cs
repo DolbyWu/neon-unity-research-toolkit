@@ -12,6 +12,7 @@ namespace NeonResearch
         private string session, lastTarget = "";
         private double lastSample;
         private bool waiting = true;
+        private double nextCatalog;
         private void OnEnable() { subscribed = provider; if (subscribed != null) subscribed.SampleReady += Receive; }
         private void OnDisable()
         {
@@ -23,7 +24,8 @@ namespace NeonResearch
         {
             if (!StudyEvents.Recording) { waiting = true; lastTarget = ""; return; }
             if (session != StudyExportSession.SessionId)
-            { session = StudyExportSession.SessionId; lastSample = StudyExportSession.Seconds; waiting = false; lastTarget = ""; }
+            { session = StudyExportSession.SessionId; lastSample = StudyExportSession.Seconds; waiting = false; lastTarget = ""; nextCatalog = 0; }
+            if (StudyExportSession.Seconds >= nextCatalog) { nextCatalog = StudyExportSession.Seconds + 2; StudyTargetCatalog.Snapshot(); }
             if (!waiting && StudyExportSession.Seconds - lastSample > staleAfterSeconds)
             { StudyGazeTargetLog.Missing("stale_or_disconnected"); EndTarget("stale_or_disconnected"); waiting = true; }
         }

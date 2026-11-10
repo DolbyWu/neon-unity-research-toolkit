@@ -1,0 +1,6 @@
+{
+  "name": "GazeFlow.NeonXR.Editor",
+  "references": ["PupilLabs.NeonXR.Core.Runtime"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

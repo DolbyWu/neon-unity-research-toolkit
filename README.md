@@ -1,4 +1,4 @@
-> **Development branch · 0.2.0-exp.1:** optional Neon XR spatial adapter, research target recording and HTML target review. [Setup and verification limits](docs/neon-xr-prototype.md). This is experimental; the public preview and submitted store snapshot below remain separate.
+> **Experimental branch · `feature/neon-xr-aoi-integration` · 0.2.0-exp.1:** optional official Neon XR spatial adapter, target catalogue, explicit trigger AOIs, HTML filters/exports and a display-only gaze-pointer button. Start with the [Windows integration update and validation limits](docs/windows-aoi-integration.md), then the [setup guide](Packages/com.dolbywu.neon-research/Documentation~/neon-xr-targets.md). This is not a new release or Asset Store update; the public preview below remains separate.
 
 ![Neon Unity Research Toolkit — Democratizing Multimodal Research. Record. Review. Annotate.](docs/media/banner.jpg)
 

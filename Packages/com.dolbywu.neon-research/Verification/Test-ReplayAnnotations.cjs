@@ -26,7 +26,7 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
   const upload=async bundle=>{await page.locator('#annotationsImport').setInputFiles({name:'synthetic-annotations.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(bundle))});};
   const exportJson=async()=>{const pending=page.waitForEvent('download');await page.locator('#annotationsExport').click();const file=await pending;return JSON.parse(fs.readFileSync(await file.path(),'utf8'));};
   await page.goto(pathToFileURL(report).href);assert.equal(await page.locator('#error').innerText(),'');assert.equal(await count(),0);
-  assert.deepEqual(await page.locator('.review-data > .panel').evaluateAll(panels=>panels.map(p=>p.id)),['timelinePanel','annotationPanel','intervalExportPanel','gameLogPanel'],'Annotations immediately follow eye data; game log stays last.');
+  assert.deepEqual(await page.locator('.review-data > .panel').evaluateAll(panels=>panels.map(p=>p.id)),['timelinePanel','annotationPanel','intervalExportPanel','targetPanel','gameLogPanel'],'Annotations immediately follow eye data; targets are available and game log stays last.');
   await page.locator('#annotationAdvanced').evaluate(e=>{e.open=true;});
   // Missing required fields and invalid bounds cannot create a record.
   await page.locator('#annotationSave').click();await message('required');assert.equal(await count(),0);

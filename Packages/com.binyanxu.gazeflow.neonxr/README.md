@@ -6,4 +6,8 @@ Install the GazeFlow development core `0.2.0-exp.1`, then official Neon XR Core,
 
 The full instructions, timing limitations and acceptance checklist are in the core package's `Documentation~/neon-xr-targets.md` and the repository's `docs/neon-xr-prototype.md`.
 
-This is an additive target-ray path. It does not replace the existing raw gaze/pupil recorder. Full Unity dependency/adapter compilation and Neon + Quest hardware validation are pending. No Pupil Labs source code or native binaries are included. Install only in a disposable test project first; do not combine the core with the overlapping Asset Store package.
+This is an additive target-ray path. It does not replace the existing raw gaze/pupil recorder. The pinned official WS client omits device timestamps: this adapter uses actual receive-event freshness, exports blank device time and discloses non-atomic ray/metadata pairing. Direct/native timestamps retain monotonic checks.
+
+During Play, **Tools > GazeFlow > Neon XR > Gaze Pointer** opens a single **Hide gaze pointer / Show gaze pointer** button. It controls display only, not acquisition, calibration or AOI logging. The portable window still requires a headset hide/show check.
+
+See the repository's `docs/windows-aoi-integration.md` and `docs/windows-aoi-verification.md` for the Windows trial scope and current verification. No Pupil Labs source code or native binaries are included. Install only in an independent project copy first; do not combine the core with the overlapping Asset Store package. Full project-wide AOI coverage and quantified accuracy/synchronization are not established.

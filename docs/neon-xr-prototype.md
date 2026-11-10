@@ -1,6 +1,6 @@
 # Neon XR research-target prototype · 0.2.0-exp.1
 
-Development branch: `feature/neon-xr-research-targets`. The submitted store snapshot remains on `store/0.1.0-preview.6`; this work does not change or resubmit it.
+Original prototype branch: `feature/neon-xr-research-targets`. The Windows integration continuation is `feature/neon-xr-aoi-integration`: see [the current update](windows-aoi-integration.md) and [verification note](windows-aoi-verification.md). The submitted store snapshot remains on `store/0.1.0-preview.6`; this work does not change or resubmit it. The checks below are the original prototype history, not the latest Windows status.
 
 See the [complete setup, architecture, timing limitations and acceptance checklist](../Packages/com.dolbywu.neon-research/Documentation~/neon-xr-targets.md).
 

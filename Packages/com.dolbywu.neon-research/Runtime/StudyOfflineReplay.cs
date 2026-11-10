@@ -49,6 +49,8 @@ public static class StudyOfflineReplay
                 json.WritePropertyName("recordingError"); json.WriteValue(manifest.Value<string>("recordingError")??"");
                 WriteTable(json,"events",Path.Combine(folder,"game_events.csv"));
                 WriteTable(json,"regions",Path.Combine(folder,"region_intervals.csv"));
+                if (File.Exists(Path.Combine(folder,"gaze_targets.csv")))
+                    WriteTable(json,"gazeTargets",Path.Combine(folder,"gaze_targets.csv"));
                 json.WritePropertyName("gaze"); json.WriteStartArray();
                 foreach (string neon in neonFolders)
                 {

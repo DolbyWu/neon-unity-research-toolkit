@@ -1,3 +1,5 @@
+> **Development branch · 0.2.0-exp.1:** optional Neon XR spatial adapter, research target recording and HTML target review. [Setup and verification limits](docs/neon-xr-prototype.md). This is experimental; the public preview and submitted store snapshot below remain separate.
+
 ![Neon Unity Research Toolkit — Democratizing Multimodal Research. Record. Review. Annotate.](docs/media/banner.jpg)
 
 # GazeFlow: Democratizing VR Eye-Tracking Research with Neon and Quest 3
@@ -15,7 +17,7 @@ The GitHub full edition includes optional external-tool media capture. The separ
 
 **Status:** `0.1.0-preview.4` · Public preview for pilot use
 
-**Current source / submission candidate:** `0.1.0-preview.5` — Publisher and copyright name: **Binyan Michelle Xu**. This metadata update leaves runtime code unchanged; the signed preview.4 archive below is historical and still carries its original author metadata. See the [Publisher identity checklist](docs/publisher-identity.md) before store submission.
+**Current development source:** `0.2.0-exp.1` (experimental; not the submitted store package) — Publisher and copyright name: **Binyan Michelle Xu**. The historical preview.5 identity update left runtime code unchanged; the signed preview.4 archive below is historical and still carries its original author metadata. See the [Publisher identity checklist](docs/publisher-identity.md) before store submission.
 
 This preview fixes save/reopen serialization for Head Pose Source, Study Region and Interaction Adapter. See the changelog before upgrading; existing Missing Script references need manual re-attachment and field/callback restoration. Download the tested signed archive from the [preview.4 release](https://github.com/DolbyWu/neon-unity-research-toolkit/releases/tag/v0.1.0-preview.4).
 

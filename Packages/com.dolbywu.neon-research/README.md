@@ -1,3 +1,5 @@
+> **Experimental development · 0.2.0-exp.1.** Optional Neon XR spatial targets and HTML target review are documented in [the integration guide](Documentation~/neon-xr-targets.md). Unity runtime/adapter and new hardware acceptance are pending. Existing recording remains available.
+
 # Neon Unity Research Toolkit
 
 **0.1.0-preview.5 (submission candidate)** · Unofficial Windows Unity Editor development preview.

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0-exp.1 — 2026-11-09 · Experimental development
+
+- Added an optional main-thread spatial gaze interface, authored research targets, nearest-collider target records and a missing-data watchdog. Existing raw Neon schemas are unchanged.
+- Added a separate optional official Neon XR adapter package; the core has no new SDK dependency. The adapter is additive, not a complete raw-receiver replacement.
+- Added offline HTML target summaries, filtering, time seeking, selected target exports and annotation linkage; legacy sessions remain supported.
+- Added configuration checks, a three-object sample, conservative metrics/DOM verification and Unity regression cases.
+- This version has static core compilation and metrics/DOM evidence only. Unity execution, full adapter compilation, real-browser/media and Neon + Quest target mapping acceptance remain pending. Submitted store preview.6 is unchanged.
+
 ## 0.1.0-preview.5 — 2026-11-07
 
 - Unified package author, copyright holder and current documentation under the Publisher spelling Binyan Michelle Xu.

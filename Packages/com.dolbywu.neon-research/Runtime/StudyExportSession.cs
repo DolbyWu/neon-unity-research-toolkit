@@ -33,6 +33,7 @@ public static class StudyExportSession
         {
             events?.Dispose(); poses?.Dispose(); anchors?.Dispose();
             StudySequence.Close();
+            StudyGazeTargetLog.Close();
             StudyMonitorData.Reset();
             events = poses = anchors = null;
             folder = sessionId = participantId = companionRecordingId = null; startTicks = eventCount = poseCount = 0; closed = false;
@@ -151,6 +152,7 @@ public static class StudyExportSession
             anchors.WriteLine(NeonStudyRecorder.Csv(sessionId, before, utc, after, Stopwatch.Frequency));
             events.Flush(); poses.Flush(); anchors.Flush();
             StudySequence.Flush();
+            StudyGazeTargetLog.Flush();
             var metadata = new Manifest { sessionId = sessionId, closed = closed,
                 participantId = participantId, companionRecordingIdManualUnverified = companionRecordingId,
                 durationSeconds = Seconds, behaviorEventCount = eventCount, headPoseCount = poseCount,
@@ -182,6 +184,7 @@ public static class StudyExportSession
             if (closed || folder == null) return;
             Event("session_end", "Normal Unity shutdown or Play stop; does not prove puzzle completion.");
             StudySequence.Close();
+            StudyGazeTargetLog.Close();
             closed = true;
             StudyMonitorData.Stop(Seconds);
             try { Flush(); }

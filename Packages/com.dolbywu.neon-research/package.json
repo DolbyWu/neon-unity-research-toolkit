@@ -1,6 +1,6 @@
 {
   "name": "com.dolbywu.neon-research",
-  "version": "0.1.0-preview.5",
+  "version": "0.2.0-exp.1",
   "displayName": "Neon Research Toolkit (Unofficial Preview)",
   "description": "Independent Unity + Neon study recording, participant intake, raw events/head pose, offline video review and manual annotations. Windows Editor preview; opt-in acquisition.",
   "unity": "6000.3",
@@ -40,6 +40,11 @@
       "displayName": "Minimal event integration sample",
       "description": "Minimal event integration without a headset SDK. Synthetic event sample; no fabricated eye data.",
       "path": "Samples~/MinimalStudy"
+    },
+    {
+      "displayName": "Three research targets (experimental)",
+      "description": "Creates three synthetic scene objects with stable IDs. No simulated eye data or automatic recording.",
+      "path": "Samples~/ThreeTargets"
     }
   ],
   "unityRelease": "23f1"

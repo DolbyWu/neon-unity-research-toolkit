@@ -1,0 +1,8 @@
+{
+  "name": "GazeFlow.NeonXR",
+  "references": [
+    "NeonResearch.Runtime",
+    "PupilLabs.NeonXR.Core.Runtime"
+  ],
+  "autoReferenced": true
+}

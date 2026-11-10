@@ -19,5 +19,5 @@ for(const name of ['NeonResearchSetup.cs','StudyLiveMonitor.cs','StudyParticipan
  const text=fs.readFileSync(path.join(pkg,'Editor',name),'utf8');assert.ok(!/escape[\s-]?room|Tools > Study >/i.test(text),'Current project-independent menu wording: '+name);
 }
 assert.ok(!/escape[\s-]?room/i.test(fs.readFileSync(path.join(pkg,'package.json'),'utf8')),'Package metadata has standalone wording.');
-assert.equal(JSON.parse(fs.readFileSync(path.join(pkg,'package.json'),'utf8')).version,'0.1.0-preview.5');
+assert.equal(JSON.parse(fs.readFileSync(path.join(pkg,'package.json'),'utf8')).version,'0.2.0-exp.1');
 console.log('PASS: '+files.length+' Markdown files, '+checkedLinks+' local links, beginner milestones and standalone UI wording.');

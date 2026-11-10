@@ -86,6 +86,8 @@ namespace NeonResearch.Tests
         [TestCase(typeof(StudyHeadPoseSource))]
         [TestCase(typeof(StudyRegion))]
         [TestCase(typeof(StudyInteractionAdapter))]
+        [TestCase(typeof(StudyResearchTarget))]
+        [TestCase(typeof(StudyGazeTargetRecorder))]
         public void PublicComponentsHavePersistentScriptsAndRetainFieldsAfterSceneReopen(Type type)
         {
             if(!Application.isBatchMode && !IsIsolatedSceneTestHost())
@@ -103,6 +105,8 @@ namespace NeonResearch.Tests
                 if(component is StudyRegion region){region.regionId="ROUNDTRIP-REGION";region.regionCollider=go.AddComponent<BoxCollider>();}
                 if(component is StudyHeadPoseSource head){head.head=go.transform;}
                 if(component is StudyInteractionAdapter interaction){interaction.objectId="ROUNDTRIP-OBJECT";}
+                if(component is StudyResearchTarget target){target.targetId="ROUNDTRIP-TARGET";target.targetGroup="test";}
+                if(component is StudyGazeTargetRecorder recorder){recorder.maxDistance=13;recorder.collisionMask=3;}
                 var script=MonoScript.FromMonoBehaviour(component);
                 Assert.That(script,Is.Not.Null);Assert.That(script.GetClass(),Is.EqualTo(type));
                 string scriptPath=AssetDatabase.GetAssetPath(script);
@@ -115,6 +119,8 @@ namespace NeonResearch.Tests
                 if(restored is StudyRegion restoredRegion){Assert.That(restoredRegion.regionId,Is.EqualTo("ROUNDTRIP-REGION"));Assert.That(restoredRegion.regionCollider,Is.Not.Null);}
                 if(restored is StudyHeadPoseSource restoredHead){Assert.That(restoredHead.head,Is.EqualTo(restoredHead.transform));}
                 if(restored is StudyInteractionAdapter restoredInteraction){Assert.That(restoredInteraction.objectId,Is.EqualTo("ROUNDTRIP-OBJECT"));}
+                if(restored is StudyResearchTarget restoredTarget){Assert.That(restoredTarget.targetId,Is.EqualTo("ROUNDTRIP-TARGET"));Assert.That(restoredTarget.targetGroup,Is.EqualTo("test"));}
+                if(restored is StudyGazeTargetRecorder restoredRecorder){Assert.That(restoredRecorder.maxDistance,Is.EqualTo(13));Assert.That(restoredRecorder.collisionMask.value,Is.EqualTo(3));}
             }
             finally
             {

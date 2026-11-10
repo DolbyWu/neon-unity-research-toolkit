@@ -8,6 +8,8 @@ The next trial connects three authored research targets with available official 
 
 The core development version is `0.2.0-exp.1`. The separate optional adapter is `com.binyanxu.gazeflow.neonxr`; the core remains usable without it or the official SDK. The store builder is also marked experimental on this branch to avoid rebuilding modified code under preview.6's version. Do not submit the development profile as an update before the pending acceptance checks pass.
 
+Windows project-copy, plugin replacement and real-device acceptance: [Codex execution handoff](windows-neon-xr-handoff.md).
+
 ## Checks
 
 - PASS: static C# compilation of the full core Runtime, Editor and test sources using actual Unity 6000.3.23f1 reference assemblies. This is not a Unity project import or runtime test.

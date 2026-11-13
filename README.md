@@ -16,7 +16,7 @@ This branch is the **Research Pipeline version**, not the default `main` branch,
 
 1. **Prepare:** choose a private data root, connect the real tracked head and check Neon streaming.
 2. **Identify:** confirm an anonymous participant and a new session before recording.
-3. **Validate:** collect five known targets, optionally fit a bounded direction correction and collect NEW samples at the SAME fixed world targets.
+3. **Validate:** choose one starting point for round one. With automatic two-round flow enabled, sufficient collection triggers bounded direction fitting and a 3-second fresh-signal countdown into NEW round-two samples at the SAME fixed world targets. Insufficient collection lists the blocked points instead of silently waiting for a fit button.
 4. **Record:** preserve raw gaze/pupil availability, head pose, explicitly integrated behavior, target-ray records and optional desktop/microphone media.
 5. **Observe:** click once to start an observer interval, once to end it, then write the researcher note in the popup.
 6. **Reflect:** replay the selected episode with the participant; save their explanation and optional confusion rating separately.

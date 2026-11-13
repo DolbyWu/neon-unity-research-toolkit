@@ -23,7 +23,7 @@ namespace EscapeRoom.ReflectiveAgent.Tests
                 var pattern=new[]{Vector3.forward,new Vector3(-.21f,0,1).normalized,new Vector3(.21f,0,1).normalized,new Vector3(0,.14f,1).normalized,new Vector3(0,-.14f,1).normalized};
                 var q=Quaternion.Euler(2,-4,0);
                 var report=new StudySpatialValidation.ValidationReport{id="synthetic-training",session_id=StudyExportSession.SessionId,calibration_id="synthetic-config",min_coverage=.7f,targets=new List<StudySpatialValidation.TargetResult>()};
-                foreach(var expected in pattern){var raw=Quaternion.Inverse(q)*expected;report.targets.Add(new StudySpatialValidation.TargetResult{coverage=1,local_direction_pairs=50,mean_observed_head_local_direction=new[]{raw.x,raw.y,raw.z},mean_expected_head_local_direction=new[]{expected.x,expected.y,expected.z}});}
+                foreach(var expected in pattern){var raw=Quaternion.Inverse(q)*expected;report.targets.Add(new StudySpatialValidation.TargetResult{target_index=report.targets.Count,coverage=1,local_direction_pairs=50,mean_observed_head_local_direction=new[]{raw.x,raw.y,raw.z},mean_expected_head_local_direction=new[]{expected.x,expected.y,expected.z}});}
                 Set(check,"LastReport",report);type.GetMethod("FitCorrectionAndBeginVerification").Invoke(provider,null);
                 var model=(StudyGazeCorrection.Model)type.GetProperty("CurrentCorrection").GetValue(provider);
                 Assert.That(Quaternion.Angle(model.Rotation,q),Is.LessThan(.05f));Assert.That(check.Running,Is.True);Assert.That(check.independentCheckPattern,Is.True);

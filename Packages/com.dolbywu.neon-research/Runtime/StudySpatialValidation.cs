@@ -16,6 +16,7 @@ namespace NeonResearch
         public float maximumMeanErrorDegrees=3f, minimumCoverage=.7f;
         public bool automaticSequence=true, nineTargets;
         public bool independentCheckPattern;
+        public bool ReusesReferenceGeometry => reusedGeometry;
         public float interTargetSeconds=2f;
         public bool Running { get; private set; }
         public bool WaitingForSignal { get; private set; }
@@ -55,6 +56,7 @@ namespace NeonResearch
         private float runMeasure, runSettle, runMaxError, runMinCoverage, runDistance, runGap;
         private bool runAutomatic;
         private bool runIndependent;
+        private bool automaticRoundStart;
         private string runCorrectionId;
         private StudyValidationSequence sequence;
 
@@ -99,7 +101,7 @@ namespace NeonResearch
             if(!Finite(measureSeconds)||measureSeconds<=0||!Finite(settleSeconds)||settleSeconds<0||!Finite(distanceMetres)||distanceMetres<=0||!Finite(maximumMeanErrorDegrees)||maximumMeanErrorDegrees<=0||!Finite(minimumCoverage)||minimumCoverage<0||minimumCoverage>1||!Finite(interTargetSeconds)||interTargetSeconds<0)throw new InvalidOperationException("Invalid validation parameters.");
             if(subscribed!=provider){if(subscribed!=null)subscribed.ValidationSampleReady-=Receive;subscribed=provider;subscribed.ValidationSampleReady+=Receive;}
             runMeasure=measureSeconds;runSettle=settleSeconds;runMaxError=maximumMeanErrorDegrees;runMinCoverage=minimumCoverage;runDistance=distanceMetres;runGap=interTargetSeconds;runAutomatic=automaticSequence;
-            runIndependent=independentCheckPattern;runCorrectionId=null;
+            runIndependent=independentCheckPattern;runCorrectionId=null;automaticRoundStart=false;reusedGeometry=false;
             calibration=calibrationId;session=StudyExportSession.SessionId;startedSessionTime=StudyEvents.Recording?(double?)StudyExportSession.Seconds:null;
             runId="validation-"+DateTime.UtcNow.ToString("yyyyMMddTHHmmssfffZ")+"-"+Guid.NewGuid().ToString("N").Substring(0,8);
             LastReport=null;LastOutput="";RestoredForReviewOnly=false;results.Clear();rows.Clear();sequence=null;
@@ -136,11 +138,19 @@ namespace NeonResearch
         {
             AwaitingVisibilityConfirmation=false;targetStarted=now;ClearMeasurement();
             markers[TargetIndex].SetActive(true);
-            Event("gaze_validation_target_start",runAutomatic&&results.Count>0?"automatic":"operator_selected","target_index="+TargetIndex+"; "+Mode);
+            Event("gaze_validation_target_start",automaticRoundStart||runAutomatic&&results.Count>0?"automatic":"operator_selected","target_index="+TargetIndex+"; "+Mode);
         }
         public void StartAutomaticSequence(int firstTarget)
+            => StartSequence(firstTarget,false);
+        public void StartAutomaticVerificationSequence(int firstTarget)
+        {
+            if(!runIndependent||!reusedGeometry||string.IsNullOrEmpty(runCorrectionId))throw new InvalidOperationException("Automatic round two requires the same fixed geometry and a fresh corrected signal.");
+            StartSequence(firstTarget,true);
+        }
+        private void StartSequence(int firstTarget,bool automaticVerification)
         {
             if(!Running||!runAutomatic||WaitingForSignal||!AwaitingVisibilityConfirmation||!HasRecentValidSignal||sequence!=null)throw new InvalidOperationException("Show the five dots, confirm wearer readiness and a live worn signal, then click ONE starting point.");
+            automaticRoundStart=automaticVerification;
             sequence=new StudyValidationSequence(targets.Length,runSettle+runMeasure,runGap);
             sequence.Start(firstTarget,Time.realtimeSinceStartupAsDouble);TargetIndex=sequence.CurrentTarget;StartTarget(sequence.TargetStartedAt);
         }
@@ -176,8 +186,8 @@ namespace NeonResearch
             var result=EvaluateTarget(TargetIndex,targets[TargetIndex],angles,covered,runMeasure,runMaxError,runMinCoverage);
             result.local_direction_pairs=directionPairs;
             if(directionPairs>0){var a=sumObserved.normalized;var b=sumExpected.normalized;result.mean_observed_head_local_direction=new[]{a.x,a.y,a.z};result.mean_expected_head_local_direction=new[]{b.x,b.y,b.z};}
-            result.sequence_ordinal=results.Count;result.operator_confirmed_visible=!runAutomatic||results.Count==0;
-            result.start_method=runAutomatic?(results.Count==0?"operator_selected_first_point":"automatic_after_initial_selection"):"operator_confirmed_each_point";
+            result.sequence_ordinal=results.Count;result.operator_confirmed_visible=!automaticRoundStart&&(!runAutomatic||results.Count==0);
+            result.start_method=automaticRoundStart?"automatic_verification_after_countdown":runAutomatic?(results.Count==0?"operator_selected_first_point":"automatic_after_initial_selection"):"operator_confirmed_each_point";
             results.Add(result);markers[TargetIndex].SetActive(false);
             Event("gaze_validation_target_end","measured","target_index="+TargetIndex+"; pass="+result.passed);
             if(runAutomatic)

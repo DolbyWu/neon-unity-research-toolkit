@@ -6,7 +6,7 @@ The portable toolkit lives under the repository's `Packages/` directory. Start w
 
 ## Contents
 
-- `Source/Assets/`: **11** newly authored bridge, tutorial-entry, pointer-panel and synthetic-test C# files with their original Unity `.meta` identities. This is a reference tree, not an automatic installer.
+- `Source/Assets/`: **12** newly authored bridge, tutorial-entry, pointer-panel and synthetic-test C# files with their original Unity `.meta` identities. This is a reference tree, not an automatic installer.
 - `Patches/Assets/`: **20** zero-context patches for existing logging, consent guards, tutorial placement/progress, initial orientation, dynamic pin identity and legacy Editor/test namespace integration.
 
 The pin-manager patch omits a cosmetic comment-only encoding conversion from the legacy source; its research-code changes are preserved. Therefore its recorded source fingerprint describes the full trial source, while the published patch deliberately leaves that unrelated baseline comment untouched. All 20 published patches pass a read-only application check against the recorded local baseline.
@@ -40,6 +40,8 @@ The legacy timeline bridge intentionally forwards the host API to **one** packag
 The authored tutorial entry is reused: five-point fitting/validation, then the original grabbing tutorial at the opposite side, then the movement tutorial and formal task. The grabbing station is hidden while validation runs and restored afterward. Actual grab callbacks are recorded independently of eye quality; they also update the original tutorial objectives without fabricating success.
 
 Two rounds now use the **same fixed world target centres**, including the centre, with new samples in round two. The trial uses a **3-degree project-specific mean-error tolerance** and 70% valid coverage; those are not official scientific acceptance cutoffs. Finishing a failed measurement still allows gameplay and separately labeled low-precision geometric records, not accepted AOI hits. Scene/head-binding changes require explicit mapping review; old approval is not silently transferred.
+
+The entry now enables the **automatic two-round flow**: start the first five-point sequence with one point click; when round-one fitting requirements are met, the provider fits the correction and proceeds through a **3-second fresh-signal countdown** to round two. The operator does not need a second start click. The same fixed targets are measured again using new samples. If coverage is too low or the first fit is otherwise not ready, the panel identifies the problem; use the explicit retry action to discard the current correction and collect **all five** again. A countdown or completed second round is not proof of accepted mapping; report/approval rules and explicit skip behavior remain separate. New synthetic automatic-transition tests accompany the snapshot; these are not a substitute for a new device session.
 
 The package itself supplies the desktop two-click **Observation Marker**, observer-note popup and linked HTML retrospective responses. This source overlay does not reimplement that feature or the raw receiver.
 

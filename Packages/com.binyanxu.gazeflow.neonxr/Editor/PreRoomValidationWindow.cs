@@ -8,7 +8,7 @@ namespace NeonResearch.NeonXR.Editor
 {
     public sealed class PreRoomValidationWindow : EditorWindow
     {
-        private string message="Collect five points, fit correction, then check NEW five points. After round two the tutorial continues automatically, pass or fail. AOI approval is separate; unverified candidates are exported in candidate_* CSV columns, never accepted as validated hits.";
+        private string message="Choose ONE point to begin round 1. Sufficient data triggers automatic correction and a 3-second fresh-signal countdown into round 2 at the SAME fixed dots. If data are insufficient, the panel lists which points need recollection. AOI approval stays separate.";
         private Vector2 scroll;
         private bool approval, advanced;
         private int approvalProvider,approvalHead;
@@ -23,6 +23,8 @@ namespace NeonResearch.NeonXR.Editor
             var providers=UnityEngine.Object.FindObjectsByType<NeonXRResearchProvider>(FindObjectsSortMode.None).Where(p=>p.isActiveAndEnabled).ToArray();
             if(providers.Length!=1){EditorGUILayout.LabelField("Exactly one active Neon XR Research Provider is required.");EditorGUILayout.EndScrollView();return;}
             var provider=providers[0];var check=provider.GetComponent<StudySpatialValidation>()??provider.gameObject.AddComponent<StudySpatialValidation>();
+            EditorGUILayout.HelpBox(provider.AutomaticValidationStatus,provider.AutomaticValidationStatus.Contains("NOT STARTED")?MessageType.Warning:MessageType.Info);
+            if(provider.AutomaticVerificationPending&&GUILayout.Button("Pause automatic round-two transition"))provider.CancelAutomaticValidationTransition();
             check.provider=provider;check.headReference=provider.headReference;
             int headId=provider.headReference==null?0:provider.headReference.GetInstanceID();
             if(approvalProvider!=provider.GetInstanceID()||approvalHead!=headId){approval=false;approvalProvider=provider.GetInstanceID();approvalHead=headId;}
@@ -34,14 +36,15 @@ namespace NeonResearch.NeonXR.Editor
                 EditorGUI.BeginChangeCheck();provider.calibrationId=EditorGUILayout.TextField("Mount calibration ID",provider.calibrationId);
                 if(EditorGUI.EndChangeCheck()){provider.mappingVerified=false;approval=false;}
                 check.automaticSequence=EditorGUILayout.ToggleLeft("Automatic five points — click ONE starting point on the computer",check.automaticSequence);
+                provider.automaticTwoRoundFlow=EditorGUILayout.ToggleLeft("Automatically fit and start round 2 when round 1 has enough data",provider.automaticTwoRoundFlow);
                 if(GUILayout.Button(check.automaticSequence?"Show five targets":"Show manual validation target",GUILayout.Height(36)))
                 {
                     try
                     {
                         provider.mappingVerified=false;approval=false;
-                        check.independentCheckPattern=provider.CurrentCorrection!=null;
+                        provider.CancelAutomaticValidationTransition();check.independentCheckPattern=provider.CurrentCorrection!=null;
                         GazePointerWindow.ApplyVisibility(UnityEngine.Object.FindObjectsByType<GazeDataVisualizer>(FindObjectsSortMode.None),false);
-                        check.Begin(provider.calibrationId);
+                        if(provider.CurrentCorrection==null)provider.ClearCorrectionAndCollectAgain();else check.Begin(provider.calibrationId);
                         message=check.automaticSequence?"All five dots appear after a live worn signal. Ask the wearer to confirm visibility, then click ONE point on the map below to start the whole sequence.":"Manual mode: confirm every visible target before starting its timer.";
                     }catch(Exception e){message=e.Message;}
                 }
@@ -53,12 +56,12 @@ namespace NeonResearch.NeonXR.Editor
                 if(!check.WaitingForSignal&&!check.HasRecentValidSignal)EditorGUILayout.HelpBox("No recent valid worn signal. Missing data will not count as valid coverage. Check Neon; abort if the wearer cannot follow the targets.",MessageType.Warning);
                 if(check.AwaitingVisibilityConfirmation)
                 {
-                    EditorGUILayout.HelpBox(check.AutomaticRun?"Ask: Can you see all five fixed dots? Click ONE starting point below. Its size pulses for the gaze period, then it disappears. After the configured gap, the next point starts automatically. No further clicks are needed. Abort if any target cannot be seen.":"Confirm the wearer can see the fixed yellow target. Do not confirm an unseen target.",MessageType.Info);
+                    EditorGUILayout.HelpBox(provider.AutomaticVerificationPending?"ROUND 2: no click needed. Countdown waits for fresh worn data. Abort or skip if the SAME dots are no longer visible.":check.AutomaticRun?"Ask: Can you see all five fixed dots? Click ONE starting point below. Its size pulses for the gaze period, then it disappears. After the configured gap, the next point starts automatically. No further clicks are needed. Abort if any target cannot be seen.":"Confirm the wearer can see the fixed yellow target. Do not confirm an unseen target.",MessageType.Info);
                     using(new EditorGUI.DisabledScope(!check.HasRecentValidSignal))
                     {
                         if(!check.independentCheckPattern&&check.CompletedTargets==0&&GUILayout.Button("Reposition the unmeasured preview in front of the current headset"))check.RecenterPreview();
-                        if(check.AutomaticRun)DrawStartMap(check);
-                        else if(GUILayout.Button("Target visible — start measuring this target",GUILayout.Height(38)))check.ConfirmTargetVisible();
+                        if(check.AutomaticRun&&!provider.AutomaticVerificationPending)DrawStartMap(check);
+                        else if(!check.AutomaticRun&&GUILayout.Button("Target visible — start measuring this target",GUILayout.Height(38)))check.ConfirmTargetVisible();
                     }
                 }
                 if(GUILayout.Button("Abort validation"))check.Abort();
@@ -74,8 +77,11 @@ namespace NeonResearch.NeonXR.Editor
                 EditorGUILayout.SelectableLabel(check.LastOutput,EditorStyles.wordWrappedLabel,GUILayout.Height(45));
                 if(provider.CurrentCorrection==null&&!check.RestoredForReviewOnly&&!check.Running&&!report.aborted)
                 {
-                    EditorGUILayout.HelpBox("Fit correction, then collect NEW samples at the SAME fixed world targets. The centre is not offset or re-anchored between rounds. No old samples are rewritten.",MessageType.Info);
-                    if(GUILayout.Button("Fit correction & show NEW verification points",GUILayout.Height(36)))
+                    var blockers=StudyValidationReadiness.FitBlockers(report);
+                    if(blockers.Length>0)EditorGUILayout.HelpBox("ROUND 2 NOT STARTED — insufficient first-round collection:\n"+string.Join("\n",blockers)+"\nCheck wearing/stream quality, then repeat all five points. Earlier files remain saved.",MessageType.Warning);
+                    if(GUILayout.Button("Retry round 1 — all five points",GUILayout.Height(36)))
+                    {try{approval=false;provider.ClearCorrectionAndCollectAgain();message="New round-one collection. Confirm the five dots, then select ONE starting point. Earlier files are retained.";}catch(Exception e){message=e.Message;}}
+                    if((!provider.automaticTwoRoundFlow||!check.automaticSequence)&&GUILayout.Button("Fit correction & show NEW verification points",GUILayout.Height(36)))
                     {try{approval=false;provider.FitCorrectionAndBeginVerification();message="Correction saved; AOI still unapproved. Confirm the NEW five dots are visible, then choose one starting point. Only a passing independent run can enable corrected hits.";}catch(Exception e){message=e.Message;}}
                 }
                 if(provider.CurrentCorrection!=null)

@@ -65,6 +65,30 @@ namespace NeonResearch.Tests
             finally{UnityEngine.Object.DestroyImmediate(host);UnityEngine.Object.DestroyImmediate(cube);StudyExportSession.Finish();reset.Invoke(null,null);if(Directory.Exists(root))Directory.Delete(root,true);}
         }
 
+        [Test] public void AutomaticVerificationRecordsAutomaticStartWithoutClaimingOperatorVisibility()
+        {
+            var reset=typeof(StudyExportSession).GetMethod("Reset",BindingFlags.NonPublic|BindingFlags.Static);reset.Invoke(null,null);
+            string root=Path.GetFullPath("Library/AutomaticValidationTests/"+Guid.NewGuid().ToString("N"));var host=new GameObject("Synthetic automatic round-two provenance");
+            try
+            {
+                StudyExportSession.EnsureStarted(root);var provider=host.AddComponent<SyntheticValidationRayProvider>();
+                var check=host.AddComponent<StudySpatialValidation>();check.provider=provider;check.headReference=host.transform;
+                var sample=new StudyGazeRaySample{valid=true,calibrationId="synthetic",source="synthetic_only",worldRay=new Ray(Vector3.zero,Vector3.forward)};
+                check.Begin("synthetic");provider.Emit(sample);
+                Assert.Throws<InvalidOperationException>(()=>check.StartAutomaticVerificationSequence(0));check.Abort();
+                check.independentCheckPattern=true;check.Begin("synthetic");sample.correctionId="synthetic-correction";provider.Emit(sample);
+                check.StartAutomaticVerificationSequence(0);
+                var flags=BindingFlags.Instance|BindingFlags.NonPublic;double past=Time.realtimeSinceStartupAsDouble-10;
+                typeof(StudySpatialValidation).GetField("targetStarted",flags).SetValue(check,past);
+                var sequence=(StudyValidationSequence)typeof(StudySpatialValidation).GetField("sequence",flags).GetValue(check);
+                typeof(StudyValidationSequence).GetField("<TargetStartedAt>k__BackingField",flags).SetValue(sequence,past);
+                typeof(StudySpatialValidation).GetMethod("Update",flags).Invoke(check,null);check.Abort();
+                var result=check.LastReport.targets[0];Assert.That(result.start_method,Is.EqualTo("automatic_verification_after_countdown"));
+                Assert.That(result.operator_confirmed_visible,Is.False);Assert.That(result.mean_error_deg,Is.Null);Assert.That(result.passed,Is.False);
+                Assert.That(File.ReadAllText(Path.Combine(check.LastOutput,"validation.json")),Does.Contain("automatic_verification_after_countdown"));
+            }
+            finally{UnityEngine.Object.DestroyImmediate(host);StudyExportSession.Finish();reset.Invoke(null,null);if(Directory.Exists(root))Directory.Delete(root,true);}
+        }
         [Test] public void ActualFiveMarkersAdvanceAutomaticallyAndGapsCannotBecomeSamples()
         {
             var reset=typeof(StudyExportSession).GetMethod("Reset",BindingFlags.NonPublic|BindingFlags.Static);

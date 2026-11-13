@@ -14,7 +14,7 @@ public static class GazeFlowCorrectionChecks
         string file="Library/GazeFlowFlowChecks/correction-integration.txt";Directory.CreateDirectory(Path.GetDirectoryName(file));int count=0;
         try
         {
-            foreach(string name in new[]{"EscapeRoom.ReflectiveAgent.Tests.AoiCorrectionIntegrationTests","EscapeRoom.ReflectiveAgent.Tests.AoiBindingApprovalTests"})
+            foreach(string name in new[]{"EscapeRoom.ReflectiveAgent.Tests.AoiCorrectionIntegrationTests","EscapeRoom.ReflectiveAgent.Tests.AoiBindingApprovalTests","EscapeRoom.ReflectiveAgent.Tests.AoiAutomaticTransitionTests"})
             {
                 var type=AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType(name)).FirstOrDefault(t=>t!=null);if(type==null)throw new InvalidOperationException("Test assembly not loaded: "+name);
                 var obj=Activator.CreateInstance(type);

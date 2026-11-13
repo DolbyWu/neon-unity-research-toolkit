@@ -1,5 +1,12 @@
 # Changelog
 
+## Research Pipeline follow-up — automatic two-round transition (2026-11-13)
+
+- Default integrated flow now automatically checks saved round-one collection, fits if sufficient and starts a 3-second fresh-signal countdown into corrected round two at the same fixed world centres.
+- Insufficient collection explicitly names each coverage/pair/direction problem and offers a whole-round retry. High pre-correction angular error is not itself a fitting blocker. Historical reports and all attempts are preserved separately.
+- Countdown resets on stale input/long updates, cancels on abort/skip/context change and never approves mapping. Automatic round-two start provenance does not claim a new operator visibility confirmation.
+- Manual fit mode remains available. This follow-up is published on the same timestamped Research Pipeline branch as a separate commit; it is not a new signed release or store update.
+
 ## Research Pipeline snapshot — 2026-11-13 13:38 EST / 18:38 UTC
 
 Branch `feature/research-pipeline-20261113-1338-est`; package identity remains `0.2.0-exp.1`, not a new signed release or store update.

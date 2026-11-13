@@ -18,22 +18,94 @@ namespace NeonResearch.NeonXR
         public string calibrationId = "";
         public StudyGazeCorrection.Model CurrentCorrection { get; private set; }
         public string CorrectionPath { get; private set; }="";
+        [Tooltip("After a complete well-covered raw five-point collection, fit once and start corrected round two after a fresh-signal countdown. Never approves AOI mapping.")]
+        public bool automaticTwoRoundFlow=true;
+        public float verificationCountdownSeconds=3f;
+        public string AutomaticValidationStatus { get; private set; }="Round 1: show five points and choose ONE starting point. Round 2 will start automatically when the collection is sufficient.";
+        public bool AutomaticVerificationPending { get; private set; }
+        public double VerificationCountdownRemaining { get; private set; }=3;
+        private string handledCollectionId,transitionSession,transitionCalibration,transitionCorrection;
+        private Transform transitionHead;
+        private double countdownFrom=-1,lastCountdownTick=-1;
+        private StudySpatialValidation flowCheck;
+        public void CancelAutomaticValidationTransition()
+        {
+            AutomaticVerificationPending=false;countdownFrom=lastCountdownTick=-1;
+            VerificationCountdownRemaining=Math.Max(0,verificationCountdownSeconds);
+            handledCollectionId=GetComponent<StudySpatialValidation>()?.LastReport?.id;
+            AutomaticValidationStatus="Automatic transition stopped. Retry collection, use manual verification, or explicitly skip. No mapping approval was granted.";
+        }
+        public void TickAutomaticValidation(double now)
+        {
+            var check=GetComponent<StudySpatialValidation>();
+            if(flowCheck!=check){if(flowCheck!=null)flowCheck.TutorialSkipRequested-=CancelAutomaticValidationTransition;flowCheck=check;if(flowCheck!=null)flowCheck.TutorialSkipRequested+=CancelAutomaticValidationTransition;}
+            if(!automaticTwoRoundFlow||!StudyEvents.Recording||check==null||double.IsNaN(now)||double.IsInfinity(now))
+            {if(AutomaticVerificationPending)CancelAutomaticValidationTransition();return;}
+            if(AutomaticVerificationPending)
+            {
+                if(!check.Running||check.RestoredForReviewOnly||!check.independentCheckPattern||CurrentCorrection==null||
+                   transitionSession!=StudyExportSession.SessionId||transitionCalibration!=calibrationId||transitionHead!=headReference||check.headReference!=headReference||CurrentCorrection.id!=transitionCorrection)
+                {CancelAutomaticValidationTransition();return;}
+                if(!check.WaitingForSignal&&!check.AwaitingVisibilityConfirmation)
+                {AutomaticVerificationPending=false;AutomaticValidationStatus="Round 2 is measuring NEW samples. AOI approval remains separate.";return;}
+                bool continuous=lastCountdownTick>=0&&now>=lastCountdownTick&&now-lastCountdownTick<=.25;
+                lastCountdownTick=now;
+                if(check.WaitingForSignal||!check.HasRecentValidSignal)
+                {countdownFrom=-1;VerificationCountdownRemaining=Math.Max(0,verificationCountdownSeconds);AutomaticValidationStatus="Round 2 waiting for fresh worn eye data. Countdown restarts when the signal returns; no click is needed.";return;}
+                if(!check.ReusesReferenceGeometry)
+                {CancelAutomaticValidationTransition();AutomaticValidationStatus="Round 2 stopped: target geometry/head binding changed. Discard correction and collect again.";return;}
+                if(!continuous)countdownFrom=-1;
+                if(countdownFrom<0)countdownFrom=now;
+                VerificationCountdownRemaining=Math.Max(0,verificationCountdownSeconds-(now-countdownFrom));
+                AutomaticValidationStatus="ROUND 2 starts automatically in "+VerificationCountdownRemaining.ToString("F1")+" s. Keep looking forward at the SAME fixed dots. Use Abort or Skip if they are not visible.";
+                if(VerificationCountdownRemaining>0)return;
+                try{check.StartAutomaticVerificationSequence(0);AutomaticVerificationPending=false;AutomaticValidationStatus="ROUND 2 / 2 — automatic corrected verification is running. No click is needed.";StudyEvents.Record("gaze_verification_automatic_start",CurrentCorrection.id,"new_samples_same_fixed_targets","Visibility was confirmed in round one, not individually reconfirmed by this countdown.");}
+                catch(Exception error){CancelAutomaticValidationTransition();AutomaticValidationStatus="Round 2 could not start: "+error.Message;}
+                return;
+            }
+            if(check.Running||check.RestoredForReviewOnly||check.LastReport==null)return;
+            var report=check.LastReport;
+            if(report.purpose=="independent_live_verification")
+            {AutomaticValidationStatus=report.aborted?"Round 2 aborted. Retry or explicitly skip; this is not a pass.":"Both rounds completed — "+(report.passed?"measured PASS; review before AOI approval.":"measured FAIL; raw and low-precision data remain separate from approved AOI hits.");return;}
+            if(report.id==handledCollectionId)return;
+            handledCollectionId=report.id;
+            if(report.aborted){AutomaticValidationStatus="Round 1 aborted. Retry collection or explicitly skip.";return;}
+            if(report.session_id!=StudyExportSession.SessionId||report.calibration_id!=calibrationId||headReference==null||check.headReference!=headReference)
+            {AutomaticValidationStatus="Round 1 context changed. Collect again with the current session, mount ID and actual tracked head.";return;}
+            var blockers=StudyValidationReadiness.FitBlockers(report);
+            if(blockers.Length>0)
+            {AutomaticValidationStatus="ROUND 2 NOT STARTED — retry round 1 (all five points).\n"+string.Join("\n",blockers);StudyEvents.Record("gaze_correction_blocked",report.id,"insufficient_collection",string.Join("; ",blockers));return;}
+            if(!check.automaticSequence){AutomaticValidationStatus="Manual mode: fit and confirm the verification targets explicitly.";return;}
+            try
+            {
+                if(!File.Exists(Path.Combine(check.LastOutput,"validation.json"))||!File.Exists(Path.Combine(check.LastOutput,"validation_samples.csv")))throw new InvalidOperationException("Round-one evidence was not saved. Fix the output location and recollect.");
+                if(float.IsNaN(verificationCountdownSeconds)||float.IsInfinity(verificationCountdownSeconds)||verificationCountdownSeconds<0)throw new InvalidOperationException("Invalid round-two countdown setting.");
+                FitCorrectionAndBeginVerification();
+                transitionSession=StudyExportSession.SessionId;transitionCalibration=calibrationId;transitionHead=headReference;transitionCorrection=CurrentCorrection.id;
+                AutomaticVerificationPending=true;countdownFrom=lastCountdownTick=-1;VerificationCountdownRemaining=verificationCountdownSeconds;
+                AutomaticValidationStatus="Correction saved automatically. Round 2 waiting for fresh data at the SAME fixed dots; no fit button is needed.";
+                StudyEvents.Record("gaze_verification_countdown_queued",CurrentCorrection.id,"round_two_pending","countdown_s="+verificationCountdownSeconds+"; new measurement, not automatic approval");
+            }catch(Exception error){AutomaticValidationStatus="ROUND 2 NOT STARTED — "+error.Message+" Retry round 1 or explicitly skip. Raw data are retained.";StudyEvents.Record("gaze_correction_blocked",report.id,"fit_or_save_failed",error.Message);}
+        }
         public void ClearCorrectionAndCollectAgain()
         {
             var check=GetComponent<StudySpatialValidation>();
             if(check==null||check.Running)throw new InvalidOperationException("Stop the current measurement before recollecting.");
+            CancelAutomaticValidationTransition();
             string previous=CurrentCorrection?.id??"";mappingVerified=false;CurrentCorrection=null;CorrectionPath="";
             if(StudyEvents.Recording)StudyEvents.Record("gaze_correction_cleared",previous,"new_collection_required","Prior files retained; no historical data rewritten.");
             check.independentCheckPattern=false;check.Begin(calibrationId);
+            AutomaticValidationStatus="ROUND 1 / 2 — confirm the dots are visible, then choose ONE starting point.";
         }
         public void FitCorrectionAndBeginVerification()
         {
             var check=GetComponent<StudySpatialValidation>();var report=check?.LastReport;
             if(check==null||check.Running||report==null||report.aborted||check.RestoredForReviewOnly||
                 report.session_id!=StudyExportSession.SessionId||report.calibration_id!=calibrationId||
-                !string.IsNullOrEmpty(report.correction_id)||report.targets==null||report.targets.Count!=5||
-                report.targets.Any(t=>t.coverage<report.min_coverage||t.local_direction_pairs<12||t.mean_observed_head_local_direction?.Length!=3||t.mean_expected_head_local_direction?.Length!=3))
+                !string.IsNullOrEmpty(report.correction_id))
                 throw new InvalidOperationException("Collect five complete uncorrected targets in this session first. Each needs adequate coverage and at least 12 valid direction pairs. Old exports without head-local pairs cannot be fitted.");
+            var blockers=StudyValidationReadiness.FitBlockers(report);
+            if(blockers.Length>0)throw new InvalidOperationException(string.Join("\n",blockers));
             Vector3 V(float[] a)=>new Vector3(a[0],a[1],a[2]);
             var q=StudyGazeCorrection.Fit(report.targets.Select(t=>V(t.mean_observed_head_local_direction)).ToArray(),report.targets.Select(t=>V(t.mean_expected_head_local_direction)).ToArray());
             var model=new StudyGazeCorrection.Model{id="correction-"+Guid.NewGuid().ToString("N"),session_id=StudyExportSession.SessionId,calibration_id=calibrationId,
@@ -100,7 +172,7 @@ namespace NeonResearch.NeonXR
         {
             if (ReferenceEquals(sender, lastClient)) Interlocked.Increment(ref receiveSequence);
         }
-        private void Update() => TrackClient(neon == null ? null : neon.RTSPClient);
+        private void Update(){TrackClient(neon == null ? null : neon.RTSPClient);TickAutomaticValidation(Time.realtimeSinceStartupAsDouble);}
         private void OnEnable()
         {
             TrackClient(null); lastTimestamp = 0;
@@ -109,6 +181,7 @@ namespace NeonResearch.NeonXR
         }
         private void OnDisable()
         {
+            CancelAutomaticValidationTransition();if(flowCheck!=null)flowCheck.TutorialSkipRequested-=CancelAutomaticValidationTransition;flowCheck=null;
             TrackClient(null);
             if (subscribed != null && subscribed.gazeDataReady != null) subscribed.gazeDataReady.RemoveListener(Receive);
         }

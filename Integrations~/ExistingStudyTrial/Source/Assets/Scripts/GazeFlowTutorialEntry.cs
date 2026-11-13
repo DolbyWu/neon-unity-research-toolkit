@@ -103,7 +103,8 @@ public sealed class GazeFlowTutorialEntry : MonoBehaviour
         check.automaticSequence=true;check.interTargetSeconds=2f;check.TutorialEntryContext=true;
         entryCheck=check;check.TutorialSkipRequested+=OnSkip;
         provider.calibrationId=MountConfigurationId();
-        check.Begin(provider.calibrationId);
+        provider.automaticTwoRoundFlow=true;provider.verificationCountdownSeconds=3f;
+        provider.ClearCorrectionAndCollectAgain();
         UnityEditor.EditorApplication.ExecuteMenuItem("Tools/GazeFlow/Pre-room Gaze Validation");
         Vector3 anchorPosition=head.position,anchorForward=head.forward;
         bool anchored=false;

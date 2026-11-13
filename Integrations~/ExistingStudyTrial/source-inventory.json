@@ -29,10 +29,10 @@
     {
       "path": "Assets/Scripts/GazeFlowTutorialEntry.cs",
       "state": "new",
-      "source_sha256": "cb6f47a69dfed634aaae0da77fb78765737800038bd9562702e0bc556d480c04",
+      "source_sha256": "e522c7337b9127f0d546554f9d658a217222d53f8ed928b2dc72515f815e3403",
       "baseline_sha256": null,
       "artifact_path": "Source/Assets/Scripts/GazeFlowTutorialEntry.cs",
-      "artifact_sha256": "cb6f47a69dfed634aaae0da77fb78765737800038bd9562702e0bc556d480c04",
+      "artifact_sha256": "e522c7337b9127f0d546554f9d658a217222d53f8ed928b2dc72515f815e3403",
       "meta_path": "Source/Assets/Scripts/GazeFlowTutorialEntry.cs.meta",
       "meta_sha256": "10c4f73271eb29de5a8a24a154b898ccd353b71cb4c01c99d2ce1755a7f46ad1"
     },
@@ -106,10 +106,10 @@
     {
       "path": "Assets/Editor/GazeFlowCorrectionChecks.cs",
       "state": "new",
-      "source_sha256": "1a7d3cb1196341a6df198ce78873534633568791603114a4d81f7735b098620f",
+      "source_sha256": "f61b937ed1c7d35604574dd7e1ae2ae11fc354b48def0987a6774f893575949e",
       "baseline_sha256": null,
       "artifact_path": "Source/Assets/Editor/GazeFlowCorrectionChecks.cs",
-      "artifact_sha256": "1a7d3cb1196341a6df198ce78873534633568791603114a4d81f7735b098620f",
+      "artifact_sha256": "f61b937ed1c7d35604574dd7e1ae2ae11fc354b48def0987a6774f893575949e",
       "meta_path": "Source/Assets/Editor/GazeFlowCorrectionChecks.cs.meta",
       "meta_sha256": "787273a9fd89cbb5a65c73562ebfff0b1928dc2026673d1e65da1049193473ec"
     },
@@ -215,10 +215,10 @@
     {
       "path": "Assets/Tests/EditMode/ReflectiveAgent/AoiCorrectionIntegrationTests.cs",
       "state": "new",
-      "source_sha256": "dd7aea31b6ee3c0c63349ad89877da4571b905bb55f2c91ef8a5a18600a1aa2b",
+      "source_sha256": "54972c209d428b911288ba3e8172a5942299ee9ab7db426fae8612fdbf24b20b",
       "baseline_sha256": null,
       "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiCorrectionIntegrationTests.cs",
-      "artifact_sha256": "dd7aea31b6ee3c0c63349ad89877da4571b905bb55f2c91ef8a5a18600a1aa2b",
+      "artifact_sha256": "54972c209d428b911288ba3e8172a5942299ee9ab7db426fae8612fdbf24b20b",
       "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiCorrectionIntegrationTests.cs.meta",
       "meta_sha256": "9ff79584bde660819c9845dc8a11bae9e8f607c014b126b5be0f1b42fdc6df43"
     },
@@ -281,6 +281,17 @@
       "artifact_sha256": "6380667350ca094301465a782f0abd81f8faf6cca10d5dfeff209c7fce37b0cc",
       "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/TutorialValidationLayoutTests.cs.meta",
       "meta_sha256": "b591e656fcbf5bf3ad84d2ba61ed9a66e26c1d977babb503b3ba929f9abcdf98"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/AoiAutomaticTransitionTests.cs",
+      "state": "new",
+      "baseline_sha256": null,
+      "source_sha256": "6e034497d63c3f2e109789d2adc4508ab2e2580a67ec6db7c20925273c098aa4",
+      "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiAutomaticTransitionTests.cs",
+      "artifact_sha256": "6e034497d63c3f2e109789d2adc4508ab2e2580a67ec6db7c20925273c098aa4",
+      "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiAutomaticTransitionTests.cs.meta",
+      "meta_sha256": "0c92a954cd4e2d150ec4229c89d0f2a9c27ea03ecbc8dbe4472d67e23c1aebe7"
     }
-  ]
+  ],
+  "latest_source_update": "Automatic two-round entry, 3-second fresh-signal countdown and synthetic transition tests synchronized after the initial dated snapshot."
 }

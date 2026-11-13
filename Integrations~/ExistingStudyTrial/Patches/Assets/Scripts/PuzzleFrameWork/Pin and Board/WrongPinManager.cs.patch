@@ -1,0 +1,21 @@
+diff --git "a/Assets/Scripts/PuzzleFrameWork/Pin and Board/WrongPinManager.cs" "b/Assets/Scripts/PuzzleFrameWork/Pin and Board/WrongPinManager.cs"
+index 52fe81b..e2fae9d 100644
+--- "a/Assets/Scripts/PuzzleFrameWork/Pin and Board/WrongPinManager.cs"
++++ "b/Assets/Scripts/PuzzleFrameWork/Pin and Board/WrongPinManager.cs"
+@@ -15,0 +16,12 @@ public class WrongPinManager : MonoBehaviour
++    [SerializeField] private string gazeFlowSpawnSiteId = "";
++    private int gazeFlowSpawnOrdinal;
++    private string gazeFlowSession;
++    private void RegisterResearchInstance(GameObject instance)
++    {
++        if(gazeFlowSession!=NeonResearch.StudyExportSession.SessionId){gazeFlowSession=NeonResearch.StudyExportSession.SessionId;gazeFlowSpawnOrdinal=0;}
++        if(string.IsNullOrWhiteSpace(gazeFlowSpawnSiteId)){Debug.LogError("[GazeFlowTrial] Pin spawn site has no authored identity; no spatial assignment may be trusted.");return;}
++        // The source can be a disabled scene template. Clones must not inherit its scene-object ID.
++        foreach(var target in instance.GetComponentsInChildren<NeonResearch.StudyResearchTarget>(true))target.requiresSpawnIdentity=true;
++        NeonResearch.StudyTargetSpawnIdentity.Register(instance,gazeFlowSpawnSiteId,(++gazeFlowSpawnOrdinal).ToString(System.Globalization.CultureInfo.InvariantCulture));
++        NeonResearch.StudyTargetCatalog.Snapshot();
++    }
+@@ -77,0 +90 @@ public class WrongPinManager : MonoBehaviour
++        RegisterResearchInstance(newPin);
+@@ -103,0 +117 @@ public class WrongPinManager : MonoBehaviour
++        RegisterResearchInstance(newPin);

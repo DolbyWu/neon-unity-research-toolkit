@@ -1,5 +1,7 @@
 # GazeFlow Neon XR Adapter · experimental
 
+Research Pipeline snapshot: **2026-11-13 13:38 EST**, branch `feature/research-pipeline-20261113-1338-est`, package `0.2.0-exp.1`. Follow the [current tutorial](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/feature/research-pipeline-20261113-1338-est/docs/research-pipeline-tutorial.md) for two-round repeat-layout validation, the 3-degree project policy and separately labeled low-precision exports. This is not a stable release or a new signed store package.
+
 Optional spatial ray adapter for official Pupil Labs Neon XR Core 2.0.0. GazeFlow remains unofficial. This package adds no simulated research data, video capture or automatic session start.
 
 Install the GazeFlow development core `0.2.0-exp.1`, then official Neon XR Core, then this adapter. Assign the official provider and actual tracked head Transform; retain an explicit calibration ID and keep mapping unverified until a known-target trial succeeds.

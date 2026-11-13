@@ -7,7 +7,7 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
  const replay=path.join(root,'Replay'),videos=path.join(root,'Video');fs.mkdirSync(replay,{recursive:true});fs.mkdirSync(videos,{recursive:true});
  const template=fs.readFileSync(path.join(project,'Runtime/Resources/NeonResearchOfflineReplay.txt'),'utf8');
  const data={version:1,session:'20990101T000000000Z-abcdef01',participant:'SYNTHETIC-ONLY',duration:12,media:{video_offset_s:2},
-  events:[['event_id','session_time_s','event_type','object_id','detail'],['1','3','grab_start','synthetic-cup','Synthetic event']],
+  events:[['event_id','session_time_s','event_type','object_id','detail'],['phase1','.5','experiment_phase_start','Main Menu AR','Synthetic phase'],['phase2','2.5','gaze_validation_start','synthetic-validation','Synthetic phase'],['1','3','grab_start','synthetic-cup','Synthetic event'],['phase3','4','grabbing_tutorial_started','grabbing_tutorial','Synthetic phase'],['phase4','6','experiment_phase_start','LocomotionTutorial','Synthetic phase'],['phase5','9','experiment_phase_start','Room 1','Synthetic phase']],
   regions:[['start_session_s','end_session_s','region','source'],['0','12','Synthetic room','synthetic']],gaze:[]};
  const report=path.join(replay,'study-replay.html');fs.writeFileSync(report,template.replace('__STUDY_DATA__',JSON.stringify(data).replace(/</g,'\\u003c')));
  const ffmpeg=process.env.STUDY_FFMPEG;if(!ffmpeg)throw Error('Set STUDY_FFMPEG to an installed FFmpeg executable; this test never downloads one.');
@@ -26,6 +26,11 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
   const upload=async bundle=>{await page.locator('#annotationsImport').setInputFiles({name:'synthetic-annotations.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(bundle))});};
   const exportJson=async()=>{const pending=page.waitForEvent('download');await page.locator('#annotationsExport').click();const file=await pending;return JSON.parse(fs.readFileSync(await file.path(),'utf8'));};
   await page.goto(pathToFileURL(report).href);assert.equal(await page.locator('#error').innerText(),'');assert.equal(await count(),0);
+  assert.equal(await page.locator('#phaseButtons button').count(),5);
+  await page.locator('#phaseButtons button').first().click();assert.equal(await page.locator('#cursor').inputValue(),'0.5');
+  assert.match(await page.locator('#phaseStatus').innerText(),/First tutorial room/);
+  await page.locator('#phaseButtons button').last().click();assert.equal(await page.locator('#cursor').inputValue(),'9');
+  assert.match(await page.locator('#phaseStatus').innerText(),/Room 1/);
   assert.deepEqual(await page.locator('.review-data > .panel').evaluateAll(panels=>panels.map(p=>p.id)),['timelinePanel','annotationPanel','intervalExportPanel','targetPanel','gameLogPanel'],'Annotations immediately follow eye data; targets are available and game log stays last.');
   await page.locator('#annotationAdvanced').evaluate(e=>{e.open=true;});
   // Missing required fields and invalid bounds cannot create a record.
@@ -62,6 +67,9 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
   await page.locator('#annotationLabel').fill('Unsaved draft');await page.locator('#annotationsExport').click();await message('Save or cancel');await page.locator('#annotationNew').click();
   // Both the known relative path and manual file picker work offline.
   await page.locator('#loadSessionVideo').click();await page.waitForFunction(()=>document.getElementById('sessionVideo').readyState>=1);
+  await seek(5);await page.waitForFunction(()=>Math.abs(document.getElementById('sessionVideo').currentTime-3)<.12);
+  await page.locator('#phaseButtons button').filter({hasText:'Movement tutorial'}).click();await page.waitForFunction(()=>Math.abs(document.getElementById('sessionVideo').currentTime-4)<.12);
+  assert.equal(await page.locator('#sessionVideo').evaluate(v=>v.paused),true);
   await seek(5);await page.waitForFunction(()=>Math.abs(document.getElementById('sessionVideo').currentTime-3)<.12);
   await page.locator('#sessionVideo').evaluate(v=>{v.currentTime=6;});await page.waitForFunction(()=>Math.abs(Number(document.getElementById('cursor').value)-8)<.15);
   await page.locator('#annotationUseCursor').click();assert.ok(Math.abs(Number(await page.locator('#annotationStart').inputValue())-8)<.15);
@@ -121,7 +129,23 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
   await page.setViewportSize({width:390,height:844});
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1),'Mobile layout does not overflow horizontally.');
   await page.locator('#annotationPanel').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(root,'annotated-video-review-mobile.png')});
-  console.log('PASS: consecutive additions without export, five independent IDs/records, first annotation preserved, explicit exit from edit mode, authoritative pause, paused scrubbing, frame-linked clocks/labels, description-only notes, legacy import, local video, JSON reload, validation, CSV escaping, no network.');
-  console.log('Synthetic preview: '+report);
+  console.log('PASS: tutorial/task chapters and offset-linked seeking; consecutive additions without export, five independent IDs/records, first annotation preserved, explicit exit from edit mode, authoritative pause, paused scrubbing, frame-linked clocks/labels, description-only notes, legacy import, local video, JSON reload, validation, CSV escaping, no network.');
+  const observationId='obs-'+'a'.repeat(32);
+  data.liveObservations=[{observation_id:observationId,start_s:3,end_s:4,observer_id:'R001',label:'Possible confusion',notes:'Looked between controls <img src=x>',status:'completed'},{observation_id:'obs-'+'b'.repeat(32),start_s:6,end_s:7,observer_id:'R001',label:'Possible confusion',notes:'Second interval',status:'completed'}];
+  const observationReport=path.join(replay,'observer-replay.html');fs.writeFileSync(observationReport,template.replace('__STUDY_DATA__',JSON.stringify(data).replace(/</g,'\\u003c')));
+  await page.setViewportSize({width:1440,height:1100});await page.goto(pathToFileURL(observationReport).href);
+  assert.equal(await page.locator('#liveObservationList > div').count(),2);assert.equal(await page.locator('img').count(),0);
+  await page.getByRole('button',{name:'Review segment / add player response'}).first().click();
+  assert.equal(await page.locator('#annotationStart').inputValue(),'3');assert.equal(await page.locator('#annotationEnd').inputValue(),'4');
+  await page.locator('#annotationAuthor').fill('P-SYNTHETIC');await page.locator('#annotationNotes').fill('I did not know which control to use.');await page.locator('#annotationConfusion').fill('4');await page.locator('#annotationSave').click();
+  const observed=await exportJson();assert.equal(observed.annotations[0].confusion_rating_1_5,4);assert.equal(observed.annotations[0].related_observation_id,observationId);assert.equal(observed.live_observations.length,2);
+  await page.getByRole('button',{name:'Review segment / add player response'}).last().click();await page.locator('#annotationNotes').fill('A second explanation');await page.locator('#annotationConfusion').fill('5');await page.locator('#annotationSave').click();assert.equal(await count(),2);
+  const both=await exportJson();await page.reload();await upload(both);await message('Loaded 2 annotations');assert.equal(await count(),2);
+  await page.locator('#annotationList').getByRole('button',{name:'Edit',exact:true}).first().click();assert.equal(await page.locator('#annotationConfusion').inputValue(),'4');await page.locator('#annotationConfusion').fill('6');await page.locator('#annotationSave').click();await message('whole number');assert.equal(await count(),2);
+  await page.locator('#annotationConfusion').fill('3');await page.locator('#annotationSave').click();
+  const observerCsvPending=page.waitForEvent('download');await page.locator('#annotationsCsv').click();const exportedObserverCsv=fs.readFileSync(await (await observerCsvPending).path(),'utf8');assert.match(exportedObserverCsv,/confusion_rating_1_5/);assert.match(exportedObserverCsv,new RegExp(observationId));
+  await page.locator('#loadSessionVideo').click();await page.waitForFunction(()=>document.getElementById('sessionVideo').readyState>=2);await page.getByRole('button',{name:'Play this interval',exact:true}).first().click();await page.waitForTimeout(1800);assert.equal(await page.locator('#sessionVideo').evaluate(v=>v.paused),true);assert.ok(Math.abs(Number(await page.locator('#cursor').inputValue())-4)<.08);
+  assert.deepEqual(errors,[]);console.log('PASS: two live observer intervals, inert notes, player response linking, separate 1–5 rating, rating validation, JSON restore, CSV links and bounded video replay.');
+  console.log('Synthetic preview: '+observationReport);
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

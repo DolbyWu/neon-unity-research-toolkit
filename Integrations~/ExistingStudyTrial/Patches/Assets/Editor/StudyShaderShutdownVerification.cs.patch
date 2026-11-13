@@ -1,0 +1,6 @@
+diff --git "a/Assets/Editor/StudyShaderShutdownVerification.cs" "b/Assets/Editor/StudyShaderShutdownVerification.cs"
+index 8d50314..8f73328 100644
+--- "a/Assets/Editor/StudyShaderShutdownVerification.cs"
++++ "b/Assets/Editor/StudyShaderShutdownVerification.cs"
+@@ -0,0 +1 @@
++using NeonResearch;

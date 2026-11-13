@@ -1,10 +1,10 @@
-> **Experimental development · 0.2.0-exp.1.** Optional Neon XR spatial targets and HTML target review are documented in [the integration guide](Documentation~/neon-xr-targets.md). Unity runtime/adapter and new hardware acceptance are pending. Existing recording remains available.
+> **Research Pipeline snapshot · 2026-11-13 13:38 EST · 0.2.0-exp.1.** See the [English beginner tutorial](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/feature/research-pipeline-20261113-1338-est/docs/research-pipeline-tutorial.md) for live observer intervals, retrospective 1–5 ratings, two-round validation and reviewed samples. Optional Neon XR spatial targets are documented in [the integration guide](Documentation~/neon-xr-targets.md). Software checks are recorded separately from new real-device acceptance. Not a new signed release or store submission.
 
 # Neon Unity Research Toolkit
 
-**0.1.0-preview.5 (submission candidate)** · Unofficial Windows Unity Editor development preview.
+**Current package identity: 0.2.0-exp.1** · Unofficial Windows Unity Editor experimental research pipeline.
 
-This candidate standardizes Publisher/copyright metadata as Binyan Michelle Xu. Runtime code is unchanged from preview.4, which fixed serialization of the three public scene components. The preview.4 hardware results do not constitute a fresh signing/import test of this candidate. Earlier previews may leave Missing Script references after saving/reopening a scene. Back up affected scenes, re-add only the broken component, and restore its fields/callbacks. Existing broken references are not automatically migrated.
+This branch adds research workflow code beyond the earlier public previews. Earlier hardware results do not validate its newest geometry/UI changes, and the submitted store edition remains separate. Earlier previews may leave Missing Script references after saving/reopening a scene. Back up affected scenes, re-add only the broken component, and restore its fields/callbacks. Existing broken references are not automatically migrated.
 
 Record anonymous participant sessions, head/camera pose, explicitly connected interaction events and available Neon eye/pupil data. Review finished sessions in English offline HTML with linked local video and optional manual annotations.
 

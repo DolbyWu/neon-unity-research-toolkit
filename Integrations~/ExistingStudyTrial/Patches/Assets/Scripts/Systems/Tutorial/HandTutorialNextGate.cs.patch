@@ -1,0 +1,22 @@
+diff --git "a/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs" "b/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs"
+index eaa72e4..0405258 100644
+--- "a/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs"
++++ "b/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs"
+@@ -62,0 +63,13 @@ public class HandTutorialNextGate : MonoBehaviour
++    public int CompletedObjectiveCount => _doneObjectives.Count;
++    public int RequiredObjectiveCount => _objectives.Count;
++    public bool WaitingForNarration => _completePending && !_completed;
++    public bool NextUnlocked => _nextButton!=null && _nextButton.activeInHierarchy;
++    public string RemainingObjectives
++    {
++        get{var labels=new List<string>();for(int i=0;i<_objectives.Count;i++)if(!_doneObjectives.Contains(i))labels.Add(_objectives[i]?.label??"Missing objective configuration");return string.Join(", ",labels);}
++    }
++    public void ObserveActualGrab(Grabbable source,PointerEvent evt)
++    {
++        if(!isActiveAndEnabled||source==null||evt.Type!=PointerEventType.Select)return;
++        if(_grabbableToObjective.TryGetValue(source,out int objective))OnPointerEvent(objective,evt);
++    }
+@@ -140,0 +154 @@ public class HandTutorialNextGate : MonoBehaviour
++        NeonResearch.StudyEvents.Record("tutorial_objective_completed",_objectives[objectiveIndex].label,"actual_grab","completed="+_doneObjectives.Count+"/"+_objectives.Count+"; remaining="+RemainingObjectives);
+@@ -205,0 +220 @@ public class HandTutorialNextGate : MonoBehaviour
++        NeonResearch.StudyEvents.Record("tutorial_next_unlocked","grabbing_tutorial","all_objectives_completed","Original locomotion Next action retained.");

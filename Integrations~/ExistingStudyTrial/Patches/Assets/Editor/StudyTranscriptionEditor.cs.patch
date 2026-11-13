@@ -1,0 +1,79 @@
+diff --git "a/Assets/Editor/StudyTranscriptionEditor.cs" "b/Assets/Editor/StudyTranscriptionEditor.cs"
+index 4fd7514..e390922 100644
+--- "a/Assets/Editor/StudyTranscriptionEditor.cs"
++++ "b/Assets/Editor/StudyTranscriptionEditor.cs"
+@@ -0,0 +1 @@
++using NeonResearch;
+@@ -15,2 +15,0 @@ public static class StudyTranscriptionEditor
+-    private const string PendingKey = "StudyTranscription.PendingPrompt";
+-    private const string PendingSinceKey = "StudyTranscription.PendingSince";
+@@ -18,44 +17 @@ public static class StudyTranscriptionEditor
+-    static StudyTranscriptionEditor()
+-    {
+-        EditorApplication.update += Poll;
+-        StudyArchiveNotifications.SessionReady += QueueFinishedPrompt;
+-    }
+-
+-    private static void QueueFinishedPrompt(string folder)
+-    {
+-        if (Application.isBatchMode) return;
+-        try
+-        {
+-            CreateAudioLauncher(StudyExportSession.OutputRoot, folder);
+-            SessionState.SetString(PendingKey, folder);
+-            SessionState.SetString(PendingSinceKey, DateTime.UtcNow.ToString("O"));
+-        }
+-        catch (Exception error) { Debug.LogWarning("[StudyTranscription] Could not prepare audio shortcut: " + error.Message); }
+-    }
+-
+-    /// <summary>Local double-click entry point. Contains paths only, never a credential.</summary>
+-    public static string CreateAudioLauncher(string root, string folder)
+-    {
+-        // SessionReady can precede the media worker creating its final WAV.
+-        StudyArchiveEditor.FinishedReplayPath(root, folder);
+-        string audioFolder = Path.Combine(folder, "Audio");
+-        StudyArchivePaths.RequireContainedUnlinked(root, audioFolder);
+-        Directory.CreateDirectory(audioFolder);
+-        var settings = NeonStudySettings.Load();
+-        string script = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "Tools", "StudyArchive", "study_transcribe.py");
+-        string command = LauncherQuote(settings.archivePythonExecutable) + " " + LauncherQuote(script) +
+-            " --root " + LauncherQuote(root) + " --session " + LauncherQuote(folder) +
+-            " --ffmpeg " + LauncherQuote(settings.mediaFfmpegExecutable) + " --prompt";
+-        string path = Path.Combine(audioFolder, "Transcribe Audio.cmd");
+-        StudyArchivePaths.RequireContainedUnlinked(root, path);
+-        if (!File.Exists(path)) File.WriteAllText(path,
+-            "@echo off\r\nchcp 65001 >nul\r\n" + command + "\r\nif errorlevel 1 pause\r\n", new System.Text.UTF8Encoding(false));
+-        return path;
+-    }
+-
+-    public static string LauncherQuote(string path)
+-    {
+-        if (string.IsNullOrWhiteSpace(path) || path.IndexOfAny(new[] { '\"', '%', '!', '\r', '\n' }) >= 0)
+-            throw new ArgumentException("Launcher paths must not contain quotes, percent signs, exclamation marks or line breaks.");
+-        return Quote(path);
+-    }
++    static StudyTranscriptionEditor() { EditorApplication.update += Poll; }
+@@ -102 +58 @@ public static class StudyTranscriptionEditor
+-                "Text is saved beside the recording in Audio/transcript-<run-id>.txt and a NEW Transcripts folder. It is automatic/unreviewed, without word timestamps or speaker identities. " +
++                "Text is saved to a NEW Transcripts folder. It is automatic/unreviewed, without word timestamps or speaker identities. " +
+@@ -164,20 +119,0 @@ public static class StudyTranscriptionEditor
+-        string pending = SessionState.GetString(PendingKey, "");
+-        if (!IsBusy && !string.IsNullOrEmpty(pending))
+-        {
+-            try
+-            {
+-                ValidateReadySession(StudyExportSession.OutputRoot, pending);
+-                SessionState.EraseString(PendingKey); // Ask once; cancellation must never trigger another automatic prompt.
+-                OpenForSession(pending);
+-                return;
+-            }
+-            catch (Exception)
+-            {
+-                if (DateTime.TryParse(SessionState.GetString(PendingSinceKey, ""), out var since) &&
+-                    DateTime.UtcNow - since.ToUniversalTime() > TimeSpan.FromMinutes(30))
+-                {
+-                    SessionState.EraseString(PendingKey);
+-                    Debug.LogWarning("[StudyTranscription] Media not ready. Use Audio/Transcribe Audio.cmd after finalization; no upload was started.");
+-                }
+-            }
+-        }

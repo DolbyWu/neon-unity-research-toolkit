@@ -26,7 +26,7 @@ namespace NeonResearch
                 settings.companionApiPort=EditorGUILayout.IntField("Companion API port",settings.companionApiPort);
                 settings.websocketPort=EditorGUILayout.IntField("Companion WebSocket port",settings.websocketPort);
                 settings.archiveAutoOpen=EditorGUILayout.Toggle("Open folder + HTML after Stop",settings.archiveAutoOpen);
-                EditorGUILayout.HelpBox("Enable Eye State on the Companion for pupil values. Counts/quality, not just Connected, must be checked. Decoder units follow the documented wire format; real-device validation remains required. No gaze-to-VR-object mapping is implemented.",MessageType.Warning);
+                EditorGUILayout.HelpBox("Enable Eye State on the Companion for pupil values. Check counts/quality, not just Connected. The raw receiver uses scene-image coordinates; 3D object mapping requires the optional Neon XR adapter, actual XR head binding and mapping verification. Decoder units follow the documented wire format; validate your own device/setup.",MessageType.Warning);
                 settings.mediaRecordingEnabled=EditorGUILayout.Toggle("Enable optional media capture",settings.mediaRecordingEnabled);
                 if(settings.mediaRecordingEnabled)
                 {

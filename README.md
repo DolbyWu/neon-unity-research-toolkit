@@ -1,234 +1,135 @@
-> **Experimental branch · `feature/neon-xr-aoi-integration` · 0.2.0-exp.1:** optional official Neon XR spatial adapter, target catalogue, explicit trigger AOIs, HTML filters/exports and a display-only gaze-pointer button. Start with the [Windows integration update and validation limits](docs/windows-aoi-integration.md), then the [setup guide](Packages/com.dolbywu.neon-research/Documentation~/neon-xr-targets.md). This is not a new release or Asset Store update; the public preview below remains separate.
+# GazeFlow — Research Pipeline
 
-![Neon Unity Research Toolkit — Democratizing Multimodal Research. Record. Review. Annotate.](docs/media/banner.jpg)
+**Timestamped experimental snapshot:** 2026-11-13, 13:38 EST (18:38 UTC)
 
-# GazeFlow: Democratizing VR Eye-Tracking Research with Neon and Quest 3
+**Branch:** `feature/research-pipeline-20261113-1338-est`
 
-**GazeFlow** is an unofficial research toolkit designed for **Pupil Labs Neon and Meta Quest 3**. It brings the technical workflows of quantitative eye-tracking and qualitative, video-based inquiry into a shared research environment—lowering the barriers to hardware integration, multimodal data alignment, and interpretation.
+**Package version:** `0.2.0-exp.1` · Windows Unity Editor `6000.3.23f1`
 
-Designed for researchers in psychology, neuroscience, and XR/HCI, GazeFlow connects data collection with interactive review, participant reflection, and human annotation.
+GazeFlow is an unofficial Unity + Pupil Labs Neon research toolkit. It connects participant/session organization, eye and head data, authored interaction events, optional local media, live researcher observations and offline participant reflection. Its purpose is to lower technical barriers to multimodal research while keeping measurements, missing data and human interpretations distinct.
 
-- **Record & Monitor**: Collect available gaze and pupil data alongside head pose, behavioral events, and optional session video, with real-time monitoring.
-- **Align & Explore**: Bring recordings into a shared session timeline to inspect eye-data traces, interaction events, and video together, with explicit timing offsets and alignment status.
-- **Reflect & Annotate**: Support researcher observation and participant retrospective reflection through point and interval annotations, custom labels, and documented evidence sources.
-- **Export for Analysis**: Export recorded data and human annotations for quantitative analysis and qualitative interpretation.
+This branch is the **Research Pipeline version**, not the default `main` branch, a new signed release, or an Asset Store submission. Package versions remain unchanged; identify this snapshot by its branch and commit. No participant archives, fresh study recordings, live configuration or API keys are included.
 
-The GitHub full edition includes optional external-tool media capture. The separate free Asset Store edition imports existing video and excludes external recording programs. This technical integration supports research protocols; it does not replace methodological validation or guarantee hardware synchronization.
+**Start here:** [Beginner tutorial](docs/research-pipeline-tutorial.md) · [Snapshot contents and checks](docs/research-pipeline-snapshot-20261113.md) · [Live observation instructions](docs/live-observer-intervals.md)
 
-**Status:** `0.1.0-preview.4` · Public preview for pilot use
+## The complete workflow
 
-**Current development source:** `0.2.0-exp.1` (experimental; not the submitted store package) — Publisher and copyright name: **Binyan Michelle Xu**. The historical preview.5 identity update left runtime code unchanged; the signed preview.4 archive below is historical and still carries its original author metadata. See the [Publisher identity checklist](docs/publisher-identity.md) before store submission.
+1. **Prepare:** choose a private data root, connect the real tracked head and check Neon streaming.
+2. **Identify:** confirm an anonymous participant and a new session before recording.
+3. **Validate:** collect five known targets, optionally fit a bounded direction correction and collect NEW samples at the SAME fixed world targets.
+4. **Record:** preserve raw gaze/pupil availability, head pose, explicitly integrated behavior, target-ray records and optional desktop/microphone media.
+5. **Observe:** click once to start an observer interval, once to end it, then write the researcher note in the popup.
+6. **Reflect:** replay the selected episode with the participant; save their explanation and optional confusion rating separately.
+7. **Export:** retain the original archive, offline HTML, annotation JSON/CSV and interval bundles; optionally build quality-filtered, human-reviewed sample tables.
 
-This preview fixes save/reopen serialization for Head Pose Source, Study Region and Interaction Adapter. See the changelog before upgrading; existing Missing Script references need manual re-attachment and field/callback restoration. Download the tested signed archive from the [preview.4 release](https://github.com/DolbyWu/neon-unity-research-toolkit/releases/tag/v0.1.0-preview.4).
+These steps do not infer a participant's cognition automatically.
 
-**Current development/test environment:** Windows, Unity `6000.3.23f1`
+## What this snapshot includes
 
-**Hardware scope:** Pupil Labs Neon; other Pupil Labs devices are not currently claimed as supported.
-
-> Independent installation and real Neon + Quest 3 tests passed core acquisition, head/interaction logging, media finalization and offline video review. See the [test results](docs/hardware-acceptance-2026-11-07.md) and [Validation](VALIDATION.md).
-
-## Demo: HTML review and annotation
-
-### ▶ Watch the introduction on YouTube
-
-[![Watch the Neon Unity Research Toolkit introduction on YouTube](https://img.youtube.com/vi/LUCue3x0qvk/hqdefault.jpg)](https://youtu.be/LUCue3x0qvk)
-
-[![▶ Play introduction — Watch on YouTube](docs/media/youtube-play-button.svg)](https://youtu.be/LUCue3x0qvk)
-
-*Click the preview image or the red play button to watch on YouTube.*
-
-The HTML workflow supports reviewing a recorded VR experience alongside eye and behavioral timelines, marking a video moment or selected interval, and adding human labels, descriptions and evidence sources.
-
-- Pause or scrub local video and inspect the corresponding experiment time.
-- Explore eye-data traces, configured regions and logged events.
-- Add multiple point or interval annotations, with explicit editing.
-- Distinguish researcher observation, participant self-report and retrospective interview evidence.
-- Export annotation JSON to save/resume work, or CSV for analysis.
-
-### VR study setup
-
-![VR headset setup during an in-person study test](docs/media/vr-study-setup.jpg)
-
-A physical VR test setup from the author's original study.
-
-### Unity experiment and live eye-data monitor · 16 seconds
-
-[![Watch the Unity experiment and live eye-data monitor](docs/media/vr-test-preview.jpg)](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/main/docs/media/vr-test.mp4)
-
-[Watch the VR test and live monitor video](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/main/docs/media/vr-test.mp4). The recording shows the running Unity experiment alongside eye-data traces and logged interactions.
-
-### HTML replay and time-aligned data review
-
-![Offline HTML replay with video, eye-data traces, regions and behavioral events](docs/media/html-replay-photo.jpg)
-
-The standalone HTML review brings the recorded video, gaze/pupil traces, regions and behavioral events into one interface.
-
-### Video-linked reflection and manual annotation · 1 minute 49 seconds
-
-[![Watch the HTML video review and manual annotation walkthrough](docs/media/html-review-preview.jpg)](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/main/docs/media/html-review-annotation.mp4)
-
-[Watch the full HTML review and annotation walkthrough](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/main/docs/media/html-review-annotation.mp4): navigate the video, mark an experiment time, choose a label, record an interpretation/evidence source, and retain multiple annotations.
-
-These demonstrations show the author's original study workflow; UI and displayed units may differ from the extracted preview package. They illustrate working acquisition/review interactions, not independently measured synchronization accuracy. Pupil values displayed in the original study use its original SDK representation and must not be interpreted as validated millimetres. Videos are compressed MP4 copies of the supplied recordings; click a preview to open the video on GitHub, or download it if inline playback is unavailable.
-
-## What the plugin provides
-
-| Module | Current capability |
+| Area | Capability |
 |---|---|
-| Participant archive | Anonymous IDs, optional background details and per-session profile snapshots |
-| Neon acquisition | Available gaze/pupil fields, native and receive timestamps, alignment/quality flags and raw payloads |
-| Head pose | Unity head/camera world position and quaternion rotation |
-| Behavioral logging | Explicit grab/release, task outcomes, custom events and observer markers |
-| Regions | Head-location intervals in configured collider regions |
-| Optional media | Local video and continuous microphone capture through separately installed tools |
-| Offline review | HTML video review, eye/event timelines, interval extraction and manual annotations |
-| Export | CSV, session metadata and annotation JSON/CSV |
+| Participant archive | Anonymous participant IDs, new per-session folders, profile snapshots and existing archive workflow |
+| Raw acquisition | Available Neon eye/pupil fields, payloads, native/receive times, alignment and validity flags |
+| Head and behavior | Tracked head world position/quaternion rotation; explicitly connected grabs, releases and custom study events |
+| Optional spatial adapter | Official Neon XR Core bridge, research target IDs/names/groups, nearest-collider hit/occlusion records and binding checks |
+| Two-round validation | Five fixed targets; bounded head-local direction fitting; new repeat-layout measurement samples; explicit approval |
+| Live observation | Desktop **Observation Marker**: start/end toggle, note popup, up to 10 intervals per session |
+| Offline HTML | Local video pause/scrub, experiment/video clocks, eye traces, target/event filters, orange observer intervals and manual annotations |
+| Participant reflection | Separate retrospective explanation, optional integer confusion rating **1–5**, linked original observation |
+| Save and export | JSON save/resume, CSV, selected intervals and full interval bundles |
+| Reviewed samples | Offline deterministic curation of reviewed labels and quality flags; no automatic model training |
 
-**Head pose is not raw IMU recording.** Accelerometer and gyroscope streams are not currently provided by the head-pose logger.
+The existing optional 0–10 participant intensity is a **different field** from the new 1–5 retrospective confusion rating. Neither is inferred from eye data. Head pose is not a raw accelerometer/gyroscope stream. Authored interaction bindings and real hardware remain necessary; the toolkit does not automatically understand every scene object.
 
-The plugin does not automatically detect all interactions, map Neon image gaze to Unity objects, identify fixations/saccades or infer cognitive states. Labels are human interpretations with recorded evidence sources.
+## Installation — this branch
 
-## Installation
+Back up your study and work in an independent copy. Do not upgrade an ongoing production experiment in place.
 
-### Recommended: tested signed archive
+### No Git installation required
 
-Download `com.dolbywu.neon-research-0.1.0-preview.4.tgz` and `SHA256SUMS.txt` from the [GitHub release](https://github.com/DolbyWu/neon-unity-research-toolkit/releases/tag/v0.1.0-preview.4). Keep the archive unchanged. In Unity Package Manager choose **Install/Add package from tarball** and select it. No Git installation is required. See the [release notes](RELEASE_NOTES.md) for tested scope and known issues. The signed package's embedded documentation preserves its pre-publication candidate wording; the release notes provide the subsequent test/publication record.
+1. Open [this branch on GitHub](https://github.com/DolbyWu/neon-unity-research-toolkit/tree/feature/research-pipeline-20261113-1338-est).
+2. Choose **Code → Download ZIP**, extract it and keep the extracted folder in a stable location.
+3. Open your project using Unity `6000.3.23f1`.
+4. In **Window → Package Manager**, choose **Install/Add package from disk**.
+5. Select `Packages/com.dolbywu.neon-research/package.json`.
 
-### Option A: install from disk
+This installs the core without starting acquisition. The core can be checked without a headset or eye device. Open the included `VerificationProject` for an isolated minimal host; it is not a complete VR experiment.
 
-1. Download and extract this repository using **Code → Download ZIP**.
-2. Open your Unity project with the supported Editor version.
-3. In **Window → Package Manager**, choose **Install/Add package from disk**.
-4. Select this file inside the extracted repository:
-
-   ```text
-   Packages/com.dolbywu.neon-research/package.json
-   ```
-
-Unity resolves `com.unity.nuget.newtonsoft-json` through Package Manager. Keep the extracted package folder in a stable location. Installation does not start acquisition.
-
-### Option B: install from Git
+### Git UPM installation
 
 With Git installed, use **Install/Add package from Git URL**:
 
 ```text
-https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.dolbywu.neon-research#v0.1.0-preview.4
+https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.dolbywu.neon-research#feature/research-pipeline-20261113-1338-est
 ```
 
-This pins the preview.4 source tag. The signed tarball is the installation route exercised in the real-device trials; the preview.4 tagged Git route has not had a separate post-publication acceptance run. Validate the route and exact version you use in your own study; see [Validation](VALIDATION.md).
+For spatial gaze, install official Neon XR Core at the recorded commit, then the optional adapter:
 
-### Try the included verification project
+```text
+https://github.com/pupil-labs/neon-xr.git?path=/com.pupil-labs.neon-xr.core#f4dee47b9690a059b1c4660628596d7303ade59a
 
-Open `VerificationProject` through Unity Hub using `6000.3.23f1`. It loads the sibling package and provides a minimal verification host, not a completed VR experiment. No headset, Neon, Python or FFmpeg is needed for a first data-only check.
+https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.binyanxu.gazeflow.neonxr#feature/research-pipeline-20261113-1338-est
+```
 
-## First recording: no eye device required
+Official Core package version at that reference: `2.0.0`. Follow the [tutorial](docs/research-pipeline-tutorial.md) for dependencies, actual XR head binding, mount configuration and scene integration. A Git branch can move: record the resolved commits for an actual study. This snapshot does not publish new signed tarballs.
+
+## First safe recording
 
 1. Open **Tools → Neon Research → Setup and Recording Settings**.
-2. Choose a dedicated output folder. Enable **Record on Unity Play (opt-in)**; leave Neon and media disabled for this first check.
-3. Click **Save project settings**.
-4. Use a tagged Main Camera, or configure a **Head Pose Source** for your actual XR head Transform.
-5. Open **Tools → Neon Research → Open Live Monitor** and press Play.
-6. Confirm a new anonymous participant. Run for approximately 60 seconds and click **Mark observation**.
-7. Stop Play normally. Inspect the new session folder and generated HTML replay.
+2. Choose your private output folder. Enable **Record on Unity Play (opt-in)**; leave Neon and media disabled for an initial data-only check.
+3. Save settings. Bind a real tracked head for VR, not an untracked Editor camera.
+4. Press Play and confirm participant details. Existing participant IDs may be reused, but each recording must create a separate session.
+5. For observation intervals, open **Tools → GazeFlow → Live Observation Marker**. Click **START OBSERVATION**, then **END OBSERVATION & WRITE NOTE**, type the note and save it.
+6. Stop Play normally. Check the closed manifest, CSV files and generated HTML.
 
-Expected results: a participant/session folder, event rows, head pose when a source is available, a closed export manifest and a working offline report. No eye samples are expected with Neon disabled.
+The note popup does not pause gameplay. The second click fixes the interval end immediately, so typing time is not included. An unfinished interval is marked interrupted on shutdown. Up to 10 live intervals are allowed per session; offline manual annotations are not limited to those 10.
 
-For detailed setup and troubleshooting, follow the [Quick Start](QUICKSTART.md).
+## Replay and participant interview
 
-## Connect Neon and your experiment
+Open the new session's `Replay/study-replay.html`. **Manual annotations** stays directly below eye data; Game log remains last.
 
-After the first recording works:
+Under **Live researcher observations**, select **Review segment / add player response** or **Play this interval**. Review the actual video if it covers the selected experiment time. Ask what happened and what the player was thinking, enter their explanation, optionally record confusion from **1 = not confused** to **5 = very confused**, then add the annotation.
 
-1. Prepare your Neon/Companion setup and network connection.
-2. Enable **Receive Neon gaze** and enter the current Companion IPv4, API port and WebSocket port in recording settings.
-3. Run a short session. Verify recent samples, quality, alignment status and actual pupil availability; a connection message alone is insufficient.
-4. Configure your XR head Transform and region colliders/IDs.
-5. Connect your interaction framework's actual UnityEvents to the interaction adapter, or use the explicit event API for custom tasks.
+Use **Export annotations JSON** to save/resume and CSV for analysis. Import the JSON into the same session's HTML to continue editing. Merely typing, closing the browser or saving a CSV does not save a resumable annotation project. The offline page does not silently rewrite raw files.
 
-For example, from your own experiment code:
+Audio recording and speech transcription are separate. **This standalone package does not currently include a cloud transcription button or automatically transcribe recorded audio.** A study-specific helper, if present elsewhere, is not part of this branch's portable workflow.
 
-```csharp
-using NeonResearch;
+## Data quality and interpretation
 
-// Records only during an active recording session.
-StudyEvents.Record(
-    kind: "task_complete",
-    objectId: "door_01",
-    outcome: "success",
-    detail: "Participant opened the exit",
-    task: "escape_room"
-);
-```
+- The former 2-degree validation cutoff was a project engineering starting point, not an official universal acceptance standard. This trial now defaults to **3 degrees mean error per target** and **70% valid coverage**. Changing the tolerance does not improve actual precision or revise historical reports.
+- Round two uses new measurement samples at the same fixed world target centres. It checks repeat-layout alignment, not generalization to every depth or object in the experiment.
+- Accepted AOI hits require the provider's explicit verification/binding checks. Fresh unverified geometric candidates are retained separately as **LOW_PRECISION_UNVERIFIED_NOT_ACCEPTED_AOI**, not silently promoted to accepted hits.
+- Invalid, unworn, stale and disconnected samples remain missing/invalid. They do not become valid zero values or continued target coverage.
+- Image-space gaze, corrected world rays, Unity callback times and media timing estimates have different semantics. Software video offsets are not hardware synchronization.
+- Ray hits are descriptive geometric observations, not automatically fixations, attention, understanding or cognitive states.
+- Missing media or an unconfigured interaction does not prove the participant was inactive.
 
-No Meta or XRI SDK is bundled. Your host project remains responsible for its XR setup and actual interaction callbacks. See the [integration guide](Packages/com.dolbywu.neon-research/Documentation~/workflow.md).
+## What is and is not verified
 
-## Manual annotations: review and reflect
+The branch contains automated Unity, synthetic browser/video and offline curation checks. The [snapshot report](docs/research-pipeline-snapshot-20261113.md) lists the exact outcomes and distinguishes them from real-device acceptance.
 
-Open the generated `Replay/study-replay.html` in Edge or Chrome. The offline report can be reviewed without Unity or the optional archive server.
+The existing study has been exercised with real devices, but earlier runs do **not** validate every new change. The latest two-round geometry/tolerance and live-observation integration still need a new end-to-end Neon + Quest check. Windows Editor is the target; standalone builds, Quest Android and other platforms are not claimed as newly validated.
 
-1. Load the matching session video, when available.
-2. Check the displayed video offset and timing method.
-3. Pause or scrub to a moment and click **Pause & mark this frame**, or select a time interval.
-4. Choose a label or enter a description, add the annotator ID and evidence source, and click **Add annotation**.
-5. Use **Add another annotation here** to retain earlier annotations while creating another record.
-6. **Export annotations JSON before closing.** Import that JSON to resume later. CSV is for analysis, not restoration.
+## Documentation and source layout
 
-This workflow supports researcher reflection and participant retrospective reports. Their evidence sources should remain distinguishable. Changing a label does not establish a psychological or neural state.
-
-HTML, media and annotation JSON are separate local files. Copy the entire session folder when moving a study. Browser downloads do not silently save changes back into the HTML.
-
-## Optional video, audio and archive tools
-
-Data-only recording and HTML review do not require Python or FFmpeg.
-
-Optional archive/capture helpers require operator-installed Python and, for media capture, FFmpeg with FFprobe. The current capture route is Windows-specific and includes a Quest/Oculus Mirror workflow. Capture is explicitly enabled and confirmed for each session.
-
-Configure these only after basic data recording works. Verify the selected window, microphone, media coverage and finalized output before a participant study. See the [Quick Start](QUICKSTART.md).
-
-## Timing and research readiness
-
-- Unity events/head pose use a local monotonic session timeline.
-- Neon alignment uses RTCP timestamps and Time Echo estimates; native, receive and aligned times remain distinguishable.
-- Video offsets are based on capture launch estimates or operator adjustment, not verified first-frame hardware synchronization.
-- Unavailable eye fields and unsupported data are identified; missing data must not be interpreted as valid zero measurements.
-
-Run a short device trial and a complete task-length trial for your own setup. Check event coverage, sampling gaps, pupil availability, alignment, video/audio coverage, shutdown and export. The original VR study deployment does not by itself validate every installation or device/software combination.
-
-Windows Unity Editor is the current development target. Standalone/Quest Android builds, other operating systems and other Unity versions remain unverified. See [Validation](VALIDATION.md).
-
-## Data and privacy
-
-Acquisition is off by default. Machine-local settings are stored under `UserSettings/NeonResearch`; the default output root is `NeonResearchData` in the host project.
-
-Use anonymous IDs, obtain appropriate consent and keep identity mappings separately. Participant notes and recordings may still contain identifying information. Keep archives, settings and recordings out of Git. No automatic cloud upload or speech transcription is included.
-
-## Documentation
-
-- [Preview.4 test results](docs/hardware-acceptance-2026-11-07.md)
-- [Release notes and installation](RELEASE_NOTES.md)
-- [Quick Start](QUICKSTART.md)
-- [Neon hardware connection and recording notes](docs/neon-hardware-setup.md)
-- [Preview.3 acceptance checklist and next steps](docs/preview-3-acceptance.md)
-- [Integration and review workflow](Packages/com.dolbywu.neon-research/Documentation~/workflow.md)
-- [Validation and known limitations](VALIDATION.md)
+- [Step-by-step research pipeline tutorial](docs/research-pipeline-tutorial.md)
+- [Timestamped snapshot and reproducibility notes](docs/research-pipeline-snapshot-20261113.md)
+- [Live observer intervals and retrospective review](docs/live-observer-intervals.md)
+- [Five-point validation and current policy](docs/automatic-five-point-validation.md)
+- [Evidence-aware annotations and reviewed samples](docs/reviewed-research-workflow.md)
+- [Optional official Neon XR target integration](Packages/com.dolbywu.neon-research/Documentation~/neon-xr-targets.md)
+- [Existing-study integration source reference](Integrations~/ExistingStudyTrial/README.md)
+- [Legacy core Quick Start](QUICKSTART.md) — use this branch's tutorial for experimental additions
 - [Changelog](Packages/com.dolbywu.neon-research/CHANGELOG.md)
-- [License](Packages/com.dolbywu.neon-research/LICENSE.md)
-- [Third-party notices](<Packages/com.dolbywu.neon-research/Third Party Notices.md>)
 
-## Roadmap
+`Packages/` contains the reusable toolkit and optional adapter. `Integrations~/` contains source-only host integration reference material, not a complete game or an automatically imported sample. `VerificationProject/` is an isolated test host. `Tools/` and package verification scripts use synthetic fixtures.
 
-Future work may add a complete importable XR example scene, additional hardware providers, raw IMU sources, calibrated gaze-to-object mapping and improved video timing.
+## Privacy, licensing and release boundaries
 
-These are planned capabilities, not current support claims.
+Use anonymous identifiers and an approved consent process. Keep identity mappings separately. Choose an output root outside Git. Entire-desktop recordings may capture unrelated windows or notifications; inspect the desktop and obtain appropriate consent before recording. Optional cloud processing requires separate authorization and secure local keys.
 
-## Project status and license
+No participant archives, new recordings, live device addresses, secret settings or external executables are uploaded with this snapshot. Existing repository demonstration media are historical materials, not newly supplied participant data.
 
-This is an independent, unofficial project, not affiliated with or endorsed by Pupil Labs or Unity.
+This is an independent, unofficial project, not endorsed by Pupil Labs or Unity. Plugin software remains under the [MIT License](LICENSE); third-party components keep their own licenses. Demonstration photos/videos, research data and independently owned study assets are not relicensed by the code license. See [media permissions](docs/media/README.md) and [third-party notices](<Packages/com.dolbywu.neon-research/Third Party Notices.md>).
 
-See the [MIT License](LICENSE) for the plugin's software licensing terms.
-
-Third-party components retain their respective licenses; see the [dependency notices](<Packages/com.dolbywu.neon-research/Third Party Notices.md>). The MIT grant does not relicense third-party code, SDKs, game assets or other contributors' independently owned material.
-
-**Demonstration photos, videos and research data are excluded from the code's MIT license.** Public display does not grant permission to reuse, redistribute or extract these materials. See [media permissions](docs/media/README.md); request separate permission from the relevant rights holders.
-
-This licensing update does not change the development-preview status or imply vendor endorsement or validated research accuracy.
+The previous [public signed preview](https://github.com/DolbyWu/neon-unity-research-toolkit/releases/tag/v0.1.0-preview.4), `main` and the submitted Asset Store edition are separate from this branch.

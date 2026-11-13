@@ -199,6 +199,9 @@ def run(folder, config, synthetic=False):
                 "requestedVideo": bool(config.get("mediaRecordVideo")), "requestedAudio": bool(config.get("mediaRecordMicrophone")),
                 "microphone": config.get("mediaMicrophoneDevice", ""), "windowTitle": config.get("mediaWindowTitle", ""),
                 "videoSource": config.get("mediaVideoSource", "window"), "videoWidth": config.get("mediaVideoWidth", 1280), "videoHeight": config.get("mediaVideoHeight", 720),
+                "captureScope": "entire_configured_desktop_rectangle_including_visible_windows" if config.get("mediaVideoSource") == "desktop" else "named_window_only",
+                "desktopRectangle": {"x": int(config.get("mediaScreenX", 0)), "y": int(config.get("mediaScreenY", 0)),
+                                     "width": int(config.get("mediaVideoWidth", 1280)), "height": int(config.get("mediaVideoHeight", 720))} if config.get("mediaVideoSource") == "desktop" else None,
                 "timestampMethod": "process_launch_UTC_estimate_NOT_first_frame_or_sample_hardware_sync",
                 "sessionStartUtcMsEstimate": request.get("requestUtcMs", now_ms()) - request.get("sessionSeconds", 0) * 1000,
                 "startedUtcMs": now_ms(), "channels": {}, "errors": [], "warnings": []}

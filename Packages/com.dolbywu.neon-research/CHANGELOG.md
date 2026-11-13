@@ -1,5 +1,17 @@
 # Changelog
 
+## Research Pipeline snapshot — 2026-11-13 13:38 EST / 18:38 UTC
+
+Branch `feature/research-pipeline-20261113-1338-est`; package identity remains `0.2.0-exp.1`, not a new signed release or store update.
+
+- Added five-point mapping validation and bounded head-local direction correction with NEW round-two samples at the SAME fixed world target centres. Default trial tolerance is 3 degrees per-target mean error, with 70% coverage retained; these are project policy, not a universal accuracy standard.
+- Preserved invalid/stale data states and separate low-precision unverified candidate exports without promoting them to accepted AOI hits.
+- Added two-click live researcher observations, end-time-first note popup, 10-interval session limit and interrupted-session handling.
+- Integrated observer segments with HTML video/timeline review, linked participant explanations and optional distinct 1–5 retrospective confusion ratings, JSON save/resume and CSV export.
+- Added evidence-aware annotation revisions and offline quality-filtered sample curation; packaged its Python source without external executables.
+- Improved optional media manifest-contention handling and retained raw/archive workflows. Audio capture is not automatic transcription.
+- Added an English research-pipeline README, tutorial, source-only existing-study integration reference and synthetic checks. Newest presentation/observer changes still need a fresh real-device end-to-end acceptance run.
+
 ## 0.2.0-exp.1 — 2026-11-09 · Experimental development
 
 - Added an optional main-thread spatial gaze interface, authored research targets, nearest-collider target records and a missing-data watchdog. Existing raw Neon schemas are unchanged.

@@ -1,0 +1,6 @@
+diff --git "a/Assets/Editor/StudyFeatureCheck.cs" "b/Assets/Editor/StudyFeatureCheck.cs"
+index 117331e..f62497e 100644
+--- "a/Assets/Editor/StudyFeatureCheck.cs"
++++ "b/Assets/Editor/StudyFeatureCheck.cs"
+@@ -0,0 +1 @@
++using NeonResearch;

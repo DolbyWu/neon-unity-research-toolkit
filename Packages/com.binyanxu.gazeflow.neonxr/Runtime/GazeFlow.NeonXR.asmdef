@@ -4,5 +4,7 @@
     "NeonResearch.Runtime",
     "PupilLabs.NeonXR.Core.Runtime"
   ],
-  "autoReferenced": true
+  "autoReferenced": true,
+  "overrideReferences": true,
+  "precompiledReferences": ["Newtonsoft.Json.dll"]
 }

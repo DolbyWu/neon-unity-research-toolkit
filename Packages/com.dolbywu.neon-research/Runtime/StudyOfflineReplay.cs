@@ -47,12 +47,40 @@ public static class StudyOfflineReplay
                 json.WritePropertyName("media"); ReadVideoTiming(folder, manifest.Value<string>("sessionId") ?? Path.GetFileName(folder), duration).WriteTo(json);
                 json.WritePropertyName("manifestPublishFailures"); json.WriteValue(manifest.Value<int?>("manifestPublishFailures")??0);
                 json.WritePropertyName("recordingError"); json.WriteValue(manifest.Value<string>("recordingError")??"");
+                json.WritePropertyName("spatialValidations"); json.WriteStartArray();
+                string validationFolder=Path.Combine(folder,"Calibration");
+                if(Directory.Exists(validationFolder))
+                    foreach(string file in Directory.GetFiles(validationFolder,"validation.json",SearchOption.AllDirectories))
+                    {
+                        try
+                        {
+                            StudyArchivePaths.RequireContainedUnlinked(folder,file);
+                            if(new FileInfo(file).Length>1024*1024)throw new InvalidDataException("Validation report too large.");
+                            JObject.Parse(File.ReadAllText(file)).WriteTo(json);
+                        }
+                        catch(Exception error) when(error is IOException || error is UnauthorizedAccessException || error is JsonException)
+                        { new JObject { ["id"]=Path.GetFileName(Path.GetDirectoryName(file)),["report_error"]="Validation report unavailable or invalid; raw replay preserved." }.WriteTo(json); }
+                    }
+                json.WriteEndArray();
                 WriteTable(json,"events",Path.Combine(folder,"game_events.csv"));
                 WriteTable(json,"regions",Path.Combine(folder,"region_intervals.csv"));
                 if (File.Exists(Path.Combine(folder,"target_catalog.csv")))
                     WriteTable(json,"targetCatalog",Path.Combine(folder,"target_catalog.csv"));
                 if (File.Exists(Path.Combine(folder,"gaze_targets.csv")))
                     WriteTable(json,"gazeTargets",Path.Combine(folder,"gaze_targets.csv"));
+                if (File.Exists(Path.Combine(folder,"gaze_targets_approximate.csv")))
+                    WriteTable(json,"gazeApproximate",Path.Combine(folder,"gaze_targets_approximate.csv"));
+                JArray observations=new JArray();
+                string observationFile=Path.Combine(folder,"live_observations.json");
+                if(File.Exists(observationFile))
+                    try {
+                        StudyArchivePaths.RequireContainedUnlinked(folder,observationFile);
+                        if(new FileInfo(observationFile).Length>1024*1024)throw new InvalidDataException("Observation file too large.");
+                        var data=JObject.Parse(File.ReadAllText(observationFile));
+                        if(data.Value<string>("schema")!="gazeflow-live-observations-v1"||data.Value<string>("session_id")!=(manifest.Value<string>("sessionId")??Path.GetFileName(folder))||!(data["records"] is JArray records)||records.Count>10)throw new InvalidDataException("Invalid observation session.");
+                        observations=records;
+                    } catch(Exception error) when(error is IOException||error is UnauthorizedAccessException||error is JsonException) { Debug.LogWarning("[StudyReplay] Observer intervals unavailable: "+error.Message); }
+                json.WritePropertyName("liveObservations");observations.WriteTo(json);
                 json.WritePropertyName("gaze"); json.WriteStartArray();
                 foreach (string neon in neonFolders)
                 {

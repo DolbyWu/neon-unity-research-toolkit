@@ -1,0 +1,286 @@
+{
+  "schema": "gazeflow-trial-source-snapshot-v1",
+  "date": "2026-11-13",
+  "timezone": "America/New_York",
+  "kind": "research_pipeline_integration_reference",
+  "source_scope": "Research/tutorial C# changes compared with the unchanged local pre-migration project. Host assets, settings, data, and legacy raw receiver source are deliberately excluded.",
+  "note": "New files retain source text and Unity metadata. Narrow zero-context patches retain source SHA-256 and baseline SHA-256; headers are canonical relative paths. Inventory SHA-256 values describe original source bytes, not normalized LF snapshot files. artifact_sha256 and meta_sha256 fingerprint the exact published snapshot files; changed artifacts fingerprint narrow patch text, not patched host source.",
+  "files": [
+    {
+      "path": "Assets/Scripts/GazeFlowHostHeadBinding.cs",
+      "state": "new",
+      "source_sha256": "f5b2139bd9530fff55c79458d3be91cbd6f5040afa0e5bbd3b3acae11ad93234",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Scripts/GazeFlowHostHeadBinding.cs",
+      "artifact_sha256": "f5b2139bd9530fff55c79458d3be91cbd6f5040afa0e5bbd3b3acae11ad93234",
+      "meta_path": "Source/Assets/Scripts/GazeFlowHostHeadBinding.cs.meta",
+      "meta_sha256": "84388e6682b84c503477d4b7a2260c5c3104d0131ed4002ba70982dba57e31ff"
+    },
+    {
+      "path": "Assets/Scripts/GazeFlowLegacySequenceBridge.cs",
+      "state": "new",
+      "source_sha256": "0c1e55ec29b3c18cfba2e2ba5effe9f0e7f988f86e7e2ef058a2a7c7f2846e2a",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Scripts/GazeFlowLegacySequenceBridge.cs",
+      "artifact_sha256": "0c1e55ec29b3c18cfba2e2ba5effe9f0e7f988f86e7e2ef058a2a7c7f2846e2a",
+      "meta_path": "Source/Assets/Scripts/GazeFlowLegacySequenceBridge.cs.meta",
+      "meta_sha256": "32499a9f5ab2b61b1ca658c6fb2db842da872d5eee733404055ecbde40721cff"
+    },
+    {
+      "path": "Assets/Scripts/GazeFlowTutorialEntry.cs",
+      "state": "new",
+      "source_sha256": "cb6f47a69dfed634aaae0da77fb78765737800038bd9562702e0bc556d480c04",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Scripts/GazeFlowTutorialEntry.cs",
+      "artifact_sha256": "cb6f47a69dfed634aaae0da77fb78765737800038bd9562702e0bc556d480c04",
+      "meta_path": "Source/Assets/Scripts/GazeFlowTutorialEntry.cs.meta",
+      "meta_sha256": "10c4f73271eb29de5a8a24a154b898ccd353b71cb4c01c99d2ce1755a7f46ad1"
+    },
+    {
+      "path": "Assets/Scripts/GazeFlowTutorialGrabRecorder.cs",
+      "state": "new",
+      "source_sha256": "5f4fd1d538a9bed1fe62d5e9d0981b649df6188242e8dd55c59861f7df302e77",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Scripts/GazeFlowTutorialGrabRecorder.cs",
+      "artifact_sha256": "5f4fd1d538a9bed1fe62d5e9d0981b649df6188242e8dd55c59861f7df302e77",
+      "meta_path": "Source/Assets/Scripts/GazeFlowTutorialGrabRecorder.cs.meta",
+      "meta_sha256": "72b1bbc4a798312f630b7df6ec3b4378dbae53f62418bbe297932d57e9a6e795"
+    },
+    {
+      "path": "Assets/Scripts/DataLogging/CSVDataSaver.cs",
+      "state": "changed",
+      "source_sha256": "ee350253c54ab50e73f251023b5fc46beb88222da32bf9a190e254fad1c9c74e",
+      "baseline_sha256": "73adf22d7abb6633c009826a38713539c0918a0f6e3ca2afbbb2ff163a430e7d",
+      "artifact_path": "Patches/Assets/Scripts/DataLogging/CSVDataSaver.cs.patch",
+      "artifact_sha256": "26dec30b8463b77db8990630ba0ddc93c5372bbc03591c406b19b507277d31ca"
+    },
+    {
+      "path": "Assets/Scripts/DataLogging/DataLogger.cs",
+      "state": "changed",
+      "source_sha256": "b104d27d7d3bf2c5e29ed2a14064d753aefdf33f3bb7fdb96e8a033afd13de0b",
+      "baseline_sha256": "c7d3303d8990f8163cd6cf555af0cdbab17af52b4e8ea251cdca7c52e428246f",
+      "artifact_path": "Patches/Assets/Scripts/DataLogging/DataLogger.cs.patch",
+      "artifact_sha256": "221ea2a83c857f02a55b6b04939f0b94ac19549ecf356bac4e69117b3624bb13"
+    },
+    {
+      "path": "Assets/Scripts/DataLogging/PlayerDataLogger.cs",
+      "state": "changed",
+      "source_sha256": "f0a4cbcb3146132b5ad728a1fbecf1357a30965748ed004e9bc835c45658d051",
+      "baseline_sha256": "ac6a25fd89e558ce0fe842627d23a7bcd1daee18cc5e0f22a67163369b2bf6aa",
+      "artifact_path": "Patches/Assets/Scripts/DataLogging/PlayerDataLogger.cs.patch",
+      "artifact_sha256": "1209ef8b24eb7ba2ebad9e5fc1960c1e368d3efa3390ae65e35d4ff6909d0a4a"
+    },
+    {
+      "path": "Assets/Scripts/Effects/MetaInitialOrientation.cs",
+      "state": "changed",
+      "source_sha256": "7fbb89afc192d433911869f0e609dbe79ae289931ea87db191995ecc8e82364d",
+      "baseline_sha256": "2386a9cf0ba223cd7321721328e805e8449945c9cea02263debd0d9041b0825d",
+      "artifact_path": "Patches/Assets/Scripts/Effects/MetaInitialOrientation.cs.patch",
+      "artifact_sha256": "a8a286beeaa8abcf3de8037d95b995188501dffca0e3caebd66e58aa7c6be026"
+    },
+    {
+      "path": "Assets/Scripts/Effects/TeleportInFront.cs",
+      "state": "changed",
+      "source_sha256": "37f8557c15db52ac5ed5bec5968720f6533dfe93a1919502716ad3460a1b182a",
+      "baseline_sha256": "e8876c2b1d6603462de4cf41eaa60dad5c010a824837b8ae882b241d84bcbd4a",
+      "artifact_path": "Patches/Assets/Scripts/Effects/TeleportInFront.cs.patch",
+      "artifact_sha256": "668b06db015a07d669bf85e7fd98415555539ef20c0df738671fc7da73043c86"
+    },
+    {
+      "path": "Assets/Scripts/PuzzleFrameWork/Pin and Board/WrongPinManager.cs",
+      "state": "changed",
+      "source_sha256": "1782b0abcfcbeef6de29e6f3cc35b33c0ba431d2e3e9314318dfdd9a627e6473",
+      "baseline_sha256": "d1a216a1f0586ee9ce9863aad945192633743b9ef48b2e85301f7b2a0b8fb6cc",
+      "artifact_path": "Patches/Assets/Scripts/PuzzleFrameWork/Pin and Board/WrongPinManager.cs.patch",
+      "artifact_sha256": "e9fca1f31f51f8587ca90c9165bd4e5cad7e9c1c5f72be666ffa692a98053864",
+      "omitted_change": "Comment-only legacy encoding conversion; no research code omitted."
+    },
+    {
+      "path": "Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs",
+      "state": "changed",
+      "source_sha256": "76d8d4a6fb64af956ce48f2fcbeab35a99ff8d85d4327163db56e46dc2fb0f51",
+      "baseline_sha256": "fb83254d10130d882a54d8adfc4be59049d00a5cc910acedec88d66c347b08cc",
+      "artifact_path": "Patches/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs.patch",
+      "artifact_sha256": "67aa1214ea516cc11f183eedf7f1977d196e23d61387e9998408d42f8db33713"
+    },
+    {
+      "path": "Assets/Editor/GazeFlowCorrectionChecks.cs",
+      "state": "new",
+      "source_sha256": "1a7d3cb1196341a6df198ce78873534633568791603114a4d81f7735b098620f",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Editor/GazeFlowCorrectionChecks.cs",
+      "artifact_sha256": "1a7d3cb1196341a6df198ce78873534633568791603114a4d81f7735b098620f",
+      "meta_path": "Source/Assets/Editor/GazeFlowCorrectionChecks.cs.meta",
+      "meta_sha256": "787273a9fd89cbb5a65c73562ebfff0b1928dc2026673d1e65da1049193473ec"
+    },
+    {
+      "path": "Assets/Editor/GazeFlowExperimentAudit.cs",
+      "state": "omitted_local_configuration_tool",
+      "reason": "Contains historical device/settings and migration-specific operations; configure your own copy manually."
+    },
+    {
+      "path": "Assets/Editor/GazeFlowTrialSessionPanel.cs",
+      "state": "new",
+      "source_sha256": "6d9b8f73d92ee0e980bcb592463e28dedf082c3b74bc6acada7100b2725b8231",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Editor/GazeFlowTrialSessionPanel.cs",
+      "artifact_sha256": "6d9b8f73d92ee0e980bcb592463e28dedf082c3b74bc6acada7100b2725b8231",
+      "meta_path": "Source/Assets/Editor/GazeFlowTrialSessionPanel.cs.meta",
+      "meta_sha256": "ceacb04041ad02d1fe83304bd167aa3b7aa31ace5237dca5ac9984fe5f535267"
+    },
+    {
+      "path": "Assets/Editor/GazeFlowTutorialPlayEntry.cs",
+      "state": "new",
+      "source_sha256": "2a4361277967d802d2dc729123395b43ae2f1d29a4bfc977b55c405f1c24571b",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Editor/GazeFlowTutorialPlayEntry.cs",
+      "artifact_sha256": "2a4361277967d802d2dc729123395b43ae2f1d29a4bfc977b55c405f1c24571b",
+      "meta_path": "Source/Assets/Editor/GazeFlowTutorialPlayEntry.cs.meta",
+      "meta_sha256": "c06a16ee33c1add3251958bccaee5914f1d68f5b0221d51f6fedd004c4098fe8"
+    },
+    {
+      "path": "Assets/Editor/NeonStudyMenu.cs",
+      "state": "changed",
+      "source_sha256": "2f6359d245ee14355152685795fde317311d58194480cb96c85c44ad9edb2004",
+      "baseline_sha256": "2674f890fd61997a72edd0f2e189552c9004e4859994d26a7afbd72066fbf69d",
+      "artifact_path": "Patches/Assets/Editor/NeonStudyMenu.cs.patch",
+      "artifact_sha256": "060e593a945ea170198f72e8506ec619dac6b08f4ebe5d3d9f6e83a50a0f73ac"
+    },
+    {
+      "path": "Assets/Editor/NeonTransportVerification.cs",
+      "state": "changed",
+      "source_sha256": "48f596d0b07c02233a008797fe44a1838171326368f67ad23b4bdc0cb92b60e5",
+      "baseline_sha256": "eb2c867b33760c3e73fe78f1d4d1c6cfd03c5dead5e9deb76baa86a05d61bfa3",
+      "artifact_path": "Patches/Assets/Editor/NeonTransportVerification.cs.patch",
+      "artifact_sha256": "5087978821356eee209e1084d9dd06de17f8ca1dbabb38c35cbce2431815b54d"
+    },
+    {
+      "path": "Assets/Editor/PortableStudyBuild.cs",
+      "state": "changed",
+      "source_sha256": "25c8f8c4dcb257d6cc07aa2d8fa4d6d854f6ab3968c4a39c9a1c68cf1da45464",
+      "baseline_sha256": "794d0a8ff44e3264b014ca804ddc2d9807b008afdefdd1b246c32c99ce19a008",
+      "artifact_path": "Patches/Assets/Editor/PortableStudyBuild.cs.patch",
+      "artifact_sha256": "2ca6b41972c4c624100ea87549ee70c9126c234edeb6bd65dcb67eefb1a0a84f"
+    },
+    {
+      "path": "Assets/Editor/StudyExportSmokeCheck.cs",
+      "state": "changed",
+      "source_sha256": "ef22c035e30d74ff85e9212a5a1cf612dd46d2df9954d39da3ff605a227cac97",
+      "baseline_sha256": "e589a7eed3c055c0011bb9be0a3ea42e02e47ec38a8dc5fa776a4b0d75a18bae",
+      "artifact_path": "Patches/Assets/Editor/StudyExportSmokeCheck.cs.patch",
+      "artifact_sha256": "c4dc04b100e2cbc4aeb7a4c50771e9ae726d615209e2df7355809317e77ae02e"
+    },
+    {
+      "path": "Assets/Editor/StudyFeatureCheck.cs",
+      "state": "changed",
+      "source_sha256": "a726eba9959a7847d243c25864bfc70100a79f38ca09294707f4ad14d63388f5",
+      "baseline_sha256": "a76dc71f1a48f6e30a855411be1b1a671929f0840e71930c1d5b58d4f3a9db17",
+      "artifact_path": "Patches/Assets/Editor/StudyFeatureCheck.cs.patch",
+      "artifact_sha256": "8554183154b4346affe4508e54ffe1c2d52ebcd2463accdf7360a1dd978cb256"
+    },
+    {
+      "path": "Assets/Editor/StudySequenceWindow.cs",
+      "state": "changed",
+      "source_sha256": "b111a251349ee81fb07f2230abdcd178432ef31ea7a73577b5d01b94b9d6ed64",
+      "baseline_sha256": "3b5dc116e17c424c190a9c95a943da023dc034a6088a8356dd0ca2c8fa7c90ca",
+      "artifact_path": "Patches/Assets/Editor/StudySequenceWindow.cs.patch",
+      "artifact_sha256": "31a8afd5b596af9b872fc97dfe4d28bbcaa475e5971ffecf303dca88c284eb9d"
+    },
+    {
+      "path": "Assets/Editor/StudyShaderShutdownVerification.cs",
+      "state": "changed",
+      "source_sha256": "0f671a88696b7bcb1b4401f1050267648c594cd0739bbf15df119b3a8a7ab694",
+      "baseline_sha256": "5c3190565794d56ac927ab9fcfde02bf89f05c4970d9bf1e68da37716a65e545",
+      "artifact_path": "Patches/Assets/Editor/StudyShaderShutdownVerification.cs.patch",
+      "artifact_sha256": "3b0bbad0119889d104f85d8425f158a7a34f212cc795c956afce599baa3f01e9"
+    },
+    {
+      "path": "Assets/Editor/StudyTranscriptionEditor.cs",
+      "state": "changed",
+      "source_sha256": "7c48121fe9802390c44c8ef25e27f672f867942ea713ff9758459e47bc8cc0a1",
+      "baseline_sha256": "1c388c0951087d6ed13ce1dce469e60c0bba6c0bec89d38d4dc468ee0f56f070",
+      "artifact_path": "Patches/Assets/Editor/StudyTranscriptionEditor.cs.patch",
+      "artifact_sha256": "e26cac3cea212158368eef466dc5df251f4b0ac5fce4db91a4125eee7401dd92"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/AoiBindingApprovalTests.cs",
+      "state": "new",
+      "source_sha256": "35f32c62d6d44129558099e03d0cb15bc37c1977a553b9d87d0642ceb81ce9a6",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiBindingApprovalTests.cs",
+      "artifact_sha256": "35f32c62d6d44129558099e03d0cb15bc37c1977a553b9d87d0642ceb81ce9a6",
+      "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiBindingApprovalTests.cs.meta",
+      "meta_sha256": "090f75b51199728bed417f3a6004a0ba21569127b5efe954e02604bee32dcd49"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/AoiCorrectionIntegrationTests.cs",
+      "state": "new",
+      "source_sha256": "dd7aea31b6ee3c0c63349ad89877da4571b905bb55f2c91ef8a5a18600a1aa2b",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiCorrectionIntegrationTests.cs",
+      "artifact_sha256": "dd7aea31b6ee3c0c63349ad89877da4571b905bb55f2c91ef8a5a18600a1aa2b",
+      "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiCorrectionIntegrationTests.cs.meta",
+      "meta_sha256": "9ff79584bde660819c9845dc8a11bae9e8f607c014b126b5be0f1b42fdc6df43"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/CleanRecordingPresentationTests.cs",
+      "state": "changed",
+      "source_sha256": "2463cae74753c22c49cf2fcfd59b23915642b7b1eb1da2fa188e34794db76276",
+      "baseline_sha256": "e74dd498c23e802a7a87709e0097274fc8603a9ebe9d9209317f23444280894f",
+      "artifact_path": "Patches/Assets/Tests/EditMode/ReflectiveAgent/CleanRecordingPresentationTests.cs.patch",
+      "artifact_sha256": "05303b6abdf2322ac76d113dfaeb2411319bcc4e48b12c49e585715f546337ee"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/GazeFlowSessionPanelTests.cs",
+      "state": "new",
+      "source_sha256": "d9e296dae9da18db8610f11888e97d23a3a455d6c892cda2e996ad1907d2bd40",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/GazeFlowSessionPanelTests.cs",
+      "artifact_sha256": "d9e296dae9da18db8610f11888e97d23a3a455d6c892cda2e996ad1907d2bd40",
+      "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/GazeFlowSessionPanelTests.cs.meta",
+      "meta_sha256": "f8ecd4c5ea8f1cb6324085daa6119aab9da43989cd26f63d7744d5bf7396fe48"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/NeonStudyTests.cs",
+      "state": "changed",
+      "source_sha256": "377d2f0d3a60b9abdb2e1a77b169ad3f83ef2978799244c0effa57253642dd5f",
+      "baseline_sha256": "46414f45593d479fbaca01afdfa8a6ed648f6d9a8c293d4fb484e189b41d7bac",
+      "artifact_path": "Patches/Assets/Tests/EditMode/ReflectiveAgent/NeonStudyTests.cs.patch",
+      "artifact_sha256": "bbb6e7e90632e847bceb34c883cfe2c0aa76c160cbd77dc475e25c63f763af34"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/ParticipantStartTests.cs",
+      "state": "changed",
+      "source_sha256": "d7f95a35823e16288e2681bd9d07cd4a6fdb08160d3d9b09658f60e4c50ded19",
+      "baseline_sha256": "395ac8b3f999fb5dccfdb0b2cf59615c6376c8f01b4f081dbf1a67cca6698e4d",
+      "artifact_path": "Patches/Assets/Tests/EditMode/ReflectiveAgent/ParticipantStartTests.cs.patch",
+      "artifact_sha256": "3d0d7e398e89a91e24c2eda62daabeaac0d80f7c732d314c4a4871159540d5b2"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/StudyExportTests.cs",
+      "state": "changed",
+      "source_sha256": "9490c9bf7a3b1782de25de1ce5c4c1f3ed76f6e463c3dc884f1f2bcce0ffb1f2",
+      "baseline_sha256": "3da9093727405ff76d9e1acca7cf53ddbd7f1f07992f0257578eae07f7feda0c",
+      "artifact_path": "Patches/Assets/Tests/EditMode/ReflectiveAgent/StudyExportTests.cs.patch",
+      "artifact_sha256": "c105668d97926503fc5ed82dd229683574f0db825221dcd6ab285f26602c557b"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/StudySequenceTests.cs",
+      "state": "changed",
+      "source_sha256": "35a4173fe8ed505873703607e018b18cd403862f50ed210f3420f99af588c2c8",
+      "baseline_sha256": "771b26b30437e1f00bb7b0329e8928c73833bb27a4670c91a2c3f1354659eaae",
+      "artifact_path": "Patches/Assets/Tests/EditMode/ReflectiveAgent/StudySequenceTests.cs.patch",
+      "artifact_sha256": "c27b31548877dd941d8dfa37b9bc2e9eed0c61bd86c07b7f25fd08b26e4467e6"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/TutorialValidationLayoutTests.cs",
+      "state": "new",
+      "source_sha256": "6380667350ca094301465a782f0abd81f8faf6cca10d5dfeff209c7fce37b0cc",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/TutorialValidationLayoutTests.cs",
+      "artifact_sha256": "6380667350ca094301465a782f0abd81f8faf6cca10d5dfeff209c7fce37b0cc",
+      "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/TutorialValidationLayoutTests.cs.meta",
+      "meta_sha256": "b591e656fcbf5bf3ad84d2ba61ed9a66e26c1d977babb503b3ba929f9abcdf98"
+    }
+  ]
+}

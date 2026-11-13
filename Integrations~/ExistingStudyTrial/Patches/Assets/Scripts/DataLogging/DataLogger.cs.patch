@@ -1,0 +1,19 @@
+diff --git "a/Assets/Scripts/DataLogging/DataLogger.cs" "b/Assets/Scripts/DataLogging/DataLogger.cs"
+index 2fd972e..174d72d 100644
+--- "a/Assets/Scripts/DataLogging/DataLogger.cs"
++++ "b/Assets/Scripts/DataLogging/DataLogger.cs"
+@@ -0,0 +1 @@
++using NeonResearch;
+@@ -161,0 +163,12 @@ namespace DataLogging.DataStructure
++            // Add an explicit component-to-target association without rewriting the
++            // original puzzle-status event or its legacy label. No name matching.
++            var researchTarget = StudySequence.ResolveResearchTarget(puzzle as UnityEngine.Component);
++            if (researchTarget != null)
++                StudySequence.Record("target_puzzle_status", mainPuzzle.ToString(), researchTarget.targetId,
++                    status ? "Completed" : "Incomplete", outcome.ToString(),
++                    Newtonsoft.Json.JsonConvert.SerializeObject(new {
++                        legacy_object_id = labelledId, parent_chain = chain,
++                        source = "DataLogger.actual_puzzle_component_nearest_authored_target",
++                        object_name = researchTarget.gameObject.name
++                    }));
++

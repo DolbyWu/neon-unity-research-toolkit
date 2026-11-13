@@ -1,0 +1,56 @@
+diff --git "a/Assets/Scripts/Effects/TeleportInFront.cs" "b/Assets/Scripts/Effects/TeleportInFront.cs"
+index ef1dcbc..bbcee83 100644
+--- "a/Assets/Scripts/Effects/TeleportInFront.cs"
++++ "b/Assets/Scripts/Effects/TeleportInFront.cs"
+@@ -1,0 +2 @@ using System.Collections;
++using System.Collections.Generic;
+@@ -21,0 +23,36 @@ public class TeleportInFront : MonoBehaviour
++    private bool _fixedStation;
++    private Pose _stationPose;
++    private bool _validationHeld;
++    private readonly Dictionary<Renderer,bool> _heldRenderers=new Dictionary<Renderer,bool>();
++    public void HoldForValidation(bool held)
++    {
++        _validationHeld=held;
++        if(held)
++        {
++            // Keep references even if interaction startup detaches a rendered rigidbody from this root.
++            if(contentRoot!=null)foreach(var renderer in contentRoot.GetComponentsInChildren<Renderer>(true))
++                if(!_heldRenderers.ContainsKey(renderer))_heldRenderers.Add(renderer,renderer.enabled);
++            foreach(var item in _heldRenderers)if(item.Key!=null)item.Key.enabled=false;
++            if(audioRoot!=null)audioRoot.SetActive(false);
++        }
++        else
++        {
++            foreach(var item in _heldRenderers)if(item.Key!=null)item.Key.enabled=item.Value;
++            _heldRenderers.Clear();
++        }
++    }
++
++    public static Pose ComputeFixedStationPose(Vector3 referencePosition,Vector3 referenceForward,float yawDegrees,float placementDistance,float heightOffset,float tiltDegrees)
++    {
++        var forward=Vector3.ProjectOnPlane(referenceForward,Vector3.up);
++        if(forward.sqrMagnitude<.0001f)forward=Vector3.forward;
++        forward=Quaternion.AngleAxis(yawDegrees,Vector3.up)*forward.normalized;
++        return new Pose(referencePosition+forward*placementDistance+Vector3.up*heightOffset,Quaternion.LookRotation(forward)*Quaternion.Euler(-tiltDegrees,0,0));
++    }
++    public void UseFixedStation(Vector3 referencePosition,Vector3 referenceForward,float yawDegrees)
++    {
++        _stationPose=ComputeFixedStationPose(referencePosition,referenceForward,yawDegrees,distance,yOffset,tiltAngle);
++        _fixedStation=true;
++        // Position even while inactive: an unexpected activation must not put the station over validation.
++        transform.SetPositionAndRotation(_stationPose.position,_stationPose.rotation);
++    }
+@@ -64,0 +102 @@ public class TeleportInFront : MonoBehaviour
++        if (_validationHeld || _fixedStation) return; // Fixed opposite area, never head-following.
+@@ -80,0 +119 @@ public class TeleportInFront : MonoBehaviour
++        if(_validationHeld){HoldForValidation(true);return;}
+@@ -85,0 +125,8 @@ public class TeleportInFront : MonoBehaviour
++        if (_fixedStation)
++        {
++            transform.SetPositionAndRotation(_stationPose.position,_stationPose.rotation);
++            if (contentRoot != null) contentRoot.SetActive(true);
++            if (audioRoot != null) audioRoot.SetActive(true);
++            return;
++        }
++

@@ -34,6 +34,7 @@ public static class StudyExportSession
             events?.Dispose(); poses?.Dispose(); anchors?.Dispose();
             StudySequence.Close();
             StudyGazeTargetLog.Close();
+            StudyLiveObservations.Reset();
             StudyMonitorData.Reset();
             events = poses = anchors = null;
             folder = sessionId = participantId = companionRecordingId = null; startTicks = eventCount = poseCount = 0; closed = false;
@@ -182,6 +183,8 @@ public static class StudyExportSession
         lock (Gate)
         {
             if (closed || folder == null) return;
+            try { StudyLiveObservations.Finish(); }
+            catch (Exception error) { ReportFailure("Observation finalization failed: "+error.Message); Debug.LogError("[StudyExport] Observation finalization failed: "+error.Message); }
             Event("session_end", "Normal Unity shutdown or Play stop; does not prove puzzle completion.");
             StudyTargetCatalog.Snapshot();
             StudySequence.Close();

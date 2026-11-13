@@ -1,0 +1,6 @@
+diff --git "a/Assets/Tests/EditMode/ReflectiveAgent/NeonStudyTests.cs" "b/Assets/Tests/EditMode/ReflectiveAgent/NeonStudyTests.cs"
+index 3d99da0..1166fcd 100644
+--- "a/Assets/Tests/EditMode/ReflectiveAgent/NeonStudyTests.cs"
++++ "b/Assets/Tests/EditMode/ReflectiveAgent/NeonStudyTests.cs"
+@@ -0,0 +1 @@
++using NeonResearch;

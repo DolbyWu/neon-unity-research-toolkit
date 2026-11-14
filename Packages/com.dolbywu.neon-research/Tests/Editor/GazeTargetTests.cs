@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -29,6 +30,24 @@ namespace NeonResearch.Tests
         {
             target = GameObject.CreatePrimitive(PrimitiveType.Cube); target.transform.position = new Vector3(1000, 1000, 1003);
             target.AddComponent<StudyResearchTarget>().targetId = "key"; Physics.SyncTransforms();
+        }
+        [Test] public void RecorderFollowsLateProviderAssignmentRebindAndReenableWithoutDuplicateOrOldCallbacks()
+        {
+            Target();string folder=StudyExportSession.EnsureStarted(root);var a=new GameObject("Synthetic old scene source");var b=new GameObject("Synthetic new scene source");blocker=new GameObject("Synthetic session recorder");
+            try{
+                var first=a.AddComponent<SyntheticValidationRayProvider>();var second=b.AddComponent<SyntheticValidationRayProvider>();var recorder=blocker.AddComponent<StudyGazeTargetRecorder>();
+                var flags=BindingFlags.NonPublic|BindingFlags.Instance;var publish=typeof(StudyGazeRayProvider).GetMethod("Publish",flags);
+                // Initial assignment happens AFTER OnEnable, as with a late-created bridge.
+                recorder.provider=first;typeof(StudyGazeTargetRecorder).GetMethod("Update",flags).Invoke(recorder,null);publish.Invoke(first,new object[]{Sample()});
+                recorder.BindProvider(second);publish.Invoke(first,new object[]{Sample()});publish.Invoke(second,new object[]{Sample()});
+                recorder.BindProvider(second);publish.Invoke(second,new object[]{Sample()});
+                recorder.enabled=false;typeof(StudyGazeTargetRecorder).GetMethod("OnDisable",flags).Invoke(recorder,null);publish.Invoke(second,new object[]{Sample()});recorder.BindProvider(second);recorder.enabled=true;typeof(StudyGazeTargetRecorder).GetMethod("OnEnable",flags).Invoke(recorder,null);publish.Invoke(second,new object[]{Sample()});
+                StudyExportSession.Finish();var table=StudySequenceAnalysis.Rows(Path.Combine(folder,"gaze_targets.csv")).ToArray();int status=Array.IndexOf(table[0],"status");
+                Assert.That(Array.FindAll(table,r=>r[status]=="target_hit").Length,Is.EqualTo(4),"Old callbacks and repeated binding must not duplicate hits.");
+                Assert.That(Array.FindAll(table,r=>r[status]=="provider_rebound_waiting_for_fresh_sample").Length,Is.GreaterThanOrEqualTo(2));
+                var previous=File.ReadAllText(Path.Combine(folder,"gaze_targets.csv"));Reset();var next=StudyExportSession.EnsureStarted(root);publish.Invoke(second,new object[]{Sample()});StudyExportSession.Finish();
+                var nextRows=StudySequenceAnalysis.Rows(Path.Combine(next,"gaze_targets.csv")).ToArray();Assert.That(Array.FindAll(nextRows,r=>r[status]=="target_hit").Length,Is.EqualTo(1));Assert.That(File.ReadAllText(Path.Combine(folder,"gaze_targets.csv")),Is.EqualTo(previous));
+            }finally{UnityEngine.Object.DestroyImmediate(a);UnityEngine.Object.DestroyImmediate(b);}
         }
         private StudyGazeRaySample Sample(bool valid = true) => new StudyGazeRaySample { worldRay = new Ray(new Vector3(1000,1000,1000),Vector3.forward), valid = valid,
             source = "synthetic_test_not_participant_data", status = valid ? "synthetic" : "mapping_unverified", calibrationId = "synthetic-calibration" };

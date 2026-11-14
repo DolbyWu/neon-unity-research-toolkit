@@ -17,18 +17,53 @@ public sealed class GazeFlowTrialSessionPanel : EditorWindow
     private static void RegisterLifecycle()
     {
         if (!IsTrial || Application.isBatchMode) return;
+        NeonResearch.NeonXR.Editor.DesktopGazeAdjustmentWindow.PreparationControlsGUI-=DrawTutorialPreparation;
+        NeonResearch.NeonXR.Editor.DesktopGazeAdjustmentWindow.PreparationControlsGUI+=DrawTutorialPreparation;
         EditorApplication.playModeStateChanged += state =>
         {
-            if (state == PlayModeStateChange.EnteredPlayMode) EditorApplication.delayCall += Open;
+            if (state == PlayModeStateChange.EnteredPlayMode) EditorApplication.delayCall += CloseOptionalPanels;
         };
+    }
+    public static bool IsOptionalPanel(string name) => name == "GazeFlowTrialSessionPanel"
+        || name == "NeonResearch.NeonXR.Editor.PreRoomValidationWindow"
+        || name == "NeonResearch.NeonXR.Editor.ObjectCalibrationWindow"
+        || name == "NeonResearch.NeonXR.Editor.GazePointerWindow"
+        || name == "NeonResearch.NeonXR.Editor.DesktopGazeAdjustmentWindow";
+    private static void CloseOptionalPanels()
+    {
+        if (!IsTrial || Application.isBatchMode || !EditorApplication.isPlaying) return;
+        foreach (var window in Resources.FindObjectsOfTypeAll<EditorWindow>())
+            if (IsOptionalPanel(window.GetType().FullName)) window.Close();
+        // Archive identity/consent are retained. Observer tools below are visible, not recording controls.
+        NeonResearch.StudyLiveMonitor.Open();
+        NeonResearch.LiveObservationWindow.Open();
     }
     [MenuItem("Tools/GazeFlow/Gaze Pointer")]
     public static void Open()
     {
         if (!IsTrial || Application.isBatchMode) return;
-        var panel = GetWindow<GazeFlowTrialSessionPanel>("Gaze Pointer");
-        panel.minSize = new Vector2(360, 140);
-        panel.Show(); panel.Focus();
+        NeonResearch.NeonXR.Editor.DesktopGazeAdjustmentWindow.Open();
+    }
+    public static HandTutorialNextGate CurrentTutorialGate()
+    {
+        var gates=FindObjectsByType<HandTutorialNextGate>(FindObjectsInactive.Include,FindObjectsSortMode.None)
+            .Where(g=>g.gameObject.scene.path==GazeFlowTutorialPlayEntry.EntryScene).ToArray();
+        return gates.Length==1?gates[0]:null;
+    }
+    public static void DrawTutorialPreparation()
+    {
+        var gate=CurrentTutorialGate();if(gate==null)return;
+        EditorGUILayout.LabelField("Tutorial preparation",EditorStyles.boldLabel);
+        if(gate.AwaitingOperatorStart)
+        {
+            EditorGUILayout.HelpBox("Tutorial narration is waiting. Adjust gaze below if needed, or skip adjustment and start now. Eye/AOI, video and microphone recording continue when enabled. No accuracy pass is required.",MessageType.Info);
+            var reference=FindObjectsByType<GazeFlowTutorialReferenceDot>(FindObjectsSortMode.None).FirstOrDefault(r=>r.gameObject.scene==gate.gameObject.scene);
+            if(reference!=null)EditorGUILayout.HelpBox(reference.Status,MessageType.None);
+            using(new EditorGUI.DisabledScope(!gate.isActiveAndEnabled))
+                if(GUILayout.Button("Start tutorial",GUILayout.Height(44)))gate.StartTutorialNarration();
+        }
+        else EditorGUILayout.LabelField(gate.NarrationStarted?"Tutorial started — original narration and objectives":"Tutorial starting — waiting for the original intro delay",EditorStyles.wordWrappedLabel);
+        GUILayout.Space(10);
     }
     private void OnEnable() => EditorApplication.update += Tick;
     private void OnDisable() => EditorApplication.update -= Tick;

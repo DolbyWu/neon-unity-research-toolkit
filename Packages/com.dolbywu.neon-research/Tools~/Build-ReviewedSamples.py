@@ -104,7 +104,12 @@ def curate(session, annotations, output, *, window=2.0, min_coverage=.7, max_gap
         if not all(isinstance(a.get(k), str) and a[k].strip() for k in ("label", "annotator_id", "source", "confidence")):
             raise ValueError("Missing human-label provenance.")
         intensity = a.get("participant_intensity")
-        if intensity is not None and (isinstance(intensity, bool) or number(intensity) is None or not 0 <= float(intensity) <= 10):
+        intensity_scale = a.get("intensity_scale", "legacy_0_10")
+        intensity_method = a.get("intensity_input_method", "legacy_or_unspecified")
+        if intensity_scale not in ("legacy_0_10", "1_10_integer_v1") or intensity_method not in ("legacy_or_unspecified", "number_buttons"):
+            raise ValueError("Unknown intensity scale or input method.")
+        lower = 1 if intensity_scale == "1_10_integer_v1" else 0
+        if intensity is not None and (isinstance(intensity, bool) or not isinstance(intensity, (int, float)) or number(intensity) is None or not lower <= float(intensity) <= 10 or intensity_scale == "1_10_integer_v1" and not float(intensity).is_integer()):
             raise ValueError("Invalid participant intensity.")
         confusion = a.get("confusion_rating_1_5")
         confusion_source = a.get("confusion_rating_source")
@@ -194,7 +199,7 @@ def curate(session, annotations, output, *, window=2.0, min_coverage=.7, max_gap
     for a in sorted(labels, key=lambda row: (row["start_s"], row["end_s"], row["id"])):
         start, end = float(a["start_s"]), float(a["end_s"])
         status = a.get("review_status", "draft")
-        base = dict(participant_id=manifest.get("participantId", ""), session_id=manifest["sessionId"], annotation_id=a["id"], label=a["label"], annotator_id=a["annotator_id"], evidence_source=a["source"], annotator_confidence=a["confidence"], participant_intensity=a.get("participant_intensity"), intensity_source="participant_self_report" if a.get("participant_intensity") is not None else "", confusion_rating_1_5=a.get("confusion_rating_1_5"), confusion_rating_source=a.get("confusion_rating_source") or "", related_observation_id=a.get("related_observation_id", ""), review_status=status, annotation_revision=a.get("record_revision", 1), related_ids=json.dumps(a.get("related_ids", []), separators=(",", ":")), time_basis=params["time_basis"], processing_id=params_id)
+        base = dict(participant_id=manifest.get("participantId", ""), session_id=manifest["sessionId"], annotation_id=a["id"], label=a["label"], annotator_id=a["annotator_id"], evidence_source=a["source"], annotator_confidence=a["confidence"], participant_intensity=a.get("participant_intensity"), intensity_source="participant_self_report" if a.get("participant_intensity") is not None else "", intensity_scale=a.get("intensity_scale", "legacy_0_10"), intensity_input_method=a.get("intensity_input_method", "legacy_or_unspecified"), confusion_rating_1_5=a.get("confusion_rating_1_5"), confusion_rating_source=a.get("confusion_rating_source") or "", related_observation_id=a.get("related_observation_id", ""), review_status=status, annotation_revision=a.get("record_revision", 1), related_ids=json.dumps(a.get("related_ids", []), separators=(",", ":")), time_basis=params["time_basis"], processing_id=params_id)
         interval_rows.append(dict(base, start_s=start, end_s=end))
         if start == end:
             audit.append(dict(annotation_id=a["id"], start_s=start, end_s=end, decision="rejected", reasons="point_annotation_not_a_training_interval"))
@@ -254,14 +259,14 @@ def curate(session, annotations, output, *, window=2.0, min_coverage=.7, max_gap
         if digest(source) != expected:
             raise ValueError("Input changed during curation; no output written.")
     output.mkdir(parents=True)
-    base_columns = list(dict(participant_id=0, session_id=0, annotation_id=0, label=0, annotator_id=0, evidence_source=0, annotator_confidence=0, participant_intensity=0, intensity_source=0, confusion_rating_1_5=0, confusion_rating_source=0, related_observation_id=0, review_status=0, annotation_revision=0, related_ids=0, time_basis=0, processing_id=0))
+    base_columns = list(dict(participant_id=0, session_id=0, annotation_id=0, label=0, annotator_id=0, evidence_source=0, annotator_confidence=0, participant_intensity=0, intensity_source=0, intensity_scale=0, intensity_input_method=0, confusion_rating_1_5=0, confusion_rating_source=0, related_observation_id=0, review_status=0, annotation_revision=0, related_ids=0, time_basis=0, processing_id=0))
     extra = ["sample_id","start_s","end_s","eye_count","eye_valid_count","eye_coverage","eye_missing_fraction","aoi_coverage","aoi_missing_fraction","aoi_callback_count","target_hit_callbacks","calibration_ids","verification_ids","aoi_statuses","video_start_s","video_end_s","video_coverage_confirmed","video_timing_method","behavior_event_count","head_pose_count","pupil_left_mm_wire_mean","pupil_left_mm_available_count","pupil_right_mm_wire_mean","pupil_right_mm_available_count"]
     write_csv(output/"samples.csv", sample_rows, base_columns+extra)
     write_csv(output/"curated_intervals.csv", interval_rows, base_columns+["start_s","end_s"])
     write_csv(output/"audit.csv", audit, ["annotation_id","start_s","end_s","decision","reasons"])
     outputs = {name: digest(output/name) for name in ("samples.csv","curated_intervals.csv","audit.csv")}
     result = dict(schema=SCHEMA, processing_id=params_id, parameters=params, input_sha256=dict(sorted(used.items())), output_sha256=outputs, builder_sha256=digest(Path(__file__)), included_samples=len(sample_rows), audit_rows=len(audit), unaligned_raw_rows_not_joined=unaligned,
-                  human_measure_policy={"participant_intensity": "optional legacy 0-10 self-report; never converted", "confusion_rating_1_5": "optional integer 1-5 participant retrospective report; distinct from legacy intensity and annotator confidence", "related_observation_id": "optional syntactically validated original observer reference; not proof of cognitive truth", "analysis_warning": "Human ratings and labels are potential outcomes, not automatically predictors. Avoid target leakage."},
+                  human_measure_policy={"participant_intensity": "optional 1-10 integer or legacy 0-10 self-report; never converted; inspect intensity_scale and intensity_input_method before pooling", "confusion_rating_1_5": "optional integer 1-5 participant retrospective report; distinct from intensity and annotator confidence", "related_observation_id": "optional syntactically validated original observer reference; not proof of cognitive truth", "analysis_warning": "Human ratings and labels are potential outcomes, not automatically predictors. Avoid target leakage."},
                   limitations=["Basic valid is not full eye-quality validation; pupil wire units are not physically validated millimetres.", "No interpolation or missing-value zero filling. AOI coverage is optional and distinct from raw eye quality.", "Video coverage uses supplied duration and saved offset, not measured hardware synchronization.", "Event/head counts are context, not validated cognitive features. Prevent task/outcome leakage when selecting predictors.", "Split by participant/session/task before model tuning; do not randomly split adjacent windows. Fit preprocessing only on training folds. Single-participant data cannot establish cross-participant generalization."])
     (output/"manifest.json").write_text(canonical(result), encoding="utf-8")
     return result

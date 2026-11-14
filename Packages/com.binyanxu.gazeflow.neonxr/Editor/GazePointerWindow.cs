@@ -11,15 +11,14 @@ namespace NeonResearch.NeonXR.Editor
         [MenuItem("Tools/GazeFlow/Neon XR/Gaze Pointer")]
         public static void Open()
         {
-            var window = GetWindow<GazePointerWindow>("Gaze Pointer");
-            window.minSize = new Vector2(360, 140);
-            window.Show();
+            DesktopGazeAdjustmentWindow.Open();
         }
 
         private void OnInspectorUpdate() => Repaint();
 
         public static void ApplyVisibility(GazeDataVisualizer[] visualizers, bool visible)
         {
+            if(!visible)foreach(var preview in Object.FindObjectsByType<StudyDesktopGazePreview>(FindObjectsSortMode.None))preview.Visible=false;
             foreach (var visualizer in visualizers)
             {
                 if (visualizer == null) continue;

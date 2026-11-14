@@ -10,6 +10,67 @@ namespace EscapeRoom.ReflectiveAgent.Tests
 {
     public sealed class AoiCorrectionIntegrationTests
     {
+        [Test] public void DirectGrabEntryHidesOnlyLegacyVrIdentityAndWelcomeAudio()
+        {
+            var scene=UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+            try{
+                var menu=new GameObject("USER ID Variant Menu");var keyboard=new GameObject("ID keypad");keyboard.transform.SetParent(menu.transform);
+                var tutorial=new GameObject("Original grabbing station");var welcome=new GameObject("Welcome Audio");welcome.transform.SetParent(tutorial.transform);var audio=welcome.AddComponent<AudioSource>();audio.playOnAwake=true;
+                var narration=new GameObject("Grab narration");narration.transform.SetParent(tutorial.transform);narration.AddComponent<AudioSource>();
+                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(menu,scene);UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(tutorial,scene);
+                var type=AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("GazeFlowTutorialEntry")).First(t=>t!=null);
+                type.GetMethod("PrepareDirectGrabEntry").Invoke(null,new object[]{scene});
+                Assert.That(menu.activeSelf,Is.False);Assert.That(keyboard.activeInHierarchy,Is.False);Assert.That(welcome.activeSelf,Is.False);Assert.That(audio.playOnAwake,Is.False);
+                Assert.That(tutorial.activeSelf,Is.True);Assert.That(narration.activeSelf,Is.True,"Original grabbing instructions remain available.");
+            }finally{UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene);}
+        }
+        [Test] public void OptionalPanelCleanupNeverClosesArchiveMonitorOrObservationNotes()
+        {
+            var type=AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("GazeFlowTrialSessionPanel")).First(t=>t!=null);var method=type.GetMethod("IsOptionalPanel");
+            foreach(var name in new[]{"GazeFlowTrialSessionPanel","NeonResearch.NeonXR.Editor.PreRoomValidationWindow","NeonResearch.NeonXR.Editor.ObjectCalibrationWindow","NeonResearch.NeonXR.Editor.GazePointerWindow","NeonResearch.NeonXR.Editor.DesktopGazeAdjustmentWindow"})Assert.That((bool)method.Invoke(null,new object[]{name}),Is.True,name);
+            foreach(var name in new[]{"NeonResearch.StudyLiveMonitor","NeonResearch.LiveObservationWindow","NeonResearch.StudyParticipantStartWindow","NeonResearch.ObservationNoteWindow"})Assert.That((bool)method.Invoke(null,new object[]{name}),Is.False,name);
+        }
+        [Test] public void SceneRecorderIsReusedAndReboundWhenInitializationReloadCreatesAStaleDuplicate()
+        {
+            var entry=AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("GazeFlowTutorialEntry")).First(t=>t!=null);var reset=entry.GetMethod("ResetHooks",BindingFlags.Static|BindingFlags.NonPublic);reset.Invoke(null,null);
+            var root=new GameObject("GazeFlow Research Target Recorder");var nextRoot=new GameObject("GazeFlow Research Target Recorder");var a=new GameObject("Synthetic prior official singleton");var b=new GameObject("Synthetic current singleton");
+            try{
+                var type=Type.GetType("NeonResearch.NeonXR.NeonXRResearchProvider, GazeFlow.NeonXR",true);var first=(StudyGazeRayProvider)a.AddComponent(type);var second=(StudyGazeRayProvider)b.AddComponent(type);
+                var recorder=root.AddComponent<StudyGazeTargetRecorder>();recorder.BindProvider(first);nextRoot.SetActive(false);var duplicate=nextRoot.AddComponent<StudyGazeTargetRecorder>();duplicate.provider=first;
+                var ensure=entry.GetMethod("EnsureSessionRecorder");Assert.That(ensure.Invoke(null,new object[]{first}),Is.SameAs(recorder));
+                UnityEngine.Object.DestroyImmediate(a);nextRoot.SetActive(true);
+                Assert.That(ensure.Invoke(null,new object[]{second}),Is.SameAs(recorder));Assert.That(duplicate.enabled,Is.False);Assert.That(recorder.provider,Is.SameAs(second));Assert.That(recorder.enabled,Is.True);
+                Assert.That(ensure.Invoke(null,new object[]{second}),Is.SameAs(recorder));Assert.That(UnityEngine.Object.FindObjectsByType<StudyGazeTargetRecorder>(FindObjectsSortMode.None).Count(r=>r.isActiveAndEnabled),Is.EqualTo(1));
+            }finally{if(a!=null)UnityEngine.Object.DestroyImmediate(a);UnityEngine.Object.DestroyImmediate(b);UnityEngine.Object.DestroyImmediate(root);UnityEngine.Object.DestroyImmediate(nextRoot);reset.Invoke(null,null);}
+        }
+        [Test] public void OfficialSourceSubscriptionCanRebindAndReenableWithoutDuplicateListeners()
+        {
+            var sourceType=Type.GetType("PupilLabs.NeonGazeDataProvider, PupilLabs.NeonXR.Core.Runtime",true);var eventType=Type.GetType("PupilLabs.Serializable.GazeDataProviderEvent, PupilLabs.NeonXR.Core.Runtime",true);
+            var sourceA=new GameObject("Synthetic official event A");var sourceB=new GameObject("Synthetic official event B");var host=new GameObject("Synthetic adapter");
+            try{
+                var a=sourceA.AddComponent(sourceType);var b=sourceB.AddComponent(sourceType);var eventField=sourceType.BaseType.GetField("gazeDataReady");eventField.SetValue(a,Activator.CreateInstance(eventType));eventField.SetValue(b,Activator.CreateInstance(eventType));
+                var type=Type.GetType("NeonResearch.NeonXR.NeonXRResearchProvider, GazeFlow.NeonXR",true);var provider=(StudyGazeRayProvider)host.AddComponent(type);int count=0;provider.SampleReady+=s=>{count++;Assert.That(s.valid,Is.False,"A source without a live client never becomes research data.");};
+                var refresh=type.GetMethod("RefreshSourceSubscription");void Fire(Component value){var evt=eventField.GetValue(value);evt.GetType().GetMethod("Invoke").Invoke(evt,new object[]{value});}
+                type.GetField("neon").SetValue(provider,a);refresh.Invoke(provider,null);Fire(a);Assert.That(count,Is.EqualTo(1));
+                type.GetField("neon").SetValue(provider,b);refresh.Invoke(provider,null);refresh.Invoke(provider,null);Fire(a);Fire(b);Assert.That(count,Is.EqualTo(2));
+                provider.enabled=false;type.GetMethod("OnDisable",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(provider,null);Fire(b);Assert.That(count,Is.EqualTo(2));refresh.Invoke(provider,null);provider.enabled=true;type.GetMethod("OnEnable",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(provider,null);Fire(b);Assert.That(count,Is.EqualTo(3));
+            }finally{UnityEngine.Object.DestroyImmediate(host);UnityEngine.Object.DestroyImmediate(sourceA);UnityEngine.Object.DestroyImmediate(sourceB);}
+        }
+        [Test] public void OptionalSpatialQualityNeverInvalidatesUsableOfficialRays()
+        {
+            var host=new GameObject("Synthetic official-first quality");
+            try{
+                var type=Type.GetType("NeonResearch.NeonXR.NeonXRResearchProvider, GazeFlow.NeonXR",true);var provider=host.AddComponent(type);
+                type.GetField("headReference").SetValue(provider,host.transform);type.GetField("calibrationId").SetValue(provider,"synthetic");
+                var method=type.GetMethod("ApplyMappingQuality");var ray=new Ray(new Vector3(.01f,.02f,.03f),Vector3.forward);
+                var sample=new StudyGazeRaySample{valid=true,worldRay=ray,rawWorldRay=ray,hasRawWorldRay=true};
+                var result=(StudyGazeRaySample)method.Invoke(provider,new object[]{sample});Assert.That(result.valid,Is.True);Assert.That(result.mappingVerified,Is.False);Assert.That(result.worldRay.origin,Is.EqualTo(ray.origin));Assert.That(result.worldRay.direction,Is.EqualTo(ray.direction));Assert.That(result.verificationStatus,Is.EqualTo("not_measured_current_binding"));
+                var check=host.AddComponent<StudySpatialValidation>();check.headReference=host.transform;Set(check,"LastReport",new StudySpatialValidation.ValidationReport{session_id=StudyExportSession.SessionId,calibration_id="synthetic",passed=false});
+                result=(StudyGazeRaySample)method.Invoke(provider,new object[]{sample});Assert.That(result.valid,Is.True);Assert.That(result.mappingVerified,Is.False);Assert.That(result.verificationStatus,Is.EqualTo("measured_fail"));
+                sample.valid=false;sample.status="not_worn";result=(StudyGazeRaySample)method.Invoke(provider,new object[]{sample});Assert.That(result.valid,Is.False);Assert.That(result.mappingVerified,Is.False);Assert.That(result.status,Is.EqualTo("not_worn"));
+                type.GetMethod("UseOfficialRayWithoutExtraCorrection").Invoke(provider,null);Assert.That(type.GetProperty("CurrentCorrection").GetValue(provider),Is.Null);Assert.That((bool)type.GetField("automaticTwoRoundFlow").GetValue(provider),Is.False);
+            }finally{UnityEngine.Object.DestroyImmediate(host);}
+        }
         private static void Set(object obj,string name,object value)=>obj.GetType().GetField("<"+name+">k__BackingField",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(obj,value);
         [Test] public void FittingCannotApproveItselfAndOnlyIndependentMatchingReportEnablesMapping()
         {

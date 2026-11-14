@@ -84,6 +84,30 @@ class ReviewedSamplesTests(unittest.TestCase):
             self.assertEqual(absent["confusion_rating_1_5"],"")
             self.assertEqual(absent["related_observation_id"],"")
         self.assertIn("never converted",result["human_measure_policy"]["participant_intensity"])
+    def test_intensity_scale_and_input_method_preserved_in_analysis_exports(self):
+        self.bundle["annotations"][0].update(participant_intensity=7, intensity_scale="1_10_integer_v1", intensity_input_method="number_buttons")
+        self.bundle["annotations"][1]["participant_intensity"]=2.5
+        self.save()
+        self.build("scales")
+        for name in ("samples.csv", "curated_intervals.csv"):
+            rows=builder.table(self.root/"scales"/name)
+            new=next(r for r in rows if r["annotation_id"]=="a")
+            old=next(r for r in rows if r["annotation_id"]=="b")
+            self.assertEqual((new["participant_intensity"],new["intensity_scale"],new["intensity_input_method"]),("7","1_10_integer_v1","number_buttons"))
+            self.assertEqual((old["participant_intensity"],old["intensity_scale"]),("2.5","legacy_0_10"))
+
+    def test_new_intensity_bounds_integer_missing_and_metadata(self):
+        first=self.bundle["annotations"][0]
+        first.update(intensity_scale="1_10_integer_v1",intensity_input_method="number_buttons")
+        for index,value in enumerate((0,11,2.5,True,"4",float("nan"))):
+            first["participant_intensity"]=value;self.save()
+            with self.assertRaises(ValueError):self.build("bad-intensity-"+str(index))
+        first["participant_intensity"]=None;self.save();self.build("not-reported")
+        row=builder.table(self.root/"not-reported/samples.csv")[0]
+        self.assertEqual(row["participant_intensity"],"")
+        first["intensity_scale"]="unknown";self.save()
+        with self.assertRaises(ValueError):self.build("bad-scale")
+
     def test_invalid_confusion_rating_provenance_and_observation_link_are_rejected(self):
         first=self.bundle["annotations"][0]
         first["confusion_rating_source"]="participant_retrospective_self_report"

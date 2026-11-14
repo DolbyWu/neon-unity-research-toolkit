@@ -1,12 +1,32 @@
-diff --git "a/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs" "b/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs"
-index eaa72e4..0405258 100644
---- "a/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs"
-+++ "b/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs"
-@@ -62,0 +63,13 @@ public class HandTutorialNextGate : MonoBehaviour
+diff --git a/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs b/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs
+index 3ec1d04..b1b90ea 100644
+--- a/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs
++++ b/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs
+@@ -62,0 +63,33 @@ public class HandTutorialNextGate : MonoBehaviour
 +    public int CompletedObjectiveCount => _doneObjectives.Count;
 +    public int RequiredObjectiveCount => _objectives.Count;
 +    public bool WaitingForNarration => _completePending && !_completed;
 +    public bool NextUnlocked => _nextButton!=null && _nextButton.activeInHierarchy;
++    public bool ResearchCalibrationHeld {get;private set;}
++    public void SetResearchCalibrationHold(bool held){ResearchCalibrationHeld=held;if(_nextButton!=null)_nextButton.SetActive(!held&&_completed);}
++    private bool _operatorStartRequired;
++    private bool _operatorStartAccepted;
++    public bool AwaitingOperatorStart {get;private set;}
++    public bool NarrationStarted {get;private set;}
++    // Separate from gaze accuracy/validation. Only the observer's explicit Start releases this wait.
++    public void RequireOperatorStart()
++    {
++        if(NarrationStarted||_operatorStartAccepted)return;
++        _operatorStartRequired=true;AwaitingOperatorStart=true;
++        if(_nextButton!=null)_nextButton.SetActive(false);
++    }
++    public bool StartTutorialNarration()
++    {
++        if(!isActiveAndEnabled||!AwaitingOperatorStart)return false;
++        AwaitingOperatorStart=false;_operatorStartAccepted=true;
++        NeonResearch.StudyEvents.Record("tutorial_start_requested","grabbing_tutorial","operator_start","Manual preparation finished or skipped; not a calibration approval.");
++        return true;
++    }
 +    public string RemainingObjectives
 +    {
 +        get{var labels=new List<string>();for(int i=0;i<_objectives.Count;i++)if(!_doneObjectives.Contains(i))labels.Add(_objectives[i]?.label??"Missing objective configuration");return string.Join(", ",labels);}
@@ -16,7 +36,25 @@ index eaa72e4..0405258 100644
 +        if(!isActiveAndEnabled||source==null||evt.Type!=PointerEventType.Select)return;
 +        if(_grabbableToObjective.TryGetValue(source,out int objective))OnPointerEvent(objective,evt);
 +    }
-@@ -140,0 +154 @@ public class HandTutorialNextGate : MonoBehaviour
+@@ -75,0 +109,2 @@ public class HandTutorialNextGate : MonoBehaviour
++        NarrationStarted=false;_operatorStartAccepted=false;AwaitingOperatorStart=_operatorStartRequired;
++
+@@ -137 +172 @@ public class HandTutorialNextGate : MonoBehaviour
+-        if (_completed || _completePending) return;
++        if (AwaitingOperatorStart || _completed || _completePending) return;
+@@ -140,0 +176 @@ public class HandTutorialNextGate : MonoBehaviour
 +        NeonResearch.StudyEvents.Record("tutorial_objective_completed",_objectives[objectiveIndex].label,"actual_grab","completed="+_doneObjectives.Count+"/"+_objectives.Count+"; remaining="+RemainingObjectives);
-@@ -205,0 +220 @@ public class HandTutorialNextGate : MonoBehaviour
+@@ -162,0 +199,3 @@ public class HandTutorialNextGate : MonoBehaviour
++        // Give scene-loaded preparation a frame even when an authored delay is zero.
++        yield return null;
++        while(AwaitingOperatorStart)yield return null;
+@@ -164,0 +204,3 @@ public class HandTutorialNextGate : MonoBehaviour
++        NarrationStarted=true;
++        NeonResearch.StudyEvents.Record("grabbing_tutorial_started","grabbing_tutorial","narration_started","Original intro/cues/Next; gaze adjustment and validation are optional.");
++
+@@ -170,0 +213 @@ public class HandTutorialNextGate : MonoBehaviour
++            if(ResearchCalibrationHeld){yield return null;continue;}
+@@ -205 +248,2 @@ public class HandTutorialNextGate : MonoBehaviour
+-        if (_nextButton != null) _nextButton.SetActive(true);
++        if (_nextButton != null) _nextButton.SetActive(!ResearchCalibrationHeld);
 +        NeonResearch.StudyEvents.Record("tutorial_next_unlocked","grabbing_tutorial","all_objectives_completed","Original locomotion Next action retained.");

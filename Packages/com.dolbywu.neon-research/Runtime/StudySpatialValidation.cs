@@ -15,6 +15,25 @@ namespace NeonResearch
         public float settleSeconds=1f, measureSeconds=2f, distanceMetres=2f;
         public float maximumMeanErrorDegrees=3f, minimumCoverage=.7f;
         public bool automaticSequence=true, nineTargets;
+        public bool bananaMarkers;
+        public bool singleBaselineBeforeObjects;
+        public float markerDiameter=.035f;
+        [Tooltip("Visual diameter only. Does not enlarge colliders, target identity or angular acceptance.")]
+        public float objectCueDiameter=.032f;
+        public int objectCollisionMask=~0;
+        public float objectRayDistance=100f,minimumCorrectTargetFraction=.8f;
+        public bool IsObjectRun => authoredTargets!=null;
+        public string LastObjectQuery { get; private set; }="No measured object query yet.";
+        public string CurrentTargetName => authoredTargets!=null&&TargetIndex<authoredTargets.Length?authoredTargets[TargetIndex].DisplayName:"Point "+(TargetIndex+1);
+        private StudyResearchTarget[] authoredTargets;
+        private Vector3[] authoredPoints,authoredPositions;
+        private Quaternion[] authoredRotations;
+        private Transform authoredHead;
+        private Mesh[] markerMeshes;
+        private Material[] aimMaterials;
+        private Material[][] bananaAccentMaterials;
+        private StudyCalibrationCueGroup cueGroup;
+        private int hitChecks,correctHits;
         public bool independentCheckPattern;
         public bool ReusesReferenceGeometry => reusedGeometry;
         public float interTargetSeconds=2f;
@@ -33,6 +52,18 @@ namespace NeonResearch
         public bool RestoredForReviewOnly { get; private set; }
         public bool BindingReviewRequired { get; set; }
         public string CurrentVerificationId => LastReport==null?"":LastReport.id;
+        public string RunId => runId;
+        public void ForgetReferenceGeometry()
+        {
+            if(Running)throw new InvalidOperationException("Stop the measurement before changing reference geometry.");
+            referenceTargets=null;referenceHead=null;referenceSession=referenceCalibration=referenceGeometryId=null;
+        }
+        public void MarkPriorBindingForReview()
+        {
+            if(Running)Abort();
+            if(LastReport!=null)RestoredForReviewOnly=true;
+            lastFresh=double.NegativeInfinity;BindingReviewRequired=LastReport!=null;
+        }
         public string CurrentVerificationStatus => Running?"validation_in_progress":LastReport==null?"not_measured":LastReport.passed?"measured_pass_operator_approval_separate":"measured_fail";
         public string LastOutput { get; private set; }="";
         public bool TutorialEntryContext { get; set; }
@@ -70,6 +101,9 @@ namespace NeonResearch
             public string start_method;
             public float[] mean_observed_head_local_direction,mean_expected_head_local_direction;
             public int local_direction_pairs;
+            public string target_id,target_name,target_group;
+            public int target_hit_checks,correct_target_hits;
+            public double? correct_target_fraction;
         }
         [Serializable] public sealed class ValidationReport
         {
@@ -79,6 +113,8 @@ namespace NeonResearch
             public string presentation_mode, abort_reason;
             public string purpose,correction_id;
             public string target_geometry_id,geometry_policy;
+            public float? minimum_correct_target_fraction;
+            public string verification_scope;
             public int[] target_order;
             public bool passed, aborted;
             public double? start_session_s, end_session_s;
@@ -100,40 +136,65 @@ namespace NeonResearch
             if(provider==null || headReference==null || string.IsNullOrWhiteSpace(calibrationId))throw new InvalidOperationException("Assign provider, tracked head and a calibration ID first.");
             if(!Finite(measureSeconds)||measureSeconds<=0||!Finite(settleSeconds)||settleSeconds<0||!Finite(distanceMetres)||distanceMetres<=0||!Finite(maximumMeanErrorDegrees)||maximumMeanErrorDegrees<=0||!Finite(minimumCoverage)||minimumCoverage<0||minimumCoverage>1||!Finite(interTargetSeconds)||interTargetSeconds<0)throw new InvalidOperationException("Invalid validation parameters.");
             if(subscribed!=provider){if(subscribed!=null)subscribed.ValidationSampleReady-=Receive;subscribed=provider;subscribed.ValidationSampleReady+=Receive;}
+            authoredTargets=null;authoredPoints=null;authoredPositions=null;authoredRotations=null;authoredHead=null;
             runMeasure=measureSeconds;runSettle=settleSeconds;runMaxError=maximumMeanErrorDegrees;runMinCoverage=minimumCoverage;runDistance=distanceMetres;runGap=interTargetSeconds;runAutomatic=automaticSequence;
             runIndependent=independentCheckPattern;runCorrectionId=null;automaticRoundStart=false;reusedGeometry=false;
             calibration=calibrationId;session=StudyExportSession.SessionId;startedSessionTime=StudyEvents.Recording?(double?)StudyExportSession.Seconds:null;
             runId="validation-"+DateTime.UtcNow.ToString("yyyyMMddTHHmmssfffZ")+"-"+Guid.NewGuid().ToString("N").Substring(0,8);
             LastReport=null;LastOutput="";RestoredForReviewOnly=false;results.Clear();rows.Clear();sequence=null;
             rows.Add("verification_id,target_index,unity_realtime_s,session_time_s,calibration_id,source,valid,status,error_deg,target_x,target_y,target_z,device_timestamp_ms,device_time_semantics,ray_origin_x,ray_origin_y,ray_origin_z,ray_direction_x,ray_direction_y,ray_direction_z,presentation_mode,sequence_ordinal,correction_id,raw_ray_direction_x,raw_ray_direction_y,raw_ray_direction_z,observed_head_local_x,observed_head_local_y,observed_head_local_z,expected_head_local_x,expected_head_local_y,expected_head_local_z");
+            rows[0]+=",expected_target_id,observed_target_id,object_query_status,object_hit_geometry,query_collider_path";
             Running=true;TargetIndex=0;targets=null;WaitingForSignal=true;AwaitingVisibilityConfirmation=false;lastFresh=double.NegativeInfinity;
             Event("gaze_validation_start","waiting_for_live_worn_signal","Not task data; "+Mode);
         }
-        private string Mode => runAutomatic?"automatic_all_points_initial_selection":"manual_each_target_confirmation";
+        public void BeginObjectTargets(string calibrationId,StudyResearchTarget[] objects,Vector3[] aimPoints,bool verification)
+        {
+            if(objects==null||aimPoints==null||objects.Length!=3||aimPoints.Length!=3||objects.Any(t=>t==null||!t.isActiveAndEnabled||!t.HasUniqueId())||objects.Select(t=>t.targetId).Distinct().Count()!=3||aimPoints.Any(p=>!StudyGazeTargetLog.Finite(p)))throw new InvalidOperationException("Assign exactly three active, distinct, uniquely identified research objects and finite aim points.");
+            if(!Finite(minimumCorrectTargetFraction)||minimumCorrectTargetFraction<0||minimumCorrectTargetFraction>1||!Finite(objectRayDistance)||objectRayDistance<=0)throw new InvalidOperationException("Invalid object validation policy.");
+            independentCheckPattern=verification;automaticSequence=verification;Begin(calibrationId);
+            authoredTargets=(StudyResearchTarget[])objects.Clone();authoredPoints=(Vector3[])aimPoints.Clone();authoredPositions=objects.Select(t=>t.transform.position).ToArray();authoredRotations=objects.Select(t=>t.transform.rotation).ToArray();authoredHead=headReference;
+        }
+        private string Mode => authoredTargets!=null?(runIndependent?"authored_object_automatic_verification":"authored_object_three_operator_clicks"):runAutomatic?"automatic_all_points_initial_selection":"manual_each_target_confirmation";
         private void Event(string kind,string status,string detail){if(StudyEvents.Recording)StudyEvents.Record(kind,runId,status,detail);}
         private void CreateTargets()
         {
             var offsets=new List<Vector2>{Vector2.zero,new Vector2(-12,0),new Vector2(12,0),new Vector2(0,8),new Vector2(0,-8)};
             if(!runAutomatic && nineTargets)offsets.AddRange(new[]{new Vector2(-12,8),new Vector2(12,8),new Vector2(-12,-8),new Vector2(12,-8)});
-            reusedGeometry=runIndependent&&referenceTargets!=null&&referenceTargets.Length==offsets.Count&&referenceHead==headReference&&referenceSession==session&&referenceCalibration==calibration;
+            int count=authoredTargets==null?offsets.Count:authoredTargets.Length;
+            reusedGeometry=runIndependent&&referenceTargets!=null&&referenceTargets.Length==count&&referenceHead==headReference&&referenceSession==session&&referenceCalibration==calibration;
             if(reusedGeometry)targets=(Vector3[])referenceTargets.Clone();
             else
             {
-                targets=offsets.Select(p=>headReference.TransformPoint(new Vector3(Mathf.Tan(p.x*Mathf.Deg2Rad)*runDistance,Mathf.Tan(p.y*Mathf.Deg2Rad)*runDistance,runDistance))).ToArray();
+                targets=authoredTargets!=null?(Vector3[])authoredPoints.Clone():offsets.Select(p=>headReference.TransformPoint(new Vector3(Mathf.Tan(p.x*Mathf.Deg2Rad)*runDistance,Mathf.Tan(p.y*Mathf.Deg2Rad)*runDistance,runDistance))).ToArray();
                 referenceTargets=(Vector3[])targets.Clone();referenceHead=headReference;referenceSession=session;referenceCalibration=calibration;referenceGeometryId=runId+"-geometry";
             }
-            WaitingForSignal=false;markers=new GameObject[targets.Length];ownedMaterials=new Material[targets.Length];
+            WaitingForSignal=false;markers=new GameObject[targets.Length];ownedMaterials=new Material[targets.Length];markerMeshes=new Mesh[targets.Length];aimMaterials=new Material[targets.Length];bananaAccentMaterials=new Material[targets.Length][];
+            var groupRoot=new GameObject("[GazeFlow] Calibration cues (temporary)");groupRoot.hideFlags=HideFlags.DontSaveInEditor|HideFlags.DontSaveInBuild;
+            if(gameObject.scene.name=="DontDestroyOnLoad"&&Application.isPlaying)DontDestroyOnLoad(groupRoot);else if(gameObject.scene.IsValid()&&gameObject.scene.isLoaded)UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(groupRoot,gameObject.scene);
+            cueGroup=groupRoot.AddComponent<StudyCalibrationCueGroup>();cueGroup.owner=this;
             var shader=Shader.Find("Universal Render Pipeline/Unlit")??Shader.Find("Unlit/Color");
             for(int i=0;i<targets.Length;i++)
             {
                 var marker=GameObject.CreatePrimitive(PrimitiveType.Sphere);markers[i]=marker;marker.name="GazeFlow validation target "+(i+1)+" (not an AOI)";
-                marker.layer=2;marker.GetComponent<Collider>().enabled=false;marker.transform.position=targets[i];marker.transform.localScale=Vector3.one*.035f;
-                if(shader!=null){var material=new Material(shader);ownedMaterials[i]=material;material.color=runAutomatic?new Color(.65f,.65f,.18f):Color.yellow;marker.GetComponent<Renderer>().sharedMaterial=material;}
+                marker.transform.SetParent(groupRoot.transform,true);
+                marker.layer=2;marker.GetComponent<Collider>().enabled=false;marker.transform.position=targets[i];marker.transform.localScale=Vector3.one*(authoredTargets!=null?objectCueDiameter:markerDiameter);
+                if(bananaMarkers&&authoredTargets==null){markerMeshes[i]=StudyBananaMarker.CreateMesh();marker.GetComponent<MeshFilter>().sharedMesh=markerMeshes[i];marker.name="Banana validation target "+(i+1)+" (not an AOI)";}
+                if(shader!=null){var material=new Material(shader);ownedMaterials[i]=material;material.color=Color.yellow;marker.GetComponent<Renderer>().sharedMaterial=material;}
+                if(bananaMarkers&&authoredTargets==null&&shader!=null)
+                {
+                    ownedMaterials[i].color=new Color(1f,.8f,.04f);
+                    bananaAccentMaterials[i]=new[]{new Material(shader){color=new Color(.37f,.28f,.05f)},new Material(shader){color=new Color(.16f,.065f,.02f)}};
+                    marker.GetComponent<Renderer>().sharedMaterials=new[]{ownedMaterials[i],bananaAccentMaterials[i][0],bananaAccentMaterials[i][1]};
+                    marker.transform.rotation=Quaternion.LookRotation(targets[i]-headReference.position);
+                    var cue=GameObject.CreatePrimitive(PrimitiveType.Sphere);cue.name="Fixed centre aim cue (not an AOI)";cue.layer=2;cue.GetComponent<Collider>().enabled=false;cue.transform.SetParent(marker.transform,false);cue.transform.localPosition=new Vector3(0,0,-.15f);cue.transform.localScale=Vector3.one*.09f;
+                    aimMaterials[i]=new Material(shader){color=Color.white};cue.GetComponent<Renderer>().sharedMaterial=aimMaterials[i];
+                }
+                cueGroup.Own(ownedMaterials[i]);cueGroup.Own(markerMeshes[i]);cueGroup.Own(aimMaterials[i]);if(bananaAccentMaterials[i]!=null)foreach(var accent in bananaAccentMaterials[i])cueGroup.Own(accent);
                 marker.SetActive(runAutomatic||i==TargetIndex);
             }
             AwaitingVisibilityConfirmation=true;ClearMeasurement();
         }
-        private void ClearMeasurement(){angles.Clear();covered=0;previousValid=double.NaN;sumObserved=Vector3.zero;sumExpected=Vector3.zero;directionPairs=0;}
+        private void ClearMeasurement(){angles.Clear();covered=0;previousValid=double.NaN;sumObserved=Vector3.zero;sumExpected=Vector3.zero;directionPairs=0;hitChecks=correctHits=0;}
         private void StartTarget(double now)
         {
             AwaitingVisibilityConfirmation=false;targetStarted=now;ClearMeasurement();
@@ -162,6 +223,7 @@ namespace NeonResearch
         }
         public void RecenterPreview()
         {
+            if(authoredTargets!=null)throw new InvalidOperationException("Object aim points are bound to actual objects; do not reposition them as a floating preview.");
             if(runIndependent)throw new InvalidOperationException("Round two keeps round-one world positions. To reposition both rounds, discard the correction and collect again.");
             if(!Running||WaitingForSignal||!AwaitingVisibilityConfirmation||results.Count!=0||!HasRecentValidSignal||sequence!=null)throw new InvalidOperationException("Only an unmeasured preview may be repositioned with a live worn signal.");
             RemoveMarkers();CreateTargets();
@@ -171,6 +233,7 @@ namespace NeonResearch
             EnsureSubscription();
             if(!Running)return;
             if(session!=StudyExportSession.SessionId){Complete(true,"session_changed");return;}
+            if(authoredTargets!=null&&(authoredHead!=headReference||authoredTargets.Where((t,i)=>t==null||!t.isActiveAndEnabled||!t.HasUniqueId()||Vector3.Distance(t.transform.position,authoredPositions[i])>.01f||Quaternion.Angle(t.transform.rotation,authoredRotations[i])>1f).Any())){Complete(true,"object_or_head_moved_during_calibration");return;}
             if(WaitingForSignal||AwaitingVisibilityConfirmation)return;
             double now=Time.realtimeSinceStartupAsDouble;
             if(WaitingBetweenTargets)
@@ -179,12 +242,13 @@ namespace NeonResearch
                 return;
             }
             // Only scale changes; the mathematical gaze target centre stays fixed.
-            markers[TargetIndex].transform.localScale=Vector3.one*(.035f*(1f+.25f*Mathf.Sin((float)(now-targetStarted)*Mathf.PI*2f*1.25f)));
+            markers[TargetIndex].transform.localScale=Vector3.one*((authoredTargets!=null?objectCueDiameter:markerDiameter)*(1f+.25f*Mathf.Sin((float)(now-targetStarted)*Mathf.PI*2f*1.25f)));
             var material=ownedMaterials[TargetIndex];
             if(material!=null)material.color=Color.yellow;
             if(now-targetStarted<runSettle+runMeasure)return;
             var result=EvaluateTarget(TargetIndex,targets[TargetIndex],angles,covered,runMeasure,runMaxError,runMinCoverage);
             result.local_direction_pairs=directionPairs;
+            if(authoredTargets!=null){var owner=authoredTargets[TargetIndex];result.target_id=owner.targetId;result.target_name=owner.DisplayName;result.target_group=owner.targetGroup;result.target_hit_checks=hitChecks;result.correct_target_hits=correctHits;result.correct_target_fraction=hitChecks==0?(double?)null:(double)correctHits/hitChecks;if(runIndependent)result.passed=result.passed&&result.correct_target_fraction.HasValue&&result.correct_target_fraction>=minimumCorrectTargetFraction;}
             if(directionPairs>0){var a=sumObserved.normalized;var b=sumExpected.normalized;result.mean_observed_head_local_direction=new[]{a.x,a.y,a.z};result.mean_expected_head_local_direction=new[]{b.x,b.y,b.z};}
             result.sequence_ordinal=results.Count;result.operator_confirmed_visible=!automaticRoundStart&&(!runAutomatic||results.Count==0);
             result.start_method=automaticRoundStart?"automatic_verification_after_countdown":runAutomatic?(results.Count==0?"operator_selected_first_point":"automatic_after_initial_selection"):"operator_confirmed_each_point";
@@ -225,6 +289,8 @@ namespace NeonResearch
             double now=Time.realtimeSinceStartupAsDouble,elapsed=now-targetStarted-runSettle;
             if(elapsed<0||elapsed>=runMeasure)return;
             double? error=sample.valid&&sample.calibrationId==calibration?AngularError(sample.worldRay,targets[TargetIndex]):null;
+            var objectHit=default(StudyGazeTargetLog.QueryResult);
+            if(authoredTargets!=null&&error.HasValue){hitChecks++;objectHit=StudyGazeTargetLog.Query(sample.worldRay,objectCollisionMask,objectRayDistance);LastObjectQuery=objectHit.status+": "+(objectHit.colliderPath??"no collider");if(objectHit.target==authoredTargets[TargetIndex]&&objectHit.status=="target_hit")correctHits++;}
             if(error.HasValue){angles.Add((float)error.Value);if(!double.IsNaN(previousValid)&&now-previousValid>0&&now-previousValid<=.1)covered+=now-previousValid;previousValid=now;}
             else previousValid=double.NaN;
             var t=targets[TargetIndex];
@@ -232,6 +298,7 @@ namespace NeonResearch
             Vector3 localObserved=Vector3.zero,localExpected=Vector3.zero;
             if(error.HasValue&&headReference!=null){localObserved=headReference.InverseTransformDirection(raw.direction).normalized;localExpected=headReference.InverseTransformDirection(t-raw.origin).normalized;sumObserved+=localObserved;sumExpected+=localExpected;directionPairs++;}
             rows.Add(NeonStudyRecorder.Csv(runId,TargetIndex,now,StudyExportSession.SessionId==session&&session!=null?(object)StudyExportSession.Seconds:"",sample.calibrationId,sample.source,error.HasValue,sample.status,error.HasValue?(object)error.Value:"",t.x,t.y,t.z,sample.deviceTimestampMs>0?(object)sample.deviceTimestampMs:"",sample.deviceTimeSemantics,error.HasValue?(object)sample.worldRay.origin.x:"",error.HasValue?(object)sample.worldRay.origin.y:"",error.HasValue?(object)sample.worldRay.origin.z:"",error.HasValue?(object)sample.worldRay.direction.x:"",error.HasValue?(object)sample.worldRay.direction.y:"",error.HasValue?(object)sample.worldRay.direction.z:"",Mode,results.Count,correction,error.HasValue?(object)raw.direction.x:"",error.HasValue?(object)raw.direction.y:"",error.HasValue?(object)raw.direction.z:"",error.HasValue?(object)localObserved.x:"",error.HasValue?(object)localObserved.y:"",error.HasValue?(object)localObserved.z:"",error.HasValue?(object)localExpected.x:"",error.HasValue?(object)localExpected.y:"",error.HasValue?(object)localExpected.z:""));
+            rows[rows.Count-1]+=","+NeonStudyRecorder.Csv(authoredTargets==null?"":authoredTargets[TargetIndex].targetId,objectHit.target==null?"":objectHit.target.targetId,objectHit.status??"",objectHit.geometry??"",objectHit.colliderPath??"");
         }
         public void Abort(){if(Running)Complete(true,"operator_abort");}
         public void SkipTutorialValidation()
@@ -257,8 +324,9 @@ namespace NeonResearch
             Running=false;WaitingForSignal=false;AwaitingVisibilityConfirmation=false;
             LastReport=new ValidationReport{id=runId,calibration_id=calibration,session_id=session,created_utc=DateTime.UtcNow.ToString("O"),start_session_s=startedSessionTime,end_session_s=StudyExportSession.SessionId==session&&session!=null?(double?)StudyExportSession.Seconds:null,passed=!aborted&&targets!=null&&results.Count==targets.Length&&results.All(r=>r.passed),aborted=aborted,abort_reason=reason,presentation_mode=Mode,target_order=sequence?.Order??results.Select(r=>r.target_index).ToArray(),inter_target_seconds=runAutomatic?runGap:0,max_mean_error_deg=runMaxError,min_coverage=runMinCoverage,settle_seconds=runSettle,measure_seconds=runMeasure,distance_metres=runDistance,targets=new List<TargetResult>(results)};
             LastReport.purpose=runIndependent?"independent_live_verification":"fit_collection_or_uncorrected_validation";LastReport.correction_id=runCorrectionId??"";
+            if(authoredTargets!=null){LastReport.minimum_correct_target_fraction=minimumCorrectTargetFraction;LastReport.verification_scope="Three authored tutorial objects at measured positions; not a full-scene/depth accuracy validation";}
             LastReport.target_geometry_id=referenceGeometryId;LastReport.geometry_policy=reusedGeometry?"same_fixed_world_targets_NEW_measurement_samples":"new_world_anchor_for_current_head_binding";
-            LastReport.method="Known fixed world targets; angular ray-to-target error; "+(string.IsNullOrEmpty(runCorrectionId)?"uncorrected ray":"bounded fitted direction correction, NEW measurement samples")+"; all targets must pass project-specific engineering thresholds; repeat-layout evidence is not full-scene accuracy.";
+            LastReport.method="Known fixed world targets; angular ray-to-target error; "+(string.IsNullOrEmpty(runCorrectionId)?"uncorrected ray":"bounded local direction correction (manual or fitted; see correction.json), NEW measurement samples")+"; all targets must pass project-specific engineering thresholds; repeat-layout evidence is not full-scene accuracy.";
             RemoveMarkers();sequence=null;
             Event("gaze_validation_end",aborted?"aborted":LastReport.passed?"measured_pass":"measured_fail","reason="+reason+"; Operator approval separate.");
             try
@@ -271,10 +339,18 @@ namespace NeonResearch
         }
         private void RemoveMarkers()
         {
+            if(cueGroup!=null)
+            {
+                var root=cueGroup.gameObject;root.SetActive(false);if(Application.isPlaying)Destroy(root);else DestroyImmediate(root);
+                cueGroup=null;markers=null;ownedMaterials=null;markerMeshes=null;aimMaterials=null;bananaAccentMaterials=null;return;
+            }
             if(markers==null)return;
             for(int i=0;i<markers.Length;i++)
             {
                 var marker=markers[i];var material=ownedMaterials==null?null:ownedMaterials[i];
+                var mesh=markerMeshes==null?null:markerMeshes[i];if(mesh!=null){if(Application.isPlaying)Destroy(mesh);else DestroyImmediate(mesh);}
+                var aim=aimMaterials==null?null:aimMaterials[i];if(aim!=null){if(Application.isPlaying)Destroy(aim);else DestroyImmediate(aim);}
+                if(bananaAccentMaterials!=null&&bananaAccentMaterials[i]!=null)foreach(var accent in bananaAccentMaterials[i])if(accent!=null){if(Application.isPlaying)Destroy(accent);else DestroyImmediate(accent);}
                 if(Application.isPlaying){if(material!=null)Destroy(material);Destroy(marker);}
                 else{if(material!=null)DestroyImmediate(material);DestroyImmediate(marker);}
             }

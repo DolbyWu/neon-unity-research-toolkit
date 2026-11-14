@@ -8,6 +8,34 @@ namespace NeonResearch.Tests
 {
     public sealed class GazeCorrectionTests
     {
+        [Test] public void ManualOffsetsHaveExplicitRightUpConventionAndRejectUnsafeRotations()
+        {
+            Assert.That((StudyGazeCorrection.ManualRotation(1,0)*Vector3.forward).x,Is.GreaterThan(0));
+            Assert.That((StudyGazeCorrection.ManualRotation(0,1)*Vector3.forward).y,Is.GreaterThan(0));
+            Assert.That(Quaternion.Angle(StudyGazeCorrection.ManualRotation(0,0),Quaternion.identity),Is.LessThan(.001f));
+            Assert.Throws<ArgumentException>(()=>StudyGazeCorrection.ManualRotation(float.NaN,0));
+            Assert.Throws<ArgumentException>(()=>StudyGazeCorrection.ManualRotation(0,float.PositiveInfinity));
+            Assert.Throws<ArgumentException>(()=>StudyGazeCorrection.ManualRotation(13,0));
+            Assert.Throws<ArgumentException>(()=>StudyGazeCorrection.ManualRotation(10,10));
+        }
+        [Test] public void ManualModelRoundTripRetainsProvenanceWithoutInventingTrainingEvidence()
+        {
+            var q=StudyGazeCorrection.ManualRotation(1,2);
+            var model=new StudyGazeCorrection.Model{correction_kind="manual_yaw_pitch",horizontal_degrees=1,vertical_degrees=2,applied_session_s=12.34,quaternion_xyzw=new[]{q.x,q.y,q.z,q.w}};
+            var copy=Newtonsoft.Json.JsonConvert.DeserializeObject<StudyGazeCorrection.Model>(Newtonsoft.Json.JsonConvert.SerializeObject(model));
+            Assert.That(copy.correction_kind,Is.EqualTo("manual_yaw_pitch"));Assert.That(copy.applied_session_s,Is.EqualTo(12.34));
+            Assert.That(copy.training_verification_id,Is.Null);Assert.That(Quaternion.Angle(copy.Rotation,q),Is.LessThan(.01f));
+        }
+        [Test] public void UsableUnverifiedRayWritesPrimaryTargetAndSeparateQualityWithoutFabricatingApproval()
+        {
+            var reset=typeof(StudyExportSession).GetMethod("Reset",BindingFlags.Static|BindingFlags.NonPublic);reset.Invoke(null,null);string root=Path.GetFullPath("Library/OfficialRayCsvTests/"+Guid.NewGuid().ToString("N"));var cube=GameObject.CreatePrimitive(PrimitiveType.Cube);
+            try{
+                var folder=StudyExportSession.EnsureStarted(root);cube.transform.position=new Vector3(1000,1000,1003);cube.AddComponent<StudyResearchTarget>().targetId="synthetic-official-target";Physics.SyncTransforms();
+                var ray=new Ray(new Vector3(1000,1000,1000),Vector3.forward);var sample=new StudyGazeRaySample{valid=true,mappingVerified=false,worldRay=ray,rawWorldRay=ray,hasRawWorldRay=true,verificationStatus="not_measured_current_binding"};
+                Assert.That(StudyGazeTargetLog.Record(sample,~0,10,out var id),Is.True);Assert.That(id,Is.EqualTo("synthetic-official-target"));sample.valid=false;sample.status="not_worn";StudyGazeTargetLog.Record(sample,~0,10,out _);StudyExportSession.Finish();
+                var table=StudySequenceAnalysis.Rows(Path.Combine(folder,"gaze_targets.csv")).ToArray();Assert.That(table[1][Array.IndexOf(table[0],"ray_valid")].ToLowerInvariant(),Is.EqualTo("true"));Assert.That(table[1][Array.IndexOf(table[0],"mapping_verified")].ToLowerInvariant(),Is.EqualTo("false"));Assert.That(table[1][Array.IndexOf(table[0],"query_collider_path")],Does.Contain(cube.name));Assert.That(table[2][Array.IndexOf(table[0],"target_id")],Is.Empty);Assert.That(table[1].Length,Is.EqualTo(table[0].Length));
+            }finally{UnityEngine.Object.DestroyImmediate(cube);StudyExportSession.Finish();reset.Invoke(null,null);if(Directory.Exists(root))Directory.Delete(root,true);}
+        }
         [Test] public void UnverifiedCandidatesAreExportedButNeverPromotedToAcceptedHits()
         {
             var reset=typeof(StudyExportSession).GetMethod("Reset",BindingFlags.Static|BindingFlags.NonPublic);reset.Invoke(null,null);

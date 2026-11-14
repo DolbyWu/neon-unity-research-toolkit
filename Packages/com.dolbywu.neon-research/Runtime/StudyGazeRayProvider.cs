@@ -10,6 +10,8 @@ namespace NeonResearch
         public bool candidateRayAvailable;
         public string correctionId;
         public bool valid;
+        // Signal/geometry validity and measured mapping quality are independent.
+        public bool mappingVerified;
         public string source, calibrationId, status, deviceTimeSemantics;
         public string verificationId, verificationStatus;
         public long deviceTimestampMs;

@@ -7,6 +7,19 @@ namespace NeonResearch.Tests
 {
  public sealed class LiveObservationTests
  {
+  [Test] public void ApprovedMarkerKeepsYellowFaceAndUnambiguousLabelsWithoutRemovingRecordingGuards()
+  {
+   Assert.That(LiveObservationWindow.ButtonFaceColor,Is.EqualTo((Color)new Color32(255,220,50,255)));
+   Assert.That(LiveObservationWindow.ActionLabel(false,false,0),Is.EqualTo("RECORDING REQUIRED"));
+   Assert.That(LiveObservationWindow.ActionLabel(true,false,0),Is.EqualTo("START OBSERVATION"));
+   Assert.That(LiveObservationWindow.ActionLabel(true,true,10),Is.EqualTo("END OBSERVATION"),"The tenth interval must still be endable.");
+   Assert.That(LiveObservationWindow.ActionLabel(true,false,1),Is.EqualTo("START NEXT OBSERVATION"));
+   Assert.That(LiveObservationWindow.ActionLabel(true,false,10),Is.EqualTo("10 INTERVALS SAVED"));
+   Assert.That(LiveObservationWindow.ElapsedLabel(59.9),Is.EqualTo("00:59"));
+   Assert.That(LiveObservationWindow.ElapsedLabel(60),Is.EqualTo("01:00"));
+   Assert.That(LiveObservationWindow.ElapsedLabel(3661),Is.EqualTo("01:01:01"));
+   Assert.That(LiveObservationWindow.ElapsedLabel(double.NaN),Is.EqualTo("00:00"));
+  }
   [Test] public void ClickIntervalsNotesLimitAndInterruptedEndAreSavedPerSession()
   {
    var reset=typeof(StudyExportSession).GetMethod("Reset",BindingFlags.NonPublic|BindingFlags.Static);

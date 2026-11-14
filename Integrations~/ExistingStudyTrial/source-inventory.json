@@ -4,15 +4,15 @@
   "timezone": "America/New_York",
   "kind": "research_pipeline_integration_reference",
   "source_scope": "Research/tutorial C# changes compared with the unchanged local pre-migration project. Host assets, settings, data, and legacy raw receiver source are deliberately excluded.",
-  "note": "New files retain source text and Unity metadata. Narrow zero-context patches retain source SHA-256 and baseline SHA-256; headers are canonical relative paths. Inventory SHA-256 values describe original source bytes, not normalized LF snapshot files. artifact_sha256 and meta_sha256 fingerprint the exact published snapshot files; changed artifacts fingerprint narrow patch text, not patched host source.",
+  "note": "New files retain source text and Unity metadata. Narrow zero-context patches retain source SHA-256 and baseline SHA-256; headers are canonical relative paths. source_sha256 fingerprints original source bytes. artifact_sha256 and meta_sha256 fingerprint published UTF-8 text payloads with LF line endings as stored in Git; normalize CRLF to LF when auditing a Windows checkout. Changed artifacts fingerprint narrow patch text, not patched host source.",
   "files": [
     {
       "path": "Assets/Scripts/GazeFlowHostHeadBinding.cs",
       "state": "new",
-      "source_sha256": "f5b2139bd9530fff55c79458d3be91cbd6f5040afa0e5bbd3b3acae11ad93234",
+      "source_sha256": "3e05ff3cb1341a705f5734cf73534418375b2737aa4f9a4fdf3068cc43c25148",
       "baseline_sha256": null,
       "artifact_path": "Source/Assets/Scripts/GazeFlowHostHeadBinding.cs",
-      "artifact_sha256": "f5b2139bd9530fff55c79458d3be91cbd6f5040afa0e5bbd3b3acae11ad93234",
+      "artifact_sha256": "3e05ff3cb1341a705f5734cf73534418375b2737aa4f9a4fdf3068cc43c25148",
       "meta_path": "Source/Assets/Scripts/GazeFlowHostHeadBinding.cs.meta",
       "meta_sha256": "84388e6682b84c503477d4b7a2260c5c3104d0131ed4002ba70982dba57e31ff"
     },
@@ -29,10 +29,10 @@
     {
       "path": "Assets/Scripts/GazeFlowTutorialEntry.cs",
       "state": "new",
-      "source_sha256": "e522c7337b9127f0d546554f9d658a217222d53f8ed928b2dc72515f815e3403",
+      "source_sha256": "e5e43330c86edef286f9460042b2e703cfd14415ab007545937d13af8e128192",
       "baseline_sha256": null,
       "artifact_path": "Source/Assets/Scripts/GazeFlowTutorialEntry.cs",
-      "artifact_sha256": "e522c7337b9127f0d546554f9d658a217222d53f8ed928b2dc72515f815e3403",
+      "artifact_sha256": "e5e43330c86edef286f9460042b2e703cfd14415ab007545937d13af8e128192",
       "meta_path": "Source/Assets/Scripts/GazeFlowTutorialEntry.cs.meta",
       "meta_sha256": "10c4f73271eb29de5a8a24a154b898ccd353b71cb4c01c99d2ce1755a7f46ad1"
     },
@@ -98,18 +98,18 @@
     {
       "path": "Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs",
       "state": "changed",
-      "source_sha256": "76d8d4a6fb64af956ce48f2fcbeab35a99ff8d85d4327163db56e46dc2fb0f51",
+      "source_sha256": "2313e4fc8bb2406126287f5e9f7403ac2fa3af39bea1d130fea3a4ba7845ade6",
       "baseline_sha256": "fb83254d10130d882a54d8adfc4be59049d00a5cc910acedec88d66c347b08cc",
       "artifact_path": "Patches/Assets/Scripts/Systems/Tutorial/HandTutorialNextGate.cs.patch",
-      "artifact_sha256": "67aa1214ea516cc11f183eedf7f1977d196e23d61387e9998408d42f8db33713"
+      "artifact_sha256": "2ff510ce58002034bf3d5d48bcb2f0de34ec7a1eb2aeee38ebdf33eb6f7779e3"
     },
     {
       "path": "Assets/Editor/GazeFlowCorrectionChecks.cs",
       "state": "new",
-      "source_sha256": "f61b937ed1c7d35604574dd7e1ae2ae11fc354b48def0987a6774f893575949e",
+      "source_sha256": "6eb1dc0e458925a2261f4ffbb2d0a596dcfe66f14241a871d56bdc9054a3a111",
       "baseline_sha256": null,
       "artifact_path": "Source/Assets/Editor/GazeFlowCorrectionChecks.cs",
-      "artifact_sha256": "f61b937ed1c7d35604574dd7e1ae2ae11fc354b48def0987a6774f893575949e",
+      "artifact_sha256": "6eb1dc0e458925a2261f4ffbb2d0a596dcfe66f14241a871d56bdc9054a3a111",
       "meta_path": "Source/Assets/Editor/GazeFlowCorrectionChecks.cs.meta",
       "meta_sha256": "787273a9fd89cbb5a65c73562ebfff0b1928dc2026673d1e65da1049193473ec"
     },
@@ -121,20 +121,20 @@
     {
       "path": "Assets/Editor/GazeFlowTrialSessionPanel.cs",
       "state": "new",
-      "source_sha256": "6d9b8f73d92ee0e980bcb592463e28dedf082c3b74bc6acada7100b2725b8231",
+      "source_sha256": "adf178d7c742836683f3630b824ec042d7dd254c4e8bc104d322832c33963f3d",
       "baseline_sha256": null,
       "artifact_path": "Source/Assets/Editor/GazeFlowTrialSessionPanel.cs",
-      "artifact_sha256": "6d9b8f73d92ee0e980bcb592463e28dedf082c3b74bc6acada7100b2725b8231",
+      "artifact_sha256": "adf178d7c742836683f3630b824ec042d7dd254c4e8bc104d322832c33963f3d",
       "meta_path": "Source/Assets/Editor/GazeFlowTrialSessionPanel.cs.meta",
       "meta_sha256": "ceacb04041ad02d1fe83304bd167aa3b7aa31ace5237dca5ac9984fe5f535267"
     },
     {
       "path": "Assets/Editor/GazeFlowTutorialPlayEntry.cs",
       "state": "new",
-      "source_sha256": "2a4361277967d802d2dc729123395b43ae2f1d29a4bfc977b55c405f1c24571b",
+      "source_sha256": "ae56cc91c3c4ac8958d426dfddefde292b3ac0e057b6b3a30413ef1bcd45aa9b",
       "baseline_sha256": null,
       "artifact_path": "Source/Assets/Editor/GazeFlowTutorialPlayEntry.cs",
-      "artifact_sha256": "2a4361277967d802d2dc729123395b43ae2f1d29a4bfc977b55c405f1c24571b",
+      "artifact_sha256": "ae56cc91c3c4ac8958d426dfddefde292b3ac0e057b6b3a30413ef1bcd45aa9b",
       "meta_path": "Source/Assets/Editor/GazeFlowTutorialPlayEntry.cs.meta",
       "meta_sha256": "c06a16ee33c1add3251958bccaee5914f1d68f5b0221d51f6fedd004c4098fe8"
     },
@@ -215,10 +215,10 @@
     {
       "path": "Assets/Tests/EditMode/ReflectiveAgent/AoiCorrectionIntegrationTests.cs",
       "state": "new",
-      "source_sha256": "54972c209d428b911288ba3e8172a5942299ee9ab7db426fae8612fdbf24b20b",
+      "source_sha256": "767cf16a83c474f2a3f72c4633a0b2ab0ee1e2db7349073dd28a3c4fb3d43266",
       "baseline_sha256": null,
       "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiCorrectionIntegrationTests.cs",
-      "artifact_sha256": "54972c209d428b911288ba3e8172a5942299ee9ab7db426fae8612fdbf24b20b",
+      "artifact_sha256": "767cf16a83c474f2a3f72c4633a0b2ab0ee1e2db7349073dd28a3c4fb3d43266",
       "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiCorrectionIntegrationTests.cs.meta",
       "meta_sha256": "9ff79584bde660819c9845dc8a11bae9e8f607c014b126b5be0f1b42fdc6df43"
     },
@@ -291,7 +291,77 @@
       "artifact_sha256": "6e034497d63c3f2e109789d2adc4508ab2e2580a67ec6db7c20925273c098aa4",
       "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiAutomaticTransitionTests.cs.meta",
       "meta_sha256": "0c92a954cd4e2d150ec4229c89d0f2a9c27ea03ecbc8dbe4472d67e23c1aebe7"
+    },
+    {
+      "path": "Assets/Editor/GazeFlowTutorialObjectAudit.cs",
+      "state": "new",
+      "baseline_sha256": null,
+      "source_sha256": "0c9431d09d27732ade57629dd563009372d86b93b477c73d03cb5e0d6f01aa46",
+      "artifact_path": "Source/Assets/Editor/GazeFlowTutorialObjectAudit.cs",
+      "artifact_sha256": "0c9431d09d27732ade57629dd563009372d86b93b477c73d03cb5e0d6f01aa46",
+      "meta_path": "Source/Assets/Editor/GazeFlowTutorialObjectAudit.cs.meta",
+      "meta_sha256": "dee16d881ceec0fe8ce56696f9fcdb0821c0118db459c0c5950aa90993163cba"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/AoiObjectCalibrationTests.cs",
+      "state": "new",
+      "baseline_sha256": null,
+      "source_sha256": "856b1b6eb720fa707549b76dda42b5c4b78216ed821f1f04d1a1faebfd1607a5",
+      "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiObjectCalibrationTests.cs",
+      "artifact_sha256": "856b1b6eb720fa707549b76dda42b5c4b78216ed821f1f04d1a1faebfd1607a5",
+      "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiObjectCalibrationTests.cs.meta",
+      "meta_sha256": "08aa807ee9aa7c81fe1a8fc33591e068d83e875263ee63b52ae0fc8a6dd1a186"
+    },
+    {
+      "path": "Assets/Editor/GazeFlowHierarchyOrganizer.cs",
+      "state": "new",
+      "source_sha256": "1c5a78c7a3b583bb47ad7afa6d2f76ae1b543bbabc3bde956c6db2c6786de98c",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Editor/GazeFlowHierarchyOrganizer.cs",
+      "artifact_sha256": "1c5a78c7a3b583bb47ad7afa6d2f76ae1b543bbabc3bde956c6db2c6786de98c",
+      "meta_path": "Source/Assets/Editor/GazeFlowHierarchyOrganizer.cs.meta",
+      "meta_sha256": "b2f7cad1838e35ae5242817658423ce5e634fcd503cbc8524458eebfd6ce9437"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/AoiDesktopGazeAdjustmentTests.cs",
+      "state": "new",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiDesktopGazeAdjustmentTests.cs",
+      "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiDesktopGazeAdjustmentTests.cs.meta",
+      "source_sha256": "d221cd67be3d5317cacf83ac07876b0620ccbe2c60fbb7e8f3fd44010016d22f",
+      "artifact_sha256": "d221cd67be3d5317cacf83ac07876b0620ccbe2c60fbb7e8f3fd44010016d22f",
+      "meta_sha256": "f8baf595ccc4e787cd18079e25652c402d1f8feeedadc3b33a166c3fe8df8d0f"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/TutorialManualStartTests.cs",
+      "state": "new",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/TutorialManualStartTests.cs",
+      "source_sha256": "76c5e2c1a7cfd7f1c4e52faa9527b0d8925fce87f0ae8d4340d50af9541f6e71",
+      "artifact_sha256": "76c5e2c1a7cfd7f1c4e52faa9527b0d8925fce87f0ae8d4340d50af9541f6e71",
+      "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/TutorialManualStartTests.cs.meta",
+      "meta_sha256": "16064775000de94bcb7af76eb1f544cc92535bd74377788e753f6591e12dc3ef"
+    },
+    {
+      "path": "Assets/Scripts/GazeFlowTutorialReferenceDot.cs",
+      "state": "new",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Scripts/GazeFlowTutorialReferenceDot.cs",
+      "meta_path": "Source/Assets/Scripts/GazeFlowTutorialReferenceDot.cs.meta",
+      "source_sha256": "a692fa419a286c52dff8ab54809c044361821c7fa0bf58bdc3db03be9b7f57ce",
+      "artifact_sha256": "a692fa419a286c52dff8ab54809c044361821c7fa0bf58bdc3db03be9b7f57ce",
+      "meta_sha256": "afdc34bd82816a77c175df045d0c8242bb4175f99cc8f78de67644cc1c564116"
+    },
+    {
+      "path": "Assets/Tests/EditMode/ReflectiveAgent/TutorialReferenceDotTests.cs",
+      "state": "new",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/TutorialReferenceDotTests.cs",
+      "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/TutorialReferenceDotTests.cs.meta",
+      "source_sha256": "e4ca10adbb9e113caeaccee372bc23fb706a6dd5fd218e3d310490cd47e2545c",
+      "artifact_sha256": "e4ca10adbb9e113caeaccee372bc23fb706a6dd5fd218e3d310490cd47e2545c",
+      "meta_sha256": "a68bb2e358ed0b1afc073b715e24164a21d43d2992c1922e927b08b3afba4ee9"
     }
   ],
-  "latest_source_update": "Automatic two-round entry, 3-second fresh-signal countdown and synthetic transition tests synchronized after the initial dated snapshot."
+  "latest_source_update": "2026-11-14: fixed yellow 32 mm lower-chess visual reference during optional desktop adjustment; no collider/AOI/physics changes; hides during measured checks and after explicit tutorial Start. Save confirmation and quiet preparation retained. Original projects/data remain unchanged; no research data copied."
 }

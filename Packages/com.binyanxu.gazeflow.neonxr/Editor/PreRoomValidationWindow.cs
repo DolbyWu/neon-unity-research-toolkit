@@ -18,14 +18,19 @@ namespace NeonResearch.NeonXR.Editor
         private void OnInspectorUpdate()=>Repaint();
         private void OnGUI()
         {
-            scroll=EditorGUILayout.BeginScrollView(scroll);EditorGUILayout.HelpBox(message,MessageType.Info);
+            scroll=EditorGUILayout.BeginScrollView(scroll);
             if(!EditorApplication.isPlaying){EditorGUILayout.LabelField("Enter Play. The trial starts with validation in the first tutorial room.");EditorGUILayout.EndScrollView();return;}
             var providers=UnityEngine.Object.FindObjectsByType<NeonXRResearchProvider>(FindObjectsSortMode.None).Where(p=>p.isActiveAndEnabled).ToArray();
             if(providers.Length!=1){EditorGUILayout.LabelField("Exactly one active Neon XR Research Provider is required.");EditorGUILayout.EndScrollView();return;}
             var provider=providers[0];var check=provider.GetComponent<StudySpatialValidation>()??provider.gameObject.AddComponent<StudySpatialValidation>();
-            EditorGUILayout.HelpBox(provider.AutomaticValidationStatus,provider.AutomaticValidationStatus.Contains("NOT STARTED")?MessageType.Warning:MessageType.Info);
+            EditorGUILayout.HelpBox("OPTIONAL quality check. Usable official rays and object hits are recorded even without a passing report. No test is required to start the original tutorial.",MessageType.Info);
+            if(GUILayout.Button("Use official Neon XR ray — no extra correction"))provider.UseOfficialRayWithoutExtraCorrection();
+            bool bananaBaseline=(check.singleBaselineBeforeObjects||check.bananaMarkers)&&check.TutorialEntryContext;
+            EditorGUILayout.HelpBox(bananaBaseline?"ONE FIVE-TARGET BASELINE: confirm the yellow dots are visible and choose ONE starting point. It then continues to three-object calibration in the tutorial, NOT another five-point round.":provider.AutomaticValidationStatus,provider.AutomaticValidationStatus.Contains("NOT STARTED")&&!bananaBaseline?MessageType.Warning:MessageType.Info);
             if(provider.AutomaticVerificationPending&&GUILayout.Button("Pause automatic round-two transition"))provider.CancelAutomaticValidationTransition();
             check.provider=provider;check.headReference=provider.headReference;
+            if(UnityEngine.Object.FindFirstObjectByType<StudyObjectCalibrationWorkflow>()!=null)
+            {EditorGUILayout.HelpBox("The one-round yellow-dot baseline is complete. Continue with the three-object calibration panel; do not start another five-point run here.",MessageType.Info);if(GUILayout.Button("Open tutorial object calibration"))ObjectCalibrationWindow.Open();EditorGUILayout.EndScrollView();return;}
             int headId=provider.headReference==null?0:provider.headReference.GetInstanceID();
             if(approvalProvider!=provider.GetInstanceID()||approvalHead!=headId){approval=false;approvalProvider=provider.GetInstanceID();approvalHead=headId;}
             if(check.BindingReviewRequired && !provider.mappingVerified)
@@ -36,7 +41,7 @@ namespace NeonResearch.NeonXR.Editor
                 EditorGUI.BeginChangeCheck();provider.calibrationId=EditorGUILayout.TextField("Mount calibration ID",provider.calibrationId);
                 if(EditorGUI.EndChangeCheck()){provider.mappingVerified=false;approval=false;}
                 check.automaticSequence=EditorGUILayout.ToggleLeft("Automatic five points — click ONE starting point on the computer",check.automaticSequence);
-                provider.automaticTwoRoundFlow=EditorGUILayout.ToggleLeft("Automatically fit and start round 2 when round 1 has enough data",provider.automaticTwoRoundFlow);
+                using(new EditorGUI.DisabledScope(bananaBaseline))provider.automaticTwoRoundFlow=EditorGUILayout.ToggleLeft("Legacy two-five-point fitting flow (not used by single baseline)",provider.automaticTwoRoundFlow);
                 if(GUILayout.Button(check.automaticSequence?"Show five targets":"Show manual validation target",GUILayout.Height(36)))
                 {
                     try
@@ -75,7 +80,7 @@ namespace NeonResearch.NeonXR.Editor
                 if(report.aborted)EditorGUILayout.LabelField("Reason: "+report.abort_reason);
                 foreach(var t in report.targets)EditorGUILayout.LabelField($"Point {t.target_index+1}: mean {(t.mean_error_deg.HasValue?t.mean_error_deg.Value.ToString("F2"):"missing")}°; p95 {(t.p95_error_deg.HasValue?t.p95_error_deg.Value.ToString("F2"):"missing")}°; coverage {t.coverage:P0}");
                 EditorGUILayout.SelectableLabel(check.LastOutput,EditorStyles.wordWrappedLabel,GUILayout.Height(45));
-                if(provider.CurrentCorrection==null&&!check.RestoredForReviewOnly&&!check.Running&&!report.aborted)
+                if(provider.CurrentCorrection==null&&!check.RestoredForReviewOnly&&!check.Running&&!report.aborted&&!bananaBaseline)
                 {
                     var blockers=StudyValidationReadiness.FitBlockers(report);
                     if(blockers.Length>0)EditorGUILayout.HelpBox("ROUND 2 NOT STARTED — insufficient first-round collection:\n"+string.Join("\n",blockers)+"\nCheck wearing/stream quality, then repeat all five points. Earlier files remain saved.",MessageType.Warning);

@@ -1,5 +1,93 @@
 # Changelog
 
+## Tutorial reference disc — 2026-11-14
+
+- Independent host binds a fixed yellow 32 mm visual reference to the existing uniquely identified chess object's lower visible solid surface during manual preparation. The wearer looks at yellow while the operator nudges cyan gaze; Save/Hide/Start remain explicit controls.
+- The runtime-generated double-sided unlit disc has no collider, Rigidbody or Research Target and does not change existing target names, physics or geometry. It follows the object anchor, not the head; existing depth occlusion remains. No visible lower surface means a status warning, not a through-wall fallback.
+- Reference is hidden during optional measured checks and after tutorial Start. This is an optional visual bias-adjustment aid, not a new accuracy pass, fixation or attention measurement. Original/main/store editions and historical research data are unchanged.
+- Compiled in the independent host; 42/42 targeted EditMode tests passed, including the existing authored chess prefab's lower-surface placement, no collider/AOI additions, unchanged original ray hit, object-versus-head anchoring, occlusion and tutorial/check visibility. Headset visual appearance remains to be tested by the wearer.
+
+## Explicit preparation finish and gaze-save confirmation — 2026-11-14
+
+- Independent host shows the original grabbing station quietly until the observer clicks **Start tutorial** in Desktop Gaze Adjustment. Original narration delay begins after the click. Validation release does not trigger narration; no gaze/accuracy result is required to start. Existing eye/AOI/media recording continues and no extra popup is auto-opened.
+- Preparation grabs remain raw behavior records without prematurely satisfying teaching objectives. Original actual-grab objectives, narration queue, Next and later scene flow remain intact. Preparation, start request and narration start have separate timeline events.
+- Added **Save gaze adjustment** with an explicit saved/hide-pointer message and immutable session-local operator receipt. It does not approve spatial accuracy or change pointer visibility. Changes/reset/rebind/session replacement require a fresh confirmation; past receipt/model files remain intact.
+- Integrated-host compilation and 38 synthetic checks passed, including one-click/idempotent Start, independent original narration delay, raw preparation grabs, retained Next, save receipts and reset/rebind/session isolation. Headset playback remains a new device-run check.
+
+## Offline review presentation and integer ratings — 2026-11-14
+
+- Research target hits now starts collapsed with a native disclosure triangle and count summary; expanded target statistics have their own bounded scroll area. Existing filters, verification flags, callbacks and exports are unchanged.
+- Live observation review/play controls and saved annotation time buttons use the same saturated yellow as the Unity observer control. Their interval seeking/playback behavior is retained.
+- New participant intensity responses use optional 1–10 integer number buttons, with no default and an explicit clear/not-reported action. JSON, CSV and offline curated outputs retain scale and input-method provenance. Legacy 0–10 values, including zero and decimals, remain unchanged; revising a rating preserves the previous value/scale in history. The distinct 1–5 retrospective confusion field is not converted.
+- Synthetic regression checks cover desktop/mobile presentation, keyboard selection, missing ratings, legacy migration, invalid-score rejection, JSON resume, CSV, target filtering and local video pause/scrub/interval replay. No participant recording was started or uploaded.
+
+## Optional desktop gaze adjustment — 2026-11-14
+
+- Added bounded operator yaw/pitch nudges, explicit manual-model provenance and a separate optional no-fitting five-point check through the Neon XR adapter's Desktop Gaze Adjustment window. Original official rays and local adjusted rays remain distinct; no automatic accuracy approval or phone-profile/mount-file edit.
+- Cyan preview uses the research callback ray and the recorder's nearest-collider/occlusion policy, with stale/invalid hiding and no gameplay callback/logging side effects. Existing Gaze Pointer entries open the new optional panel; it does not auto-open on Play.
+- Each nudge saves a new immutable session-local correction JSON and explicit event/gap. Reset retains files and returns to official rays. Known scene-head replacements retain only matching-session/configuration manual offsets, never mapping approval. New participant sessions do not inherit offsets.
+- Added manual sign/limit/provenance and adapter-level synthetic checks for reset, source replacement, same-session carry, independent approval, raw/adjusted exports and preview behavior. Device accuracy acceptance remains pending; original/main/store editions and research data are unchanged.
+
+## Approved large observation control — 2026-11-14
+
+- Applied the approved large-button design to Live Observation Marker: saturated yellow face, dark outline/raised shadow, participant/context row, clear interval timer and start/end/next labels. No banana spots or flashing animation.
+- The same face is painted independently of the Unity skin's hover/active/disabled and Play tint. Locked controls remain visibly yellow but cannot start observations without an active recording; the tenth active interval can still be ended.
+- Original start/end timestamps, separate observer-note window, 10-interval limit, archive identity and exports are unchanged. Closing/repainting the panel never starts/stops recording or closes an interval; owned display textures are cleaned up on close.
+- Checks: 68 core tests and 22 independent-host targeted checks passed. Actual idle Editor panel inspected: locked control remains bright yellow with dark text and a raised edge. A new recorded start/end visual check was not performed.
+
+## Local observer-panel preference — 2026-11-14
+
+- Independent host again opens Live Observation Marker alongside the live monitor on Play. Opening it does not start an interval or recording. Extra calibration/validation and pointer panels remain optional and do not auto-open.
+- Desktop archive participant identity, direct grabbing entry and cross-scene recorder continuity are unchanged.
+
+## Local scene continuity and optional observer tools — 2026-11-14
+
+- Target recorder follows late provider assignment and source replacement, detaches old listeners, and writes a waiting/gap boundary without replaying old rays. Official adapter event subscriptions similarly follow source replacement and re-enable.
+- Independent host keeps one session recorder across scene unload/reload and disables recognized duplicate initialization recorders rather than deleting objects. Actual scene-head rebinding is retained; ambiguous/unrelated recorder configurations fail explicitly.
+- Desktop archive participant selection remains the sole identity. Legacy VR ID entry/welcome audio are bypassed in the host copy; grabbing narration/objectives remain. Only the live monitor opens automatically; observation, pointer and extra calibration tools are manual opt-in.
+- Core synthetic checks: 67 passed. Fresh cross-scene device acceptance is still required; no historical records, original project, main/store edition or public release changed.
+
+## Observation appearance restored — 2026-11-14
+
+- Reverted the experimental banana texture/style. Start and end controls again use the standard Unity button appearance and original sizing. Timing, recording guards and note saving are unchanged.
+
+## Local observation button artwork — 2026-11-14
+
+- Banana-yellow observation control with dark irregular ripening spots, an ink border and bold dark type. Hover and pressed states remain distinct; disabled controls remain disabled. English labels and start/end/note behavior are unchanged.
+- Artwork is generated and cached locally in the Editor; owned textures are released when the panel closes. No downloaded image, network call, scene change or recording change.
+
+## Local official-first recording — 2026-11-14
+
+- Separated usable-ray validity from optional measured mapping quality; unverified usable official rays now enter primary target exports and observed-hit events. Worn/freshness/finite checks and stale gaps remain enforced.
+- Independent host no longer forces five-point or three-object correction before the original tutorial. Extra correction is opt-in, cleared at scene head rebinding; no automatic accuracy approval.
+- Added explicit mapping quality and actual collider paths to primary target CSV. HTML defaults to observed hits, with a separate verified-only view and matching filtered exports. Historical recordings are unchanged.
+- Software checks: 66 core, 18 host targeted integration tests, plus browser target/filter/annotation/CSV/bundle tests passed. New hardware acceptance remains required.
+
+## Local hierarchy organization — 2026-11-14
+
+- Generated calibration visuals now share a single temporary world-space parent, excluded from saved scene/build content. Ending a check removes the group and only its owned materials/meshes.
+- An explicit owned-group component also cleans orphan EditMode test previews if their validation owner disappears, without moving targets with the head or touching unrelated gameplay objects.
+- The isolated trial's existing unsaved-scene preview remnants were grouped under a disabled, undoable archive, not deleted. No scene asset or research data was saved/changed. Core synthetic suite: 64 passed; existing trial checks: 17 passed.
+
+## Local visual choice — yellow dots (2026-11-14)
+
+- Replaced active banana cues with yellow round dots in the independent trial. Both baseline and real-object cues use a 32 mm base diameter and proportional pulse.
+- Single-baseline sequencing is now an explicit flag, independent of visual shape; switching off banana visuals does not restore the old two-five-point workflow.
+- Target centres, physics, calibration/verification policies and raw records remain unchanged. Optional banana source is retained but inactive in the trial.
+
+## Local visibility feedback — 2026-11-14
+
+- Increased authored-object cue diameter from 8 mm to 32 mm (4×), including its pulse, without moving the calibration aim point or enlarging gameplay/AOI colliders.
+- Made procedural banana cues more curved and recognizable, with explicit yellow body, brown stem and dark tip material sections that work with the existing unlit shader.
+- Retained original correction/verification quality policies. All 62 core synthetic tests passed; no new hardware pass, publication or original-project edit is claimed.
+
+## Local follow-up — banana baseline and authored objects (2026-11-14)
+
+- Independent-host entry now uses one enlarged five-banana baseline, then three explicit captures on actual teaching-object owners, bounded joint direction fitting and NEW automatic three-object verification.
+- Added a shared read-only nearest-collider query so verification checks the same target IDs/occlusion policy as the logger. Wrong-target/occluded samples cannot pass solely on angular error.
+- Retained explicit approval, unverified exports, all baseline/attempt records and raw eye data. Reports/CSV/HTML add authored IDs, names, groups, correct-hit fractions and limited scope.
+- Original narration and Next wait for object calibration approval or explicit skip, without changing physics or fabricating grab objectives. No automatic publication or hardware acceptance claim.
+
 ## Research Pipeline follow-up — automatic two-round transition (2026-11-13)
 
 - Default integrated flow now automatically checks saved round-one collection, fits if sufficient and starts a 3-second fresh-signal countdown into corrected round two at the same fixed world centres.

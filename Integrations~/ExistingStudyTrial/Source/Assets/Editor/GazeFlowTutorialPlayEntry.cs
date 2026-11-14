@@ -30,7 +30,7 @@ public static class GazeFlowTutorialPlayEntry
         EditorSceneManager.playModeStartScene=entry;
         Directory.CreateDirectory("Library/GazeFlowFlowChecks");
         File.WriteAllText("Library/GazeFlowFlowChecks/play-entry.txt",AssetDatabase.GetAssetPath(EditorSceneManager.playModeStartScene));
-        Debug.Log("[GazeFlow flow] Play starts with five points -> turn around for grabbing -> LocomotionTutorial -> Room 1. Working scene is not changed.");
+        Debug.Log("[GazeFlow flow] Play uses the desktop participant archive ID, then grabbing -> LocomotionTutorial -> Room 1. Extra calibration is optional; working scene is not changed.");
     }
     [MenuItem("Tools/GazeFlow/Check Tutorial Entry Layout")]
     public static void CheckLayout()

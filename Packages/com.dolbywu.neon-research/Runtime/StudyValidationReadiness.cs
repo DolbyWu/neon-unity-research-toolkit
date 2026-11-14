@@ -8,8 +8,10 @@ namespace NeonResearch
     public static class StudyValidationReadiness
     {
         private static readonly string[] Names={"Centre","Left","Right","Up","Down"};
-        public static string[] FitBlockers(StudySpatialValidation.ValidationReport report)
+        public static string[] FitBlockers(StudySpatialValidation.ValidationReport report,int targetCount=5)
         {
+            if(targetCount!=3&&targetCount!=5)throw new ArgumentException("Only three authored targets or five validation points are supported.");
+            string countName=targetCount==5?"five":"three";
             var blockers=new List<string>();
             if(report==null)return new[]{"Round 1 has no completed report. Collect all five points first."};
             if(report.aborted)blockers.Add("Round 1 was aborted. Collect a complete new five-point round before fitting.");
@@ -17,15 +19,15 @@ namespace NeonResearch
             bool validThreshold=Finite(report.min_coverage)&&report.min_coverage>=0&&report.min_coverage<=1;
             if(!validThreshold)blockers.Add("Round 1 has an invalid minimum coverage setting. Use a finite value from 0 to 1 and collect again.");
             if(report.targets==null)return Append(blockers,"Round 1 has no target records. Collect all five points first.");
-            if(report.targets.Count!=5)blockers.Add("Round 1 requires exactly five target records; found "+report.targets.Count+". Collect all five points in one new round.");
+            if(report.targets.Count!=targetCount)blockers.Add("Round 1 requires exactly "+countName+" target records; found "+report.targets.Count+". Collect all targets in one new round.");
             var seen=new HashSet<int>();
             for(int n=0;n<report.targets.Count;n++)
             {
                 var target=report.targets[n];
                 if(target==null){blockers.Add("Target record "+(n+1)+" is missing. Collect a complete new round.");continue;}
                 int index=target.target_index;
-                if(index<0||index>=5){blockers.Add("Target record "+(n+1)+" has an invalid point index. Expected five unique indices 0 to 4.");continue;}
-                string point="Point "+(index+1)+" ("+Names[index]+"): ";
+                if(index<0||index>=targetCount){blockers.Add("Target record "+(n+1)+" has an invalid point index. Expected "+countName+" unique target indices.");continue;}
+                string point="Point "+(index+1)+" ("+(string.IsNullOrEmpty(target.target_name)?Names[index]:target.target_name)+"): ";
                 if(!seen.Add(index))blockers.Add(point+"duplicate target record. Do not combine measurements from different rounds.");
                 if(!Finite(target.coverage)||target.coverage<0||target.coverage>1)
                     blockers.Add(point+"valid-data coverage is missing or invalid; collect this point again in a new round.");
@@ -38,7 +40,7 @@ namespace NeonResearch
                 if(!Direction(target.mean_expected_head_local_direction))
                     blockers.Add(point+"expected head-local direction is missing, nonfinite or too small to fit. Check the target/head binding and repeat round 1.");
             }
-            for(int i=0;i<5;i++)if(!seen.Contains(i))blockers.Add("Point "+(i+1)+" ("+Names[i]+"): no unique target record in this round.");
+            for(int i=0;i<targetCount;i++)if(!seen.Contains(i))blockers.Add("Point "+(i+1)+" ("+Names[i]+"): no unique target record in this round.");
             return blockers.ToArray();
         }
         private static string[] Append(List<string> values,string value){values.Add(value);return values.ToArray();}

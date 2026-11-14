@@ -1,5 +1,7 @@
 # Research Pipeline: beginner tutorial
 
+**Latest independent-host flow (2026-11-14):** [official-first recording](official-first-workflow.md) supersedes the older required calibration sequences below. Use the desktop archive participant ID, then enter grabbing directly; no VR ID keypad/welcome audio. The monitor and Live Observation Marker open automatically, but intervals still require explicit start/end clicks. Extra spatial checks remain manual and optional. One session AOI recorder is rebound across scene transitions. Skipping QA does not claim measured spatial accuracy.
+
 Snapshot: **2026-11-13, 13:38 EST (UTC−05:00)** · branch `feature/research-pipeline-20261113-1338-est` · package version `0.2.0-exp.1`.
 
 This is a Windows Unity Editor research workflow for recording, reviewing and annotating Neon + XR studies. It is an **experimental research-pipeline snapshot**, not a new stable release or Asset Store submission. Automated checks do not establish scientific validity or replace a fresh device test of your own setup.
@@ -161,7 +163,9 @@ Open `Replay/study-replay.html` in a local browser. Keep the surrounding session
 5. Click **Add annotation**. It creates a new record linked to the original observation ID, not a replacement for the researcher's note. More intervals and multiple annotations are allowed.
 6. For other moments, pause or drag the video, **Mark current frame / time**, choose a label or description, then **Add annotation**. Use **Add another annotation here** to start another record instead of editing an old one.
 
-The legacy optional **0–10 participant intensity** field is a different measure from the **1–5 retrospective confusion** rating. No automatic conversion occurs. Retrospective self-report, observer interpretation, quotations and annotator confidence should remain separate sources.
+Optional **participant intensity** uses yellow **1–10 integer buttons**. Click one number; selected scores have a solid yellow face. Nothing is selected initially. **Clear rating / not reported** saves a missing response, not 1 or 0. The score describes the selected experience, not confidence in the annotation. Imported legacy 0–10 values (including zero and decimals) remain unchanged unless a new response is explicitly selected; previous values and scales remain in revision history. This is a different measure from the **1–5 retrospective confusion** rating. No automatic conversion occurs. Retrospective self-report, observer interpretation, quotations and annotator confidence should remain separate sources.
+
+**Research target hits · experimental** starts collapsed: click the triangle/title to expand or collapse it. Its count summary remains visible; the expanded target table scrolls internally. Target/group/interaction filters and quality labels are unchanged. Bright yellow observation review/play buttons and saved annotation time buttons locate the same experiment interval and the corresponding video when covered.
 
 ### Save, resume and export
 
@@ -189,7 +193,7 @@ Draft/disputed/excluded or unresolved labels, active overlaps, validation period
 
 This builder does not train a classifier or turn optional ratings into an automatically validated prediction target. Before machine learning, define the label policy, examine class balance and missingness, and split training/test data by participant/session/task—not adjacent random windows. Keep raw, AOI and media timing limitations explicit.
 
-When supplied, `confusion_rating_1_5`, its participant-retrospective source and `related_observation_id` are retained in the curated interval and sample exports. They remain human-report provenance, not automatic cognitive truth. The legacy 0–10 intensity field is retained independently.
+When supplied, `confusion_rating_1_5`, its participant-retrospective source and `related_observation_id` are retained in the curated interval and sample exports. They remain human-report provenance, not automatic cognitive truth. Intensity exports also retain `intensity_scale` (`1_10_integer_v1` or `legacy_0_10`) and `intensity_input_method`. Inspect those fields before pooling ratings; old values are never rescaled and missing values are never filled. A different input control does not by itself improve measurement precision or machine-learning accuracy.
 
 ## 11. Your first acceptance checklist
 

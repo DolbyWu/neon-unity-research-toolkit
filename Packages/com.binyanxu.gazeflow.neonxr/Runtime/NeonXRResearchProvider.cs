@@ -8,7 +8,7 @@ using UnityEngine;
 namespace NeonResearch.NeonXR
 {
     [AddComponentMenu("GazeFlow/Neon XR Research Provider (Experimental)")]
-    public sealed class NeonXRResearchProvider : StudyGazeRayProvider
+    public sealed partial class NeonXRResearchProvider : StudyGazeRayProvider
     {
         public NeonGazeDataProvider neon;
         [Tooltip("The same XR head/camera Transform used by the official gaze visualizer.")]
@@ -19,7 +19,7 @@ namespace NeonResearch.NeonXR
         public StudyGazeCorrection.Model CurrentCorrection { get; private set; }
         public string CorrectionPath { get; private set; }="";
         [Tooltip("After a complete well-covered raw five-point collection, fit once and start corrected round two after a fresh-signal countdown. Never approves AOI mapping.")]
-        public bool automaticTwoRoundFlow=true;
+        public bool automaticTwoRoundFlow=false;
         public float verificationCountdownSeconds=3f;
         public string AutomaticValidationStatus { get; private set; }="Round 1: show five points and choose ONE starting point. Round 2 will start automatically when the collection is sufficient.";
         public bool AutomaticVerificationPending { get; private set; }
@@ -39,6 +39,7 @@ namespace NeonResearch.NeonXR
         {
             var check=GetComponent<StudySpatialValidation>();
             if(flowCheck!=check){if(flowCheck!=null)flowCheck.TutorialSkipRequested-=CancelAutomaticValidationTransition;flowCheck=check;if(flowCheck!=null)flowCheck.TutorialSkipRequested+=CancelAutomaticValidationTransition;}
+            if(check!=null&&check.TutorialEntryContext&&(check.singleBaselineBeforeObjects||check.bananaMarkers))return;
             if(!automaticTwoRoundFlow||!StudyEvents.Recording||check==null||double.IsNaN(now)||double.IsInfinity(now))
             {if(AutomaticVerificationPending)CancelAutomaticValidationTransition();return;}
             if(AutomaticVerificationPending)
@@ -123,8 +124,40 @@ namespace NeonResearch.NeonXR
             StudyArchivePaths.RequireContainedUnlinked(StudyExportSession.Folder,path);
             if(new FileInfo(path).Length>65536)throw new InvalidDataException("Correction file too large.");
             var model=JsonConvert.DeserializeObject<StudyGazeCorrection.Model>(File.ReadAllText(path));
-            if(model==null||model.schema!="gazeflow-local-ray-correction-v1"||model.session_id!=StudyExportSession.SessionId||model.calibration_id!=calibrationId||string.IsNullOrWhiteSpace(model.id)||string.IsNullOrWhiteSpace(model.training_verification_id))throw new InvalidDataException("Correction session/configuration mismatch.");
+            if(model==null||model.schema!="gazeflow-local-ray-correction-v1"||model.session_id!=StudyExportSession.SessionId||model.calibration_id!=calibrationId||string.IsNullOrWhiteSpace(model.id)||(model.correction_kind!="manual_yaw_pitch"&&string.IsNullOrWhiteSpace(model.training_verification_id)))throw new InvalidDataException("Correction session/configuration mismatch.");
+            if(model.correction_kind=="manual_yaw_pitch"&&Quaternion.Angle(model.Rotation,StudyGazeCorrection.ManualRotation(model.horizontal_degrees,model.vertical_degrees))>.01f)throw new InvalidDataException("Manual offset metadata does not match its rotation.");
+            InvalidateDesktopVerification();InvalidateDesktopSaveConfirmation();
             var rotation=model.Rotation;CurrentCorrection=model;CorrectionPath=path;
+        }
+        public void ClearCorrectionForObjectCollection()
+        {
+            var check=GetComponent<StudySpatialValidation>();if(check!=null&&check.Running)throw new InvalidOperationException("Finish or abort the active check before object calibration.");
+            CancelAutomaticValidationTransition();automaticTwoRoundFlow=false;mappingVerified=false;CurrentCorrection=null;CorrectionPath="";
+            InvalidateDesktopVerification();InvalidateDesktopPreview();InvalidateDesktopSaveConfirmation();
+        }
+        public void UseOfficialRayWithoutExtraCorrection()
+        {
+            string previous=CurrentCorrection?.id??"";
+            var check=GetComponent<StudySpatialValidation>();if(check!=null&&check.Running)check.Abort();
+            ClearCorrectionForObjectCollection();
+            InvalidateDesktopVerification();InvalidateDesktopPreview();InvalidateDesktopSaveConfirmation();
+            AutomaticValidationStatus="Official Neon XR ray recording. Extra accuracy checks and correction are optional; no tutorial gate.";
+            if(StudyEvents.Recording){StudyGazeTargetLog.Missing("correction_reset_waiting_for_fresh_sample");StudyEvents.Record("official_gaze_mode_selected","neon_xr","spatial_accuracy_not_measured","previous_correction="+previous+"; No extra correction; previous reports retained. Freshness and worn checks remain active.");}
+        }
+        public void FitObjectTargetsAndBeginVerification(StudyResearchTarget[] objects,Vector3[] points)
+        {
+            var check=GetComponent<StudySpatialValidation>();var report=check?.LastReport;
+            if(check==null||check.Running||check.RestoredForReviewOnly||report==null||report.session_id!=StudyExportSession.SessionId||report.calibration_id!=calibrationId||!check.IsObjectRun)throw new InvalidOperationException("Collect three current-session authored objects first.");
+            var blockers=StudyValidationReadiness.FitBlockers(report,3);if(blockers.Length>0)throw new InvalidOperationException(string.Join("\n",blockers));
+            if(objects==null||objects.Length!=3||report.targets.Where((t,i)=>objects[i]==null||t.target_id!=objects[i].targetId).Any())throw new InvalidOperationException("Object identities changed since collection.");
+            if(!File.Exists(Path.Combine(check.LastOutput,"validation.json"))||!File.Exists(Path.Combine(check.LastOutput,"validation_samples.csv")))throw new InvalidOperationException("Object collection evidence must be saved first.");
+            Vector3 V(float[] a)=>new Vector3(a[0],a[1],a[2]);
+            var q=StudyGazeCorrection.FitThreeTargetYawPitch(report.targets.Select(t=>V(t.mean_observed_head_local_direction)).ToArray(),report.targets.Select(t=>V(t.mean_expected_head_local_direction)).ToArray());
+            var model=new StudyGazeCorrection.Model{id="correction-"+Guid.NewGuid().ToString("N"),session_id=StudyExportSession.SessionId,calibration_id=calibrationId,training_verification_id=report.id,quaternion_xyzw=new[]{q.x,q.y,q.z,q.w},angle_degrees=Quaternion.Angle(Quaternion.identity,q),method="Three authored objects; equal-target-weight bounded yaw/pitch chord-error fit; roll fixed at zero; NEW independent object verification required",limitation="Two-parameter local bias model; no roll, origin, depth, distortion or time fitting. Not a replacement for official mount calibration or full-field validation."};
+            string folder=Path.Combine(StudyExportSession.Folder,"Calibration",model.id);Directory.CreateDirectory(folder);string path=Path.Combine(folder,"correction.json");StudyAtomicFile.Write(path,JsonConvert.SerializeObject(model,Formatting.Indented));
+            CurrentCorrection=model;CorrectionPath=path;mappingVerified=false;
+            StudyEvents.Record("gaze_correction_fitted",model.id,"three_object_verification_required","training="+report.id+"; no automatic approval");
+            check.BeginObjectTargets(calibrationId,objects,points,true);
         }
         public Ray CorrectLocalRay(Ray raw)
         {
@@ -137,6 +170,7 @@ namespace NeonResearch.NeonXR
             if(check==null||check.LastReport==null)return false;
             var report=check.LastReport;
             if(CurrentCorrection==null)return string.IsNullOrEmpty(report.correction_id);
+            if(IsDesktopManualCorrection&&!DesktopVerificationMatches(check))return false;
             return report.correction_id==CurrentCorrection.id&&report.purpose=="independent_live_verification"&&report.id!=CurrentCorrection.training_verification_id&&CurrentCorrection.session_id==StudyExportSession.SessionId&&CurrentCorrection.calibration_id==calibrationId;
         }
         /// <summary>Call only after explicit operator review. Scene rebinding never calls this automatically.</summary>
@@ -172,21 +206,30 @@ namespace NeonResearch.NeonXR
         {
             if (ReferenceEquals(sender, lastClient)) Interlocked.Increment(ref receiveSequence);
         }
-        private void Update(){TrackClient(neon == null ? null : neon.RTSPClient);TickAutomaticValidation(Time.realtimeSinceStartupAsDouble);}
+        public void RefreshSourceSubscription()
+        {
+            var desired=isActiveAndEnabled?neon:null;
+            if(ReferenceEquals(subscribed,desired))return;
+            if(subscribed!=null&&subscribed.gazeDataReady!=null)subscribed.gazeDataReady.RemoveListener(Receive);
+            TrackClient(null);lastTimestamp=0;subscribed=desired;
+            if(isActiveAndEnabled&&subscribed!=null&&subscribed.gazeDataReady!=null)subscribed.gazeDataReady.AddListener(Receive);
+        }
+        private void Update(){RefreshSourceSubscription();TrackClient(neon == null ? null : neon.RTSPClient);TickAutomaticValidation(Time.realtimeSinceStartupAsDouble);}
         private void OnEnable()
         {
             TrackClient(null); lastTimestamp = 0;
-            subscribed = neon;
-            if (subscribed != null && subscribed.gazeDataReady != null) subscribed.gazeDataReady.AddListener(Receive);
+            RefreshSourceSubscription();
         }
         private void OnDisable()
         {
             CancelAutomaticValidationTransition();if(flowCheck!=null)flowCheck.TutorialSkipRequested-=CancelAutomaticValidationTransition;flowCheck=null;
             TrackClient(null);
             if (subscribed != null && subscribed.gazeDataReady != null) subscribed.gazeDataReady.RemoveListener(Receive);
+            subscribed=null;
         }
         private void Receive(GazeDataProvider provider)
         {
+            if(!isActiveAndEnabled||provider==null||provider!=neon)return;
             var client = neon == null ? null : neon.RTSPClient;
             // Official simulated samples have no live RTSP client. Never treat them as research data.
             if (client == null) { Invalid("no_live_client_or_simulation"); return; }
@@ -217,7 +260,7 @@ namespace NeonResearch.NeonXR
             sample.rawWorldRay=new Ray(headReference.TransformPoint(rawLocalRay.origin),headReference.TransformDirection(rawLocalRay.direction));sample.hasRawWorldRay=true;
             sample.correctionId=CurrentCorrection?.id??"";
             Ray localRay;
-            try{localRay=CorrectLocalRay(rawLocalRay);}catch(InvalidOperationException){mappingVerified=false;sample.status="correction_session_or_config_mismatch";Reject(sample);return;}
+            try{localRay=CorrectLocalRay(rawLocalRay);}catch(InvalidOperationException){mappingVerified=false;CurrentCorrection=null;CorrectionPath="";sample.correctionId="";localRay=rawLocalRay;StudyEvents.Record("gaze_correction_discarded","neon_xr","official_ray_fallback","Optional correction no longer matches session/configuration; official ray retained, mapping unverified.");}
             sample.worldRay = new Ray(headReference.TransformPoint(localRay.origin), headReference.TransformDirection(localRay.direction));
             sample.valid = StudyGazeTargetLog.Finite(sample.worldRay.origin) && StudyGazeTargetLog.Finite(sample.worldRay.direction) && sample.worldRay.direction.sqrMagnitude > 0.000001f;
             sample.status = sample.valid ? "spatial_ray_before_operator_approval" : "invalid_ray";
@@ -229,12 +272,20 @@ namespace NeonResearch.NeonXR
                 sample.verificationStatus=mappingVerified?"prior_binding_report_operator_reconfirmed_current_binding":"prior_binding_report_current_binding_unapproved";
             if(validation != null && validation.LastReport != null && validation.LastReport.calibration_id != calibrationId)
             { sample.verificationId=""; sample.verificationStatus="calibration_changed_since_validation"; }
-            if (!mappingVerified || string.IsNullOrWhiteSpace(calibrationId) || validation==null || validation.Running || validation.LastReport==null || !validation.LastReport.passed || validation.LastReport.aborted || validation.LastReport.session_id!=StudyExportSession.SessionId || validation.LastReport.calibration_id!=calibrationId || !ReportMatchesCorrection(validation))
-            { sample.candidateRayAvailable=sample.valid;sample.valid = false; sample.status = "mapping_unverified"; Publish(sample); return; }
-            if (sample.valid) sample.status = "operator_verified_mapping_not_hardware_validated";
-            Publish(sample);
+            PublishResearch(ApplyMappingQuality(sample));
         }
-        private void Reject(StudyGazeRaySample sample) { PublishValidation(sample); Publish(sample); }
+        /// <summary>Never erase usable official rays because optional spatial QA was not passed.</summary>
+        public StudyGazeRaySample ApplyMappingQuality(StudyGazeRaySample sample)
+        {
+            var check=GetComponent<StudySpatialValidation>();var report=check==null?null:check.LastReport;
+            bool same=report!=null&&report.session_id==StudyExportSession.SessionId&&report.calibration_id==calibrationId&&check.headReference==headReference&&(report.correction_id??"")==(CurrentCorrection?.id??"");
+            sample.mappingVerified=sample.valid&&mappingVerified&&!string.IsNullOrWhiteSpace(calibrationId)&&same&&!check.Running&&report.passed&&!report.aborted&&ReportMatchesCorrection(check);
+            sample.verificationStatus=check!=null&&check.Running?"verification_in_progress":!same?"not_measured_current_binding":report.aborted?"measurement_aborted":!report.passed?"measured_fail":sample.mappingVerified?"operator_verified":"measured_pass_not_operator_approved";
+            if(same&&check.RestoredForReviewOnly)sample.verificationStatus=sample.mappingVerified?"prior_binding_report_operator_reconfirmed_current_binding":"prior_binding_report_current_binding_unapproved";
+            if(sample.valid)sample.status=sample.mappingVerified?"operator_verified_mapping_not_hardware_validated":string.IsNullOrEmpty(sample.correctionId)?"official_ray_spatial_accuracy_unverified":"corrected_ray_spatial_accuracy_unverified";
+            return sample;
+        }
+        private void Reject(StudyGazeRaySample sample) { PublishValidation(sample); PublishResearch(sample); }
         private void Invalid(string status) => Reject(new StudyGazeRaySample { source = "pupil_labs_neon_xr_callback", status = status, calibrationId = calibrationId });
     }
 }

@@ -9,6 +9,9 @@ namespace NeonResearch
         [Serializable] public sealed class Model
         {
             public string schema="gazeflow-local-ray-correction-v1",id,session_id,calibration_id,training_verification_id;
+            public string correction_kind="fitted_rotation";
+            public float horizontal_degrees,vertical_degrees;
+            public double? applied_session_s;
             public string method="Equal-target-weight Wahba/Davenport rotation; head-local direction only; independent live verification required";
             public string limitation="No translation, depth, distortion or time correction; not a replacement for official mount calibration";
             public float[] quaternion_xyzw;
@@ -25,10 +28,49 @@ namespace NeonResearch
                 }
             }
         }
+        /// <summary>Operator nudge in head-local coordinates: positive horizontal is right, vertical is up. Not a fitted accuracy claim.</summary>
+        public static Quaternion ManualRotation(float horizontalDegrees,float verticalDegrees)
+        {
+            if(!Finite(horizontalDegrees)||!Finite(verticalDegrees)||Mathf.Abs(horizontalDegrees)>12||Mathf.Abs(verticalDegrees)>12)throw new ArgumentException("Manual offsets must be finite and within 12 degrees.");
+            var rotation=Quaternion.Euler(-verticalDegrees,horizontalDegrees,0);
+            if(Quaternion.Angle(Quaternion.identity,rotation)>12.001f)throw new ArgumentException("Combined manual rotation exceeds 12 degrees. Inspect wearing and official mount settings.");
+            return rotation;
+        }
         // Davenport symmetric eigenproblem, scalar-first quaternion. Reference: NASA NTRS 19990104598.
         public static Quaternion Fit(IReadOnlyList<Vector3> observed,IReadOnlyList<Vector3> expected,float maximumDegrees=12)
+            => FitInternal(observed,expected,maximumDegrees,5);
+        public static Quaternion FitThreeTargets(IReadOnlyList<Vector3> observed,IReadOnlyList<Vector3> expected,float maximumDegrees=12)
         {
-            if(observed==null||expected==null||observed.Count!=expected.Count||observed.Count<5)throw new ArgumentException("Five complete direction pairs are required.");
+            if(observed==null||observed.Count!=3||expected==null||expected.Count!=3)throw new ArgumentException("Exactly three complete authored targets are required.");
+            return FitInternal(observed,expected,maximumDegrees,3);
+        }
+        /// <summary>Explicit two-parameter tutorial model. Roll is fixed at zero, not estimated from a narrow pattern.</summary>
+        public static Quaternion FitThreeTargetYawPitch(IReadOnlyList<Vector3> observed,IReadOnlyList<Vector3> expected,float maximumDegrees=12)
+        {
+            if(observed==null||expected==null||observed.Count!=3||expected.Count!=3||!Finite(maximumDegrees)||maximumDegrees<=0||maximumDegrees>12)throw new ArgumentException("Three complete targets and a rotation limit up to 12 degrees are required.");
+            var a=new Vector3[3];var b=new Vector3[3];
+            for(int i=0;i<3;i++){
+                if(!StudyGazeTargetLog.Finite(observed[i])||!StudyGazeTargetLog.Finite(expected[i])||observed[i].sqrMagnitude<.01f||expected[i].sqrMagnitude<.01f)throw new ArgumentException("Missing/nonfinite direction pair.");
+                a[i]=observed[i].normalized;b[i]=expected[i].normalized;
+                if(a[i].z<.5f||b[i].z<.5f)throw new ArgumentException("Tutorial yaw/pitch fitting requires targets in the forward head-local field.");
+            }
+            float spreadA=0,spreadB=0;
+            for(int i=0;i<3;i++)for(int j=i+1;j<3;j++){spreadA=Mathf.Max(spreadA,Vector3.Angle(a[i],a[j]));spreadB=Mathf.Max(spreadB,Vector3.Angle(b[i],b[j]));}
+            if(spreadA<1||spreadB<1)throw new ArgumentException("Keep the head steady and look with the eyes at the three distinct cues; direction spread is below 1 degree.");
+            double Loss(float pitch,float yaw){var q=Quaternion.Euler(pitch,yaw,0);double loss=0;for(int i=0;i<3;i++){var d=q*a[i]-b[i];loss+=d.sqrMagnitude;}return loss;}
+            float p=0,y=0;double best=Loss(p,y);
+            for(float step=4;step>=.0005f;step*=.5f)for(int iteration=0;iteration<100;iteration++){
+                float nextP=p,nextY=y;double nextLoss=best;
+                for(int axis=0;axis<2;axis++)for(int sign=-1;sign<=1;sign+=2){float cp=p+(axis==0?sign*step:0),cy=y+(axis==1?sign*step:0);double loss=Loss(cp,cy);if(loss<nextLoss){nextP=cp;nextY=cy;nextLoss=loss;}}
+                if(nextLoss>=best)break;p=nextP;y=nextY;best=nextLoss;
+            }
+            var result=Quaternion.Euler(p,y,0);
+            if(Quaternion.Angle(Quaternion.identity,result)>maximumDegrees)throw new InvalidOperationException("Required yaw/pitch correction exceeds the safety limit. Repeat official mount calibration.");
+            return result;
+        }
+        private static Quaternion FitInternal(IReadOnlyList<Vector3> observed,IReadOnlyList<Vector3> expected,float maximumDegrees,int minimum)
+        {
+            if(observed==null||expected==null||observed.Count!=expected.Count||observed.Count<minimum)throw new ArgumentException("Insufficient complete direction pairs.");
             if(!Finite(maximumDegrees)||maximumDegrees<=0||maximumDegrees>12)throw new ArgumentException("Invalid rotation limit.");
             var a=new Vector3[observed.Count];var b=new Vector3[a.Length];var m=new double[3,3];
             for(int n=0;n<a.Length;n++)

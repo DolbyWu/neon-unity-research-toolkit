@@ -17,13 +17,14 @@ public sealed class GazeFlowHostHeadBinding:MonoBehaviour
             if(head==null)continue;
             var source=head.GetComponent<StudyHeadPoseSource>();
             if(source==null)source=head.gameObject.AddComponent<StudyHeadPoseSource>();source.head=head;
-            provider.headReference=head;
+            if(!string.IsNullOrWhiteSpace(provider.calibrationId))provider.RebindDesktopHead(head,provider.calibrationId);
+            else{provider.headReference=head;provider.mappingVerified=false;}
             foreach(var visualizer in provider.neon.transform.root.GetComponentsInChildren<PupilLabs.GazeDataVisualizer>(true))
             {
                 typeof(PupilLabs.GazeDataVisualizer).GetField("reference",BindingFlags.Instance|BindingFlags.NonPublic)?.SetValue(visualizer,head);
-                visualizer.RayVisible = showCalibrationPointer;
+                visualizer.RayVisible = showCalibrationPointer&&!provider.DesktopPointerVisible;
                 visualizer.DoRaycast = showCalibrationPointer;
-                visualizer.RaycastPointerVisible = showCalibrationPointer;
+                visualizer.RaycastPointerVisible = showCalibrationPointer&&!provider.DesktopPointerVisible;
             }
             Debug.Log("[GazeFlowTrial] Bound spatial provider to explicit PlayerDataLogger.HeadReference: "+head.name+". Mapping remains unverified.");
             break;

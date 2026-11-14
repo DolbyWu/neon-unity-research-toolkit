@@ -1,16 +1,18 @@
 # Existing study trial: research pipeline integration reference
 
+**Latest local follow-up (2026-11-14):** [official-first workflow](../../docs/official-first-workflow.md): desktop archive ID, direct grabbing entry without the legacy VR keypad/welcome audio, automatic monitor and Live Observation Marker opening, optional extra calibration and one persistent/rebound session AOI recorder. Observation timing still requires explicit start/end clicks. Older mandatory calibration sequences below are historical. No scenes, participant data or live configuration are included.
+
 Snapshot date: **2026-11-13**, America/New_York. This is a **source-only research pipeline reference**, not a complete study, universal scene migration, packaged sample, release or fresh hardware acceptance result.
 
 The portable toolkit lives under the repository's `Packages/` directory. Start with the [pipeline tutorial](../../docs/research-pipeline-tutorial.md) for a new integration. This folder preserves the additional source work used to connect an already functioning, separately owned study to those packages.
 
 ## Contents
 
-- `Source/Assets/`: **12** newly authored bridge, tutorial-entry, pointer-panel and synthetic-test C# files with their original Unity `.meta` identities. This is a reference tree, not an automatic installer.
+- `Source/Assets/`: **19** newly authored bridge, tutorial-entry, reference/observer controls and synthetic-test C# files with their original Unity `.meta` identities. This is a reference tree, not an automatic installer.
 - `Patches/Assets/`: **20** zero-context patches for existing logging, consent guards, tutorial placement/progress, initial orientation, dynamic pin identity and legacy Editor/test namespace integration.
 
 The pin-manager patch omits a cosmetic comment-only encoding conversion from the legacy source; its research-code changes are preserved. Therefore its recorded source fingerprint describes the full trial source, while the published patch deliberately leaves that unrelated baseline comment untouched. All 20 published patches pass a read-only application check against the recorded local baseline.
-- `source-inventory.json`: relative source paths, original SHA-256 fingerprints and baseline SHA-256 for changed files. Snapshot text has normalized LF endings; fingerprints describe the original source bytes, not normalized copies.
+- `source-inventory.json`: relative source paths, original SHA-256 fingerprints and baseline SHA-256 for changed files. `source_sha256` describes original source bytes. `artifact_sha256` and `meta_sha256` describe published UTF-8/LF payloads in Git; Windows checkouts may expand line endings to CRLF, so normalize CRLF to LF when checking those two artifact fingerprints.
 - `legacy-source-replacement.json`: legacy source paths replaced by package-provided implementations in the trial. It is a migration inventory, **not a deletion command**.
 - `dependency-reference.json`: fixed versions and non-personal technical capture choices. It is not a ready-to-use project manifest or device configuration.
 
@@ -36,6 +38,12 @@ The legacy timeline bridge intentionally forwards the host API to **one** packag
 8. Complete a new Neon + Quest test of targets, occlusion, head binding, actual grabbing/releases, tutorial Next, scene transitions, stale/invalid data and reconnect. Separately check that video/audio finalize and HTML intervals/annotations export and restore correctly.
 
 ## Behavior represented by this reference
+
+**Current default (2026-11-14):** this now follows the [official-first workflow](../../docs/official-first-workflow.md), not the earlier mandatory validation sequence described below. The grabbing station is visible but narration waits for **Start tutorial** in the [Desktop Gaze Adjustment panel](../../docs/desktop-gaze-adjustment.md). Extra gaze adjustment/checks remain optional. **Save gaze adjustment** writes an operator confirmation, not accuracy approval. Existing eye/AOI/media capture continues during preparation; raw grabs are logged but cannot prematurely complete teaching objectives. The original intro delay begins after the Start click. No extra preparation popup is auto-opened.
+
+The current entry also creates a visual-only yellow reference disc on the lower visible surface of the specifically bound chess target. It has no collider, Rigidbody or research-target component; it hides during checks and after Start. It is an operator adjustment reference, not automatic calibration evidence. See the desktop adjustment guide above for the current controls.
+
+The following paragraphs describe earlier opt-in fitting implementations retained in the reference; they are not automatically run at entry:
 
 The authored tutorial entry is reused: five-point fitting/validation, then the original grabbing tutorial at the opposite side, then the movement tutorial and formal task. The grabbing station is hidden while validation runs and restored afterward. Actual grab callbacks are recorded independently of eye quality; they also update the original tutorial objectives without fabricating success.
 

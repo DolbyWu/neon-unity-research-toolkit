@@ -1,6 +1,8 @@
 # GazeFlow — Research Pipeline
 
-**Timestamped experimental snapshot:** 2026-11-13, 13:38 EST (18:38 UTC)
+**Latest workflow update (2026-11-14): official Neon XR first.** Extra gaze correction/validation is optional, not a recording gate. The independent host shows its grabbing station quietly while the researcher optionally adjusts gaze, confirms **Save gaze adjustment**, hides the pointer and clicks **Start tutorial**; then the original movement tutorial and main task follow. A yellow lower-object reference supports visual alignment without changing physics. Fresh worn official rays and object hits are recorded whether or not extra spatial QA was performed; spatial accuracy/approval stays separate. See [today's changes and checks](docs/research-pipeline-update-20261114.md) and [official-first workflow and limits](docs/official-first-workflow.md). This is a branch update, not a new release or hardware acceptance pass.
+
+**Initial experimental snapshot:** 2026-11-13, 13:38 EST (18:38 UTC) · **Latest update:** 2026-11-14 (America/New_York)
 
 **Branch:** `feature/research-pipeline-20261113-1338-est`
 
@@ -12,11 +14,13 @@ This branch is the **Research Pipeline version**, not the default `main` branch,
 
 **Start here:** [Beginner tutorial](docs/research-pipeline-tutorial.md) · [Snapshot contents and checks](docs/research-pipeline-snapshot-20261113.md) · [Live observation instructions](docs/live-observer-intervals.md)
 
+**Optional desktop control:** [Desktop gaze adjustment](docs/desktop-gaze-adjustment.md) adds computer-operated direction nudges, **Save gaze adjustment**, reset to the official ray, a matching cyan research-ray cursor and a separate no-fitting accuracy check. The host integration supplies the yellow visual reference and **Start tutorial** control. These do not change phone profiles or make verification a recording/tutorial gate.
+
 ## The complete workflow
 
 1. **Prepare:** choose a private data root, connect the real tracked head and check Neon streaming.
 2. **Identify:** confirm an anonymous participant and a new session before recording.
-3. **Validate:** choose one starting point for round one. With automatic two-round flow enabled, sufficient collection triggers bounded direction fitting and a 3-second fresh-signal countdown into NEW round-two samples at the SAME fixed world targets. Insufficient collection lists the blocked points instead of silently waiting for a fit button.
+3. **Optional quality check:** use the official gaze pointer on known objects. Extra five-point / three-object checks and correction are opt-in, not recording or tutorial gates. Skipping a check does not claim measured accuracy.
 4. **Record:** preserve raw gaze/pupil availability, head pose, explicitly integrated behavior, target-ray records and optional desktop/microphone media.
 5. **Observe:** click once to start an observer interval, once to end it, then write the researcher note in the popup.
 6. **Reflect:** replay the selected episode with the participant; save their explanation and optional confusion rating separately.
@@ -34,12 +38,12 @@ These steps do not infer a participant's cognition automatically.
 | Optional spatial adapter | Official Neon XR Core bridge, research target IDs/names/groups, nearest-collider hit/occlusion records and binding checks |
 | Two-round validation | Five fixed targets; bounded head-local direction fitting; new repeat-layout measurement samples; explicit approval |
 | Live observation | Desktop **Observation Marker**: start/end toggle, note popup, up to 10 intervals per session |
-| Offline HTML | Local video pause/scrub, experiment/video clocks, eye traces, target/event filters, orange observer intervals and manual annotations |
+| Offline HTML | Local video pause/scrub, experiment/video clocks, eye traces, collapsible target review, target/event filters, yellow observer/replay controls and manual annotations |
 | Participant reflection | Separate retrospective explanation, optional integer confusion rating **1–5**, linked original observation |
 | Save and export | JSON save/resume, CSV, selected intervals and full interval bundles |
 | Reviewed samples | Offline deterministic curation of reviewed labels and quality flags; no automatic model training |
 
-The existing optional 0–10 participant intensity is a **different field** from the new 1–5 retrospective confusion rating. Neither is inferred from eye data. Head pose is not a raw accelerometer/gyroscope stream. Authored interaction bindings and real hardware remain necessary; the toolkit does not automatically understand every scene object.
+Optional participant intensity uses **1–10 integer buttons**, with no default response. Imported legacy 0–10 values retain their original scale and are never automatically converted. Intensity is a **different field** from the 1–5 retrospective confusion rating. Neither is inferred from eye data. Head pose is not a raw accelerometer/gyroscope stream. Authored interaction bindings and real hardware remain necessary; the toolkit does not automatically understand every scene object.
 
 ## Installation — this branch
 
@@ -108,7 +112,7 @@ Audio recording and speech transcription are separate. **This standalone package
 
 The branch contains automated Unity, synthetic browser/video and offline curation checks. The [snapshot report](docs/research-pipeline-snapshot-20261113.md) lists the exact outcomes and distinguishes them from real-device acceptance.
 
-The existing study has been exercised with real devices, but earlier runs do **not** validate every new change. The latest two-round geometry/tolerance and live-observation integration still need a new end-to-end Neon + Quest check. Windows Editor is the target; standalone builds, Quest Android and other platforms are not claimed as newly validated.
+The existing study has been exercised with real devices, but earlier runs do **not** validate every new change. Current software evidence includes 70 isolated core tests, 42 targeted host tests, real-browser replay checks and 11 offline curation tests. A new end-to-end Neon + Quest check is still required for the newest reference cue, desktop adjustments and narration timing. These checks are not spatial-accuracy acceptance. Windows Editor is the target; standalone builds, Quest Android and other platforms are not claimed as newly validated.
 
 ## Documentation and source layout
 

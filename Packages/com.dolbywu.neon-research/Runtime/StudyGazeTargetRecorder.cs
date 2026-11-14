@@ -13,7 +13,17 @@ namespace NeonResearch
         private double lastSample;
         private bool waiting = true;
         private double nextCatalog;
-        private void OnEnable() { subscribed = provider; if (subscribed != null) subscribed.SampleReady += Receive; }
+        public void BindProvider(StudyGazeRayProvider value){provider=value;RefreshSubscription();}
+        private void RefreshSubscription()
+        {
+            var desired=isActiveAndEnabled?provider:null;
+            if(ReferenceEquals(subscribed,desired))return;
+            if(!ReferenceEquals(subscribed,null))subscribed.SampleReady-=Receive;
+            if(StudyEvents.Recording){StudyGazeTargetLog.Missing("provider_rebound_waiting_for_fresh_sample");EndTarget("provider_rebound");}
+            subscribed=desired;waiting=true;
+            if(isActiveAndEnabled&&subscribed!=null)subscribed.SampleReady+=Receive;
+        }
+        private void OnEnable() { RefreshSubscription(); }
         private void OnDisable()
         {
             if (subscribed != null) subscribed.SampleReady -= Receive;
@@ -22,6 +32,7 @@ namespace NeonResearch
         }
         private void Update()
         {
+            RefreshSubscription();
             if (!StudyEvents.Recording) { waiting = true; lastTarget = ""; return; }
             if (session != StudyExportSession.SessionId)
             { session = StudyExportSession.SessionId; lastSample = StudyExportSession.Seconds; waiting = false; lastTarget = ""; nextCatalog = 0; }

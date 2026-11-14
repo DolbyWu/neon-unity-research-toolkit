@@ -135,6 +135,7 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
   const observationReport=path.join(replay,'observer-replay.html');fs.writeFileSync(observationReport,template.replace('__STUDY_DATA__',JSON.stringify(data).replace(/</g,'\\u003c')));
   await page.setViewportSize({width:1440,height:1100});await page.goto(pathToFileURL(observationReport).href);
   assert.equal(await page.locator('#liveObservationList > div').count(),2);assert.equal(await page.locator('img').count(),0);
+  for(const b of await page.locator('#liveObservationList .observationButton').all())assert.equal(await b.evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(255, 220, 50)');
   await page.getByRole('button',{name:'Review segment / add player response'}).first().click();
   assert.equal(await page.locator('#annotationStart').inputValue(),'3');assert.equal(await page.locator('#annotationEnd').inputValue(),'4');
   await page.locator('#annotationAuthor').fill('P-SYNTHETIC');await page.locator('#annotationNotes').fill('I did not know which control to use.');await page.locator('#annotationConfusion').fill('4');await page.locator('#annotationSave').click();

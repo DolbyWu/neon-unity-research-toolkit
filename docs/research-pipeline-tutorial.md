@@ -1,5 +1,7 @@
 # Research Pipeline: beginner tutorial
 
+**New to the interface?** Follow the [illustrated quickstart with current screenshots](illustrated-quickstart.md) first. It explains the settings, monitor, cyan adjustment controls and yellow observation button, including their inactive states. Screenshots are redacted for public documentation.
+
 **Latest independent-host flow (2026-11-14):** [official-first recording](official-first-workflow.md) supersedes the older required calibration sequences below. Use the desktop archive participant ID, then enter grabbing directly; no VR ID keypad/welcome audio. The monitor and Live Observation Marker open automatically, but intervals still require explicit start/end clicks. Extra spatial checks remain manual and optional. One session AOI recorder is rebound across scene transitions. Skipping QA does not claim measured spatial accuracy.
 
 Snapshot: **2026-11-13, 13:38 EST (UTC−05:00)** · branch `feature/research-pipeline-20261113-1338-est` · package version `0.2.0-exp.1`.
@@ -74,7 +76,7 @@ Do a ten-second spoken test, stop, then open the actual audio and video files. C
 
 ## 4. Bind real spatial gaze and research targets
 
-Use **Tools > GazeFlow > Research Target Setup (Experimental)** and the [detailed spatial setup guide](../Packages/com.dolbywu.neon-research/Documentation~/neon-xr-targets.md).
+Use **Tools > GazeFlow > Advanced > Setup > Research Target Setup (Experimental)** and the [detailed spatial setup guide](../Packages/com.dolbywu.neon-research/Documentation~/neon-xr-targets.md).
 
 1. Configure the official Neon XR provider and mount calibration for the headset mounting.
 2. Add **Neon XR Research Provider (Experimental)**. Assign its official `neon` provider and the **actual tracked head/camera Transform** as `headReference`. The stationary XR rig root is not a substitute for the moving head.
@@ -99,9 +101,9 @@ Each recording creates a new session beneath `Participants/<ID>/Sessions/<new-se
 
 Open **Tools > Neon Research > Open Live Monitor**. Verify samples are arriving and being written. Check the correct scene and tracking in the headset independently; increasing counters alone do not prove the wearer is in the expected task.
 
-## 6. Run two-round gaze validation
+## 6. Optional legacy two-round gaze validation
 
-The reusable package exposes the validation window; automatic entry in a particular tutorial/pre-task room requires that host project's integration. In a generic project, open **Tools > GazeFlow > Pre-room Gaze Validation** during Play.
+This is the advanced optional workflow, not the default recording path. For simple optional manual nudges use [Desktop Gaze Adjustment](desktop-gaze-adjustment.md). The reusable package exposes the validation window; automatic entry in a particular tutorial/pre-task room requires that host project's integration. In a generic project, open **Tools > GazeFlow > Advanced > Legacy > Pre-room Gaze Validation** during Play.
 
 1. Confirm the one active research provider has the correct moving head binding and mount ID. Enable **Automatic five points**.
 2. Click **Show five targets**, unless your integrated host already starts the preview. The system waits for a fresh worn signal. Confirm the wearer can see all five fixed targets without obstruction.
@@ -115,7 +117,7 @@ The current default project policy is **mean angular error ≤3° for every targ
 
 If verification fails, do not force approval. Check wearing, mount configuration, head binding and signal quality, then repeat as needed. In the integrated trial, completed round two may continue to the task even if failed; generic hosts must decide their own scene transition behavior. Raw data and clearly labeled low-precision geometric observations remain independent of approval.
 
-To hide only the visible gaze dot/line, open **Tools > GazeFlow > Neon XR > Gaze Pointer** and choose **Hide gaze pointer**. This does not stop acquisition or approve mapping. Do not use the pointer's apparent alignment as a replacement for measured validation.
+To hide only the research gaze dot, open **Tools > GazeFlow > Desktop Gaze Adjustment** and choose **Hide gaze pointer**. This does not stop acquisition or approve mapping. Do not use the pointer's apparent alignment as a replacement for measured validation.
 
 ## 7. Mark an observed episode during play
 

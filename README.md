@@ -14,7 +14,7 @@ GazeFlow is an unofficial Unity + Pupil Labs Neon research toolkit. It connects 
 
 This branch is the **Research Pipeline version**, not the default `main` branch, a new signed release, or an Asset Store submission. Package versions remain unchanged; identify this snapshot by its branch and commit. No participant archives, fresh study recordings, live configuration or API keys are included.
 
-**Start here:** [Beginner tutorial](docs/research-pipeline-tutorial.md) · [Snapshot contents and checks](docs/research-pipeline-snapshot-20261113.md) · [Live observation instructions](docs/live-observer-intervals.md)
+**Start here:** [Illustrated quickstart with screenshots](docs/illustrated-quickstart.md) · [Detailed beginner tutorial](docs/research-pipeline-tutorial.md) · [Snapshot contents and checks](docs/research-pipeline-snapshot-20261113.md) · [Live observation instructions](docs/live-observer-intervals.md)
 
 **Optional desktop control:** [Desktop gaze adjustment](docs/desktop-gaze-adjustment.md) adds computer-operated direction nudges, **Save gaze adjustment**, reset to the official ray, a matching cyan research-ray cursor and a separate no-fitting accuracy check. The host integration supplies the yellow visual reference and **Start tutorial** control. These do not change phone profiles or make verification a recording/tutorial gate.
 

@@ -16,6 +16,12 @@ This branch is the **Research Pipeline version**, not the default `main` branch,
 
 **Optional desktop control:** [Desktop gaze adjustment](docs/desktop-gaze-adjustment.md) adds computer-operated direction nudges, **Save gaze adjustment**, reset to the official ray, a matching cyan research-ray cursor and a separate no-fitting accuracy check. The host integration supplies the yellow visual reference and **Start tutorial** control. These do not change phone profiles or make verification a recording/tutorial gate.
 
+## Recorded demo
+
+[Watch the research workflow demonstration on YouTube](https://youtu.be/ZujH4r9jMH4).
+
+For the current controls and setup, follow the [desktop adjustment guide](docs/desktop-gaze-adjustment.md) and [beginner tutorial](docs/research-pipeline-tutorial.md). A demonstration is not a measured spatial-accuracy validation. The video is hosted on YouTube; no video or participant recording file is included in this repository.
+
 ## The complete workflow
 
 1. **Prepare:** choose a private data root, connect the real tracked head and check Neon streaming.

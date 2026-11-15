@@ -6,7 +6,7 @@ namespace NeonResearch
     public sealed class StudyResearchSetup : EditorWindow
     {
         private string result = "";
-        [MenuItem("Tools/GazeFlow/Research Target Setup (Experimental)")]
+        [MenuItem("Tools/GazeFlow/Advanced/Setup/Research Target Setup (Experimental)")]
         private static void Open() => GetWindow<StudyResearchSetup>("GazeFlow Targets");
         private void OnGUI()
         {

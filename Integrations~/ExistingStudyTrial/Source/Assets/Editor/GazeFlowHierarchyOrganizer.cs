@@ -9,7 +9,7 @@ public static class GazeFlowHierarchyOrganizer
     private const string ArchiveName="[GazeFlow] Archived test previews (inactive)";
     private static readonly Regex PreviewName=new Regex("^(GazeFlow|Banana) validation target [1-9] \\(not an AOI\\)$");
     [InitializeOnLoadMethod] private static void Register()=>EditorApplication.delayCall+=Organize;
-    [MenuItem("Tools/GazeFlow/Organize Generated Hierarchy")]
+    [MenuItem("Tools/GazeFlow/Advanced/Diagnostics/Organize Generated Hierarchy")]
     public static void Organize()
     {
         if(Application.isBatchMode||EditorApplication.isPlayingOrWillChangePlaymode||!Application.dataPath.Replace('\\','/').Equals("C:/GazeFlowTrials/EscapeRoom_GazeFlow_0.2.0-exp.1_Test_20261110-03/Assets",StringComparison.OrdinalIgnoreCase))return;

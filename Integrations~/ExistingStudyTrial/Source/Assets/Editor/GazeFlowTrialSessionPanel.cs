@@ -38,7 +38,7 @@ public sealed class GazeFlowTrialSessionPanel : EditorWindow
         NeonResearch.StudyLiveMonitor.Open();
         NeonResearch.LiveObservationWindow.Open();
     }
-    [MenuItem("Tools/GazeFlow/Gaze Pointer")]
+    // Legacy callable alias retained without a duplicate menu entry.
     public static void Open()
     {
         if (!IsTrial || Application.isBatchMode) return;

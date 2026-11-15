@@ -1,0 +1,7 @@
+diff --git a/Assets/Editor/StudySequenceVerification.cs b/Assets/Editor/StudySequenceVerification.cs
+index 4207623..73882ae 100644
+--- a/Assets/Editor/StudySequenceVerification.cs
++++ b/Assets/Editor/StudySequenceVerification.cs
+@@ -20 +20 @@ public static class StudySequenceVerification
+-    [MenuItem("Tools/Study/Run Offline Sequence Tests")]
++    [MenuItem("Tools/GazeFlow/Advanced/Diagnostics/Run Offline Sequence Tests")]

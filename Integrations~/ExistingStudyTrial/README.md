@@ -9,9 +9,9 @@ The portable toolkit lives under the repository's `Packages/` directory. Start w
 ## Contents
 
 - `Source/Assets/`: **19** newly authored bridge, tutorial-entry, reference/observer controls and synthetic-test C# files with their original Unity `.meta` identities. This is a reference tree, not an automatic installer.
-- `Patches/Assets/`: **20** zero-context patches for existing logging, consent guards, tutorial placement/progress, initial orientation, dynamic pin identity and legacy Editor/test namespace integration.
+- `Patches/Assets/`: **22** zero-context patches for existing logging, consent guards, tutorial placement/progress, initial orientation, dynamic pin identity and legacy Editor/test namespace/menu integration.
 
-The pin-manager patch omits a cosmetic comment-only encoding conversion from the legacy source; its research-code changes are preserved. Therefore its recorded source fingerprint describes the full trial source, while the published patch deliberately leaves that unrelated baseline comment untouched. All 20 published patches pass a read-only application check against the recorded local baseline.
+The pin-manager patch omits a cosmetic comment-only encoding conversion from the legacy source; its research-code changes are preserved. Therefore its recorded source fingerprint describes the full trial source, while the published patch deliberately leaves that unrelated baseline comment untouched. Published patches are checked read-only against the recorded local baseline before handoff.
 - `source-inventory.json`: relative source paths, original SHA-256 fingerprints and baseline SHA-256 for changed files. `source_sha256` describes original source bytes. `artifact_sha256` and `meta_sha256` describe published UTF-8/LF payloads in Git; Windows checkouts may expand line endings to CRLF, so normalize CRLF to LF when checking those two artifact fingerprints.
 - `legacy-source-replacement.json`: legacy source paths replaced by package-provided implementations in the trial. It is a migration inventory, **not a deletion command**.
 - `dependency-reference.json`: fixed versions and non-personal technical capture choices. It is not a ready-to-use project manifest or device configuration.

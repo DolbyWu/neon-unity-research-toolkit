@@ -25,10 +25,9 @@ The live monitor and Live Observation Marker open automatically on Play, after t
 
 The observation marker uses a large, persistently yellow raised button with an interval timer. Its action changes from START OBSERVATION to END OBSERVATION to START NEXT OBSERVATION without graying the face. Before recording, RECORDING REQUIRED is visibly locked; reaching ten intervals prevents a new start but not ending the tenth interval. Notes still open separately after the end timestamp is saved. Button appearance is not an indication that data collection has started.
 
-- Tools > GazeFlow > Gaze Pointer: display the official pointer for a visual check.
-- Tools > GazeFlow > Desktop Gaze Adjustment: [computer-only optional local nudges, reset, research-ray preview and independent measurement](desktop-gaze-adjustment.md). Gaze Pointer menu entries now open this same panel; the displayed cursor follows the ray actually used by research AOI.
-- Tools > GazeFlow > Pre-room Gaze Validation: opt-in measurement only.
-- Tools > GazeFlow > Tutorial Object Calibration: opt-in extra correction and independent verification at the tutorial objects. Keep objects still; manual checks do not suspend original gameplay automatically.
+- Tools > GazeFlow > Desktop Gaze Adjustment: [computer-only optional local nudges, reset, research-ray preview and independent measurement](desktop-gaze-adjustment.md). This is the single current pointer/adjustment entry; the displayed cursor follows the ray actually used by research AOI.
+- Tools > GazeFlow > Advanced > Legacy > Pre-room Gaze Validation: older opt-in measurement panel.
+- Tools > GazeFlow > Advanced > Legacy > Tutorial Object Calibration: older opt-in extra correction and independent verification at tutorial objects. Keep objects still; manual checks do not suspend original gameplay automatically.
 - Use official Neon XR ray — no extra correction: stop optional measurement, clear extra correction and keep recording. It does not approve accuracy.
 - Tools > GazeFlow > Live Observation Marker: unchanged start/end interval and notes.
 

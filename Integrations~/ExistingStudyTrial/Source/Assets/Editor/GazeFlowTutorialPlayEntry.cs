@@ -21,7 +21,7 @@ public static class GazeFlowTutorialPlayEntry
         EditorApplication.delayCall+=CheckLayout;
         EditorApplication.playModeStateChanged+=state=>{if(state==PlayModeStateChange.ExitingEditMode)Configure();};
     }
-    [MenuItem("Tools/GazeFlow/Use Tutorial Entry for Play")]
+    [MenuItem("Tools/GazeFlow/Advanced/Setup/Use Tutorial Entry for Play")]
     public static void Configure()
     {
         if(!IsTrial || EditorApplication.isPlaying)return;
@@ -32,7 +32,7 @@ public static class GazeFlowTutorialPlayEntry
         File.WriteAllText("Library/GazeFlowFlowChecks/play-entry.txt",AssetDatabase.GetAssetPath(EditorSceneManager.playModeStartScene));
         Debug.Log("[GazeFlow flow] Play uses the desktop participant archive ID, then grabbing -> LocomotionTutorial -> Room 1. Extra calibration is optional; working scene is not changed.");
     }
-    [MenuItem("Tools/GazeFlow/Check Tutorial Entry Layout")]
+    [MenuItem("Tools/GazeFlow/Advanced/Diagnostics/Check Tutorial Entry Layout")]
     public static void CheckLayout()
     {
         if(!IsTrial||Application.isBatchMode||EditorApplication.isPlayingOrWillChangePlaymode)return;

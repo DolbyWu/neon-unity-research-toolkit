@@ -1,5 +1,22 @@
 # Changelog
 
+## Offline gaze offset report — 2026-11-15
+
+- Added a left-column report below the session video with cursor-linked manual yaw/pitch, model/mount IDs, latest save context and seekable application/save/reset/binding history. A fresh usable callback identifies the actual correction; invalid/stale/missing metadata is never replaced by a valid zero.
+- New replays embed bounded, same-session correction models and save receipts. Invalid metadata produces a warning without blocking replay. Added JSON/CSV offset exports and full-session offset provenance in complete interval bundles. Existing recordings and raw scene-image eye/pupil traces are not rewritten.
+- Documented callback-versus-eye/video timing and the distinction between applied angles, save confirmation and measured spatial accuracy. Historical HTML needs regeneration; missing history is not fabricated.
+
+## Cyan desktop direction controls — 2026-11-15
+
+- Redesigned the manual gaze arrows as bright cyan raised buttons in a cross layout, with larger geometric arrows, English labels, central step value and a pressed-depth effect. Painting remains vivid independently of disabled/Play tint; native input guards remain enforced and a locked-state caption is shown.
+- Retained adjustment directions, step sizes, reset/save behavior, accuracy checks and recording. The idle preview never starts recording or adjusts a ray. Owned button textures are released when the window closes.
+
+## Tools menu organization — 2026-11-15
+
+- Kept the current desktop adjustment and live interval marker as direct menu entries. Removed two duplicate pointer menu aliases while retaining callable implementations.
+- Grouped older optional calibration panels under GazeFlow / Advanced / Legacy, developer checks under Advanced / Diagnostics and target/tutorial configuration under Advanced / Setup. Integrated-host legacy point-marker/settings/replay entry points follow the same groups.
+- Monitor, participant archive/intake, recording settings, media, HTML, analysis and host transcription remain available. No runtime behavior, provider, scene, data, physics or official SDK menu is deleted/changed. See the current Tools menu guide.
+
 ## Tutorial reference disc — 2026-11-14
 
 - Independent host binds a fixed yellow 32 mm visual reference to the existing uniquely identified chess object's lower visible solid surface during manual preparation. The wearer looks at yellow while the operator nudges cyan gaze; Save/Hide/Start remain explicit controls.

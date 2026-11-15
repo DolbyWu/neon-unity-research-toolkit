@@ -12,6 +12,28 @@ namespace EscapeRoom.ReflectiveAgent.Tests
     /// <summary>Synthetic local data only. Never connects to Neon, records media or touches participant archives.</summary>
     public sealed class AoiDesktopGazeAdjustmentTests
     {
+        [Test] public void CyanDirectionControlsRetainExplicitRecordingHeadAndCheckGuards()
+        {
+            var editor=Type.GetType("NeonResearch.NeonXR.Editor.DesktopGazeAdjustmentWindow, GazeFlow.NeonXR.Editor",true);
+            Assert.That((Color32)(Color)editor.GetProperty("DirectionFaceColor").GetValue(null),Is.EqualTo(new Color32(37,230,245,255)));
+            for(int bits=0;bits<16;bits++)
+            {
+                bool recording=(bits&1)!=0,head=(bits&2)!=0,checking=(bits&4)!=0,fitted=(bits&8)!=0;
+                Assert.That((bool)editor.GetMethod("CanNudge").Invoke(null,new object[]{recording,head,checking,fitted}),Is.EqualTo(recording&&head&&!checking&&!fitted));
+            }
+        }
+        [Test] public void DirectionButtonTexturesAreOwnedAndClosingDoesNotChangeSession()
+        {
+            var editor=Type.GetType("NeonResearch.NeonXR.Editor.DesktopGazeAdjustmentWindow, GazeFlow.NeonXR.Editor",true);var window=ScriptableObject.CreateInstance(editor);string session=StudyExportSession.SessionId;
+            try
+            {
+                var names=new[]{"directionOutlineTexture","directionFillTexture","directionShadowTexture"};
+                var textures=names.Select(name=>{var texture=(Texture2D)editor.GetMethod("DirectionTexture",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{Color.cyan});editor.GetField(name,Hidden).SetValue(window,texture);return texture;}).ToArray();
+                Assert.That(textures.All(texture=>texture.width==32&&(texture.hideFlags&HideFlags.DontSaveInEditor)!=0),Is.True);
+                editor.GetMethod("OnDisable",Hidden).Invoke(window,null);
+                Assert.That(textures.All(texture=>texture==null),Is.True);Assert.That(names.All(name=>editor.GetField(name,Hidden).GetValue(window)==null),Is.True);Assert.That(StudyExportSession.SessionId,Is.EqualTo(session));
+            }finally{UnityEngine.Object.DestroyImmediate(window);}
+        }
         private const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
         private static Type Adapter=>Type.GetType("NeonResearch.NeonXR.NeonXRResearchProvider, GazeFlow.NeonXR",true);
         private static Type Preview=>Type.GetType("NeonResearch.NeonXR.StudyDesktopGazePreview, GazeFlow.NeonXR",true);

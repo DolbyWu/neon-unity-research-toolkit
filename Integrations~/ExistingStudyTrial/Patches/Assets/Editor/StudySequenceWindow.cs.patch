@@ -1,6 +1,9 @@
-diff --git "a/Assets/Editor/StudySequenceWindow.cs" "b/Assets/Editor/StudySequenceWindow.cs"
-index 5c4c800..e624165 100644
---- "a/Assets/Editor/StudySequenceWindow.cs"
-+++ "b/Assets/Editor/StudySequenceWindow.cs"
+diff --git a/Assets/Editor/StudySequenceWindow.cs b/Assets/Editor/StudySequenceWindow.cs
+index 5c4c800..2203543 100644
+--- a/Assets/Editor/StudySequenceWindow.cs
++++ b/Assets/Editor/StudySequenceWindow.cs
 @@ -0,0 +1 @@
 +using NeonResearch;
+@@ -6 +7 @@ public sealed class StudySequenceWindow : EditorWindow
+-    [MenuItem("Tools/Study/Neon/Create Offline Replay From Finished Session")]
++    [MenuItem("Tools/GazeFlow/Advanced/Legacy/Create Offline Replay From Finished Session")]

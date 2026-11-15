@@ -8,7 +8,7 @@ namespace NeonResearch.NeonXR.Editor
     /// <summary>Display-only control; never approves mapping or starts/stops acquisition.</summary>
     public sealed class GazePointerWindow : EditorWindow
     {
-        [MenuItem("Tools/GazeFlow/Neon XR/Gaze Pointer")]
+        // Legacy callable alias retained without a duplicate menu entry.
         public static void Open()
         {
             DesktopGazeAdjustmentWindow.Open();

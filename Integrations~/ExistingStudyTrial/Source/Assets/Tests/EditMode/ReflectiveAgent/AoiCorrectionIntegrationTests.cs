@@ -10,6 +10,20 @@ namespace EscapeRoom.ReflectiveAgent.Tests
 {
     public sealed class AoiCorrectionIntegrationTests
     {
+        [Test] public void CurrentToolsStayDirectWhileLegacyAndDiagnosticsAreGrouped()
+        {
+            Type Find(string name)=>AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType(name)).First(t=>t!=null);
+            string[] Menus(string name)=>Find(name).GetMethods(BindingFlags.Static|BindingFlags.Public|BindingFlags.NonPublic).SelectMany(m=>m.GetCustomAttributes(typeof(UnityEditor.MenuItem),false).Cast<UnityEditor.MenuItem>()).Select(a=>a.menuItem).ToArray();
+            Assert.That(Menus("NeonResearch.NeonXR.Editor.DesktopGazeAdjustmentWindow"),Does.Contain("Tools/GazeFlow/Desktop Gaze Adjustment"));
+            Assert.That(Menus("NeonResearch.LiveObservationWindow"),Does.Contain("Tools/GazeFlow/Live Observation Marker"));
+            Assert.That(Menus("NeonResearch.StudyLiveMonitor"),Does.Contain("Tools/Neon Research/Open Live Monitor"));
+            Assert.That(Menus("NeonResearch.StudyArchiveEditor"),Does.Contain("Tools/Neon Research/Open Participant Archive"));
+            Assert.That(Menus("NeonResearch.NeonResearchSetup"),Does.Contain("Tools/Neon Research/Setup and Recording Settings"));
+            Assert.That(Menus("NeonResearch.NeonXR.Editor.GazePointerWindow"),Is.Empty);Assert.That(Menus("GazeFlowTrialSessionPanel"),Is.Empty);
+            foreach(var name in new[]{"NeonResearch.NeonXR.Editor.PreRoomValidationWindow","NeonResearch.NeonXR.Editor.ObjectCalibrationWindow"})Assert.That(Menus(name).All(p=>p.StartsWith("Tools/GazeFlow/Advanced/Legacy/")),Is.True,name);
+            foreach(var name in new[]{"GazeFlowCorrectionChecks","GazeFlowHierarchyOrganizer","GazeFlowTutorialObjectAudit","StudySequenceVerification","StudyParticipantVerification"})Assert.That(Menus(name).All(p=>p.StartsWith("Tools/GazeFlow/Advanced/Diagnostics/")),Is.True,name);
+            Assert.That(Menus("StudyTranscriptionEditor"),Does.Contain("Tools/Study/Transcription/Transcribe Finished Session (OpenAI)"));
+        }
         [Test] public void DirectGrabEntryHidesOnlyLegacyVrIdentityAndWelcomeAudio()
         {
             var scene=UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();

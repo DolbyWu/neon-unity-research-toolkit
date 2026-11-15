@@ -7,7 +7,7 @@ namespace NeonResearch.NeonXR.Editor
     public sealed class ObjectCalibrationWindow:EditorWindow
     {
         private string error="";private Vector2 scroll;
-        [MenuItem("Tools/GazeFlow/Tutorial Object Calibration")]
+        [MenuItem("Tools/GazeFlow/Advanced/Legacy/Tutorial Object Calibration")]
         public static void Open(){var w=GetWindow<ObjectCalibrationWindow>("Tutorial calibration");w.minSize=new Vector2(560,470);w.Show();}
         private void OnInspectorUpdate()=>Repaint();
         private void OnGUI()

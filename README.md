@@ -2,7 +2,9 @@
 
 **Latest workflow update (2026-11-14): official Neon XR first.** Extra gaze correction/validation is optional, not a recording gate. The independent host shows its grabbing station quietly while the researcher optionally adjusts gaze, confirms **Save gaze adjustment**, hides the pointer and clicks **Start tutorial**; then the original movement tutorial and main task follow. A yellow lower-object reference supports visual alignment without changing physics. Fresh worn official rays and object hits are recorded whether or not extra spatial QA was performed; spatial accuracy/approval stays separate. See [today's changes and checks](docs/research-pipeline-update-20261114.md) and [official-first workflow and limits](docs/official-first-workflow.md). This is a branch update, not a new release or hardware acceptance pass.
 
-**Initial experimental snapshot:** 2026-11-13, 13:38 EST (18:38 UTC) · **Latest update:** 2026-11-14 (America/New_York)
+**UI and replay update (2026-11-15):** bright cyan desktop direction buttons, simplified Tools menus, and a left-column **Gaze offset report** linked to the replay cursor. The report retains adjustment/save/reset history and supports JSON/CSV exports; original Neon X/Y and pupil traces are unchanged. Applied angles are not measured accuracy. See the [desktop adjustment and replay guide](docs/desktop-gaze-adjustment.md) and [Tools menu guide](docs/tools-menu-guide.md). Unity core checks: **72/72**; isolated host checks: **45/45**; offline replay/video/annotation/AOI browser checks passed. No new hardware accuracy claim, package version bump or signed release is implied.
+
+**Initial experimental snapshot:** 2026-11-13, 13:38 EST (18:38 UTC) · **Latest update:** 2026-11-15 (America/New_York)
 
 **Branch:** `feature/research-pipeline-20261113-1338-est`
 
@@ -17,6 +19,8 @@ This branch is the **Research Pipeline version**, not the default `main` branch,
 **Optional desktop control:** [Desktop gaze adjustment](docs/desktop-gaze-adjustment.md) adds computer-operated direction nudges, **Save gaze adjustment**, reset to the official ray, a matching cyan research-ray cursor and a separate no-fitting accuracy check. The host integration supplies the yellow visual reference and **Start tutorial** control. These do not change phone profiles or make verification a recording/tutorial gate.
 
 ## Recorded demo
+
+**Tools menu update (2026-11-15):** daily gaze/observation controls stay direct; older calibration panels and developer checks are grouped under **Advanced**. See the [current menu guide](docs/tools-menu-guide.md). No runtime features or data were removed.
 
 [Watch the research workflow demonstration on YouTube](https://youtu.be/ZujH4r9jMH4).
 
@@ -44,7 +48,7 @@ These steps do not infer a participant's cognition automatically.
 | Optional spatial adapter | Official Neon XR Core bridge, research target IDs/names/groups, nearest-collider hit/occlusion records and binding checks |
 | Two-round validation | Five fixed targets; bounded head-local direction fitting; new repeat-layout measurement samples; explicit approval |
 | Live observation | Desktop **Observation Marker**: start/end toggle, note popup, up to 10 intervals per session |
-| Offline HTML | Local video pause/scrub, experiment/video clocks, eye traces, collapsible target review, target/event filters, yellow observer/replay controls and manual annotations |
+| Offline HTML | Local video pause/scrub, experiment/video clocks, eye traces, cursor-linked offset report/history, collapsible target review, target/event filters, yellow observer/replay controls and manual annotations |
 | Participant reflection | Separate retrospective explanation, optional integer confusion rating **1–5**, linked original observation |
 | Save and export | JSON save/resume, CSV, selected intervals and full interval bundles |
 | Reviewed samples | Offline deterministic curation of reviewed labels and quality flags; no automatic model training |

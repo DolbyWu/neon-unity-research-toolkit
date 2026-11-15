@@ -13,7 +13,7 @@ namespace NeonResearch.NeonXR.Editor
         private bool approval, advanced;
         private int approvalProvider,approvalHead;
         private static readonly string[] PointNames={"1 · Centre","2 · Left","3 · Right","4 · Up","5 · Down"};
-        [MenuItem("Tools/GazeFlow/Pre-room Gaze Validation")]
+        [MenuItem("Tools/GazeFlow/Advanced/Legacy/Pre-room Gaze Validation")]
         public static void Open(){var window=GetWindow<PreRoomValidationWindow>("Gaze validation");window.minSize=new Vector2(560,480);window.Show();window.Focus();}
         private void OnInspectorUpdate()=>Repaint();
         private void OnGUI()

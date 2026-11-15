@@ -1,6 +1,12 @@
-diff --git "a/Assets/Editor/NeonStudyMenu.cs" "b/Assets/Editor/NeonStudyMenu.cs"
-index 60019d2..c1c3f87 100644
---- "a/Assets/Editor/NeonStudyMenu.cs"
-+++ "b/Assets/Editor/NeonStudyMenu.cs"
+diff --git a/Assets/Editor/NeonStudyMenu.cs b/Assets/Editor/NeonStudyMenu.cs
+index 60019d2..66dbbd8 100644
+--- a/Assets/Editor/NeonStudyMenu.cs
++++ b/Assets/Editor/NeonStudyMenu.cs
 @@ -0,0 +1 @@
 +using NeonResearch;
+@@ -7 +8 @@ public static class NeonStudyMenu
+-    [MenuItem("Tools/Study/Neon/Mark Observation During Play")]
++    [MenuItem("Tools/GazeFlow/Advanced/Legacy/Single Observation Marker")]
+@@ -15 +16 @@ public static class NeonStudyMenu
+-    [MenuItem("Tools/Study/Neon/Open Connection Settings")]
++    [MenuItem("Tools/GazeFlow/Advanced/Legacy/Open Connection Settings JSON")]

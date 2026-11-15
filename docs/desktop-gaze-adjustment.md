@@ -4,8 +4,10 @@ This optional Unity Editor tool keeps official Neon XR reception/mapping and add
 
 ## Open and use
 
+The direction controls use a bright cyan cross layout with large geometric arrows, English labels and a pressed-depth effect. The centre shows the selected step. The idle preview remains visible, but controls are locked until recording and head binding are available, and while a check or fitted correction is active. Colours do not indicate permission or measured accuracy. This appearance change does not alter correction signs, step sizes, save receipts or recording.
+
 1. Work in the isolated study copy, not the original or store edition. Press Play, confirm the archive participant ID and recording consent normally.
-2. Open **Tools > GazeFlow > Desktop Gaze Adjustment**. The study copy's existing **Tools > GazeFlow > Gaze Pointer** entry opens the same tool. It never opens automatically on Play.
+2. Open **Tools > GazeFlow > Desktop Gaze Adjustment**. It is the single current gaze-control menu entry; duplicate Gaze Pointer aliases were removed during the [menu cleanup](tools-menu-guide.md). It never opens automatically on Play.
 3. Choose **Show gaze pointer**. The cyan cursor displays the same callback ray used by research AOI logging. In the integrated host's first tutorial room, a fixed **yellow 32 mm disc** appears on the lower visible solid surface of the uniquely bound chess object during preparation. Ask the wearer to keep looking at the yellow centre, **not** to follow the cyan cursor. The yellow reference stays anchored to the object rather than following head motion, is depth-occluded normally, has no collider/Rigidbody/AOI, and does not approve mapping. It hides during an optional accuracy check and after **Start tutorial**. If no unobstructed lower surface is found, the panel reports that instead of moving geometry or drawing through walls.
 4. Choose a step (default 0.10 degrees) and click **LEFT / RIGHT / UP / DOWN**. Positive horizontal moves gaze right; positive vertical moves it up, in tracked-head-local axes. A new immutable correction revision is saved per click. No target, head pose or collider is moved.
 5. Click **Save gaze adjustment**. The panel shows **Adjustment saved — you can now hide the gaze pointer.** This writes a separate immutable operator-confirmation receipt, referencing the selected correction. Repeated clicks for the unchanged binding return the same receipt. This is not a measured accuracy pass and does not hide the cursor or approve AOI quality.
@@ -32,6 +34,18 @@ There is no automatic second fitting round, tutorial hold or automatic approval.
 - The official visualizer's visible cursor/ray is hidden when this preview is used, to avoid confusing raw and adjusted cursors. Official raycast/gameplay callbacks are otherwise left unchanged. A separate gameplay gaze-interaction system is not silently recalibrated by this research tool.
 
 ## Files and session isolation
+
+### Offset report in the offline replay
+
+Newly generated replays include **Gaze offset report** below the video in the left column. Scroll within that column to see the report while keeping the shared eye-data timeline on the right. At the experiment cursor it shows the horizontal and vertical **operator-applied** angles, their signs, correction ID and mount configuration from a fresh usable `gaze_targets.csv` callback. Positive horizontal is right; positive vertical is up. The lookup uses the last callback at or before the cursor, no older than 0.1 seconds. Gaps and invalid rays display unavailable, not a valid zero. An empty correction ID on an otherwise usable current-format callback means no **extra GazeFlow** rotation, not necessarily no phone-side offset.
+
+The report also displays the latest save receipt as historical context, and an expandable list of applications, saves, resets and head-binding events. Click a timed entry to pause and seek experiment time and, where video covers it, video time. Then use the existing **Mark current frame / time** annotation action if you want to add an interpretation. A save does not establish continued use after reset/rebinding and does not approve accuracy.
+
+Export the complete offset metadata as JSON or the application/save/transition history as CSV. The complete interval JSON also includes full-session offset context under `gaze_adjustment_report`; it is explicitly full-session context, not interval-only samples. Per-row `correction_id` remains authoritative for actual recorded AOI use. Fitted rotations without a manual yaw/pitch decomposition are labelled rather than displayed as zero-degree nudges.
+
+The original Neon scene-image X/Y and pupil traces are retained unchanged. A head-local angular correction cannot be added to scene-image pixels. The report follows the experiment cursor alongside the existing traces; changing the eye-time selector does not change callback times. This is not a Neon Player integration or evidence of hardware synchronization or measured residual accuracy.
+
+The exporter reads bounded, same-session `Calibration/*/correction.json` models and `Calibration/gaze-confirmations/*.json` receipts without changing them. Missing, malformed, foreign-session or unsafe metadata is omitted with a warning while the raw replay remains available. Historical HTML is static: regenerate a replay from its complete session folder to add this panel. Missing historical records cannot be reconstructed; preserve the old HTML/annotation exports before regenerating if they are needed.
 
 - `Calibration/manual-offset-<id>/correction.json`: kind, horizontal/vertical degrees, bounded quaternion, session/configuration identity, apply time and method/limitations. Each adjustment gets a new ID; no older revision is overwritten.
 - `Calibration/gaze-confirmations/gaze-save-<id>.json`: operator save receipt, exact correction reference (or official/no-extra-correction mode), head/session/configuration, angles, save time and explicit non-approval limitation. `game_events.csv` records `gaze_adjustment_saved`. Neither the receipt nor the button grants accuracy approval or starts/stops recording.

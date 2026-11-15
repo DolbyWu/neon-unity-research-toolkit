@@ -19,6 +19,7 @@ namespace NeonResearch.NeonXR.Editor
         private GUIStyle directionText,directionStep,directionOutline,directionFill,directionShadow;
         private Texture2D directionOutlineTexture,directionFillTexture,directionShadowTexture;
         private int pressedDirection=-1;
+        [SerializeField] private StudyGazeReferencePoint referencePoint;
         public static Color DirectionFaceColor=>new Color32(37,230,245,255);
         public static bool CanNudge(bool recording,bool hasHead,bool measuring,bool fittedCorrection)=>recording&&hasHead&&!measuring&&!fittedCorrection;
         [MenuItem("Tools/GazeFlow/Desktop Gaze Adjustment")]
@@ -107,7 +108,7 @@ namespace NeonResearch.NeonXR.Editor
         {
             scroll=EditorGUILayout.BeginScrollView(scroll);
             EditorGUILayout.LabelField("Desktop Gaze Adjustment",EditorStyles.boldLabel);
-            EditorGUILayout.HelpBox("GazeFlow local direction adjustment on top of official Neon XR. Not official Companion offset correction. No phone controls, automatic fitting or mandatory tutorial gate.",MessageType.Info);
+            EditorGUILayout.HelpBox("GazeFlow local direction adjustment on top of official Neon XR. Not official Companion offset correction. No phone controls, automatic fitting or mandatory task gate.",MessageType.Info);
             if(!EditorApplication.isPlaying){EditorGUILayout.LabelField("Enter Play and complete participant / recording confirmation.");DrawDirectionPad(null,false);EditorGUILayout.EndScrollView();return;}
             // Host preparation must remain accessible even with missing gaze/provider data.
             PreparationControlsGUI?.Invoke();
@@ -120,6 +121,12 @@ namespace NeonResearch.NeonXR.Editor
             if(key!=context){context=key;approval=false;}
             EditorGUILayout.LabelField("Signal",p.DesktopSignalStatus);
             EditorGUILayout.LabelField("Head",p.headReference==null?"Not bound":p.headReference.name);
+            referencePoint=(StudyGazeReferencePoint)EditorGUILayout.ObjectField("Optional visual reference",referencePoint,typeof(StudyGazeReferencePoint),true);
+            if(referencePoint!=null)
+            {
+                if(GUILayout.Button(referencePoint.showReference?"Hide visual reference":"Show visual reference",GUILayout.Height(32)))referencePoint.SetVisible(!referencePoint.showReference);
+                EditorGUILayout.LabelField(referencePoint.Status,EditorStyles.wordWrappedMiniLabel);
+            }
             using(new EditorGUI.DisabledScope(p.headReference==null))
                 if(GUILayout.Button(p.DesktopPointerVisible?"Hide gaze pointer":"Show gaze pointer",GUILayout.Height(38)))p.SetDesktopPointerVisible(!p.DesktopPointerVisible);
             EditorGUILayout.HelpBox("The cyan pointer uses the SAME research ray as AOI logging and the same recorder collision mask. It hides on invalid/stale data. In empty space it uses a 2 m visual fallback, not an AOI hit. Official gameplay callbacks are unchanged.",MessageType.None);
@@ -143,7 +150,7 @@ namespace NeonResearch.NeonXR.Editor
             EditorGUILayout.HelpBox("Keep the head and a clearly specified target still while nudging. Arrows move the research gaze, not the target. Each change saves a new correction ID and clears prior accuracy approval. Combined rotation limit: 12 degrees (engineering safety bound, not an accuracy standard).",MessageType.None);
             GUILayout.Space(8);EditorGUILayout.LabelField("Optional independent accuracy check",EditorStyles.boldLabel);
             using(new EditorGUI.DisabledScope(!canRecord||running))
-                if(GUILayout.Button("Show five check targets - no automatic fitting",GUILayout.Height(38)))Act(()=>p.BeginDesktopAccuracyCheck());
+                if(GUILayout.Button("Show five check targets - no automatic fitting",GUILayout.Height(38)))Act(()=>{if(referencePoint!=null)referencePoint.SetVisible(false);p.BeginDesktopAccuracyCheck();});
             check=p.GetComponent<StudySpatialValidation>();
             if(check!=null)
             {
@@ -170,7 +177,7 @@ namespace NeonResearch.NeonXR.Editor
             }
             EditorGUILayout.LabelField("Mapping verified: "+p.mappingVerified);
             EditorGUILayout.HelpBox(message,MessageType.Info);
-            EditorGUILayout.HelpBox("The five-point check measures new samples only and does not fit or auto-approve. Skipping/failing it never stops gaze, AOI, media or the tutorial. Reset after re-wearing or setup changes. Phone-side offsets must be documented separately.",MessageType.None);
+            EditorGUILayout.HelpBox("The five-point check measures new samples only and does not fit or auto-approve. Skipping/failing it never stops gaze, AOI, media or your task. Reset after re-wearing or setup changes. Phone-side offsets must be documented separately.",MessageType.None);
             EditorGUILayout.EndScrollView();
         }
     }

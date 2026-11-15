@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0-beta.1 candidate — portable workflow
+
+- Added an opt-in Start Here hub and monitor/observer auto-open setting after recording starts. Recording, device acquisition and media stay disabled by default.
+- Matching Neon XR adapter adds explicit tracked-head/official-provider setup, a dedicated root, optional unambiguous cross-scene source discovery and a visual reference on any authored Transform. No required game scripts, tutorial scene transitions or named reference objects.
+- Retained raw data, optional local media, yellow observer intervals, offline annotations/save-resume and cursor-linked offset reports. These are the free UPM packages, not a rebuild of the separate store submission.
+- Independent core checks: 72/72; official-SDK adapter host: 78/78. Final installed-artifact and new generic-rig hardware acceptance are tracked separately in the repository Validation report.
+
 ## Offline gaze offset report — 2026-11-15
 
 - Added a left-column report below the session video with cursor-linked manual yaw/pitch, model/mount IDs, latest save context and seekable application/save/reset/binding history. A fresh usable callback identifies the actual correction; invalid/stale/missing metadata is never replaced by a valid zero.

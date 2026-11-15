@@ -19,7 +19,7 @@ namespace NeonResearch.NeonXR.Editor
         private void OnGUI()
         {
             scroll=EditorGUILayout.BeginScrollView(scroll);
-            if(!EditorApplication.isPlaying){EditorGUILayout.LabelField("Enter Play. The trial starts with validation in the first tutorial room.");EditorGUILayout.EndScrollView();return;}
+            if(!EditorApplication.isPlaying){EditorGUILayout.LabelField("Enter Play with a configured official research provider and tracked head. This optional check never chooses a task scene.");EditorGUILayout.EndScrollView();return;}
             var providers=UnityEngine.Object.FindObjectsByType<NeonXRResearchProvider>(FindObjectsSortMode.None).Where(p=>p.isActiveAndEnabled).ToArray();
             if(providers.Length!=1){EditorGUILayout.LabelField("Exactly one active Neon XR Research Provider is required.");EditorGUILayout.EndScrollView();return;}
             var provider=providers[0];var check=provider.GetComponent<StudySpatialValidation>()??provider.gameObject.AddComponent<StudySpatialValidation>();

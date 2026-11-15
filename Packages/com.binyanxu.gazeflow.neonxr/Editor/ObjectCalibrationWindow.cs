@@ -14,12 +14,12 @@ namespace NeonResearch.NeonXR.Editor
         {
             scroll=EditorGUILayout.BeginScrollView(scroll);
             var flow=UnityEngine.Object.FindFirstObjectByType<StudyObjectCalibrationWorkflow>();
-            if(!EditorApplication.isPlaying||flow==null){EditorGUILayout.HelpBox("Optional extra correction / quality check. The default tutorial records official Neon XR rays without this step. Enter the grabbing tutorial to use these optional three-object controls.",MessageType.Info);EditorGUILayout.EndScrollView();return;}
+            if(!EditorApplication.isPlaying||flow==null){EditorGUILayout.HelpBox("Optional legacy three-object check. Enter Play with a configured Object Calibration Workflow component and three authored reference targets. Use Desktop Gaze Adjustment for the simpler default controls.",MessageType.Info);EditorGUILayout.EndScrollView();return;}
             EditorGUILayout.HelpBox("OPTIONAL: recording and the original tutorial do not require this correction or a passing check. Use official rays if no extra correction is needed.",MessageType.Info);
             if(GUILayout.Button("Use official Neon XR ray — no extra correction")){if(flow.Check!=null&&flow.Check.Running)flow.Check.Abort();flow.provider.UseOfficialRayWithoutExtraCorrection();flow.Finish(false);}
             EditorGUILayout.HelpBox(flow.Message,flow.State==StudyObjectCalibrationWorkflow.Phase.Error?MessageType.Warning:MessageType.Info);
             if(error.Length>0)EditorGUILayout.HelpBox(error,MessageType.Warning);
-            EditorGUILayout.LabelField("1. Chess → 2. Card → 3. Box",EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Three authored reference objects, in configured order",EditorStyles.boldLabel);
             for(int i=0;i<3;i++)
             {
                 using(new EditorGUI.DisabledScope(flow.State!=StudyObjectCalibrationWorkflow.Phase.Idle&&flow.State!=StudyObjectCalibrationWorkflow.Phase.Error))flow.objects[i]=(StudyResearchTarget)EditorGUILayout.ObjectField((i<flow.roleNames.Length?flow.roleNames[i]:"Object "+(i+1)),flow.objects[i],typeof(StudyResearchTarget),true);

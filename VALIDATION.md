@@ -1,5 +1,13 @@
 # Validation and known limitations
 
+## 0.2.0-beta.1 portable candidate — 15 November 2026
+
+Independent core-host checks passed **72/72**. The final source host with pinned official Neon XR SDK/adapter passed **81/81**. A fresh project installed from the actual two beta tarballs also passed **81/81**, including setup guards, source ambiguity/disablement, manual-offset rebinding, non-physical references and both new public components' scene save/reopen. Five browser suites passed video/annotation, offset, AOI and evidence-review regressions. Generic-rig hardware and visual acceptance remain pending; prior study sessions do not pass those new steps automatically. See the [candidate acceptance checklist](docs/beta-0.2.0-acceptance.md).
+
+Use short Windows verification paths: an initial deeply nested worktree host hit platform limits when synthetic tests created nested session files. The same checks passed at short independent paths. Arbitrary long-path archive support is not claimed.
+
+The beta UPM workflow does not rebuild or resubmit the store candidate. Earlier acceptance records below apply to those historical versions, not automatically to this beta.
+
 This report describes measured software checks, not certification of a physical study setup.
 
 ## Published preview.4 acceptance update — 7 November 2026

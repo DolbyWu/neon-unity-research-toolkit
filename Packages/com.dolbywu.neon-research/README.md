@@ -1,33 +1,28 @@
-> **Research Pipeline snapshot · 2026-11-13 13:38 EST · 0.2.0-exp.1.** See the [English beginner tutorial](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/feature/research-pipeline-20261113-1338-est/docs/research-pipeline-tutorial.md) for live observer intervals, retrospective 1–5 ratings, two-round validation and reviewed samples. Optional Neon XR spatial targets are documented in [the integration guide](Documentation~/neon-xr-targets.md). Software checks are recorded separately from new real-device acceptance. Not a new signed release or store submission.
+# GazeFlow — Neon Research Toolkit for Unity
 
-# Neon Unity Research Toolkit
+**0.2.0-beta.1 candidate · unofficial · Windows Unity Editor 6000.3.23f1.**
 
-**Current package identity: 0.2.0-exp.1** · Unofficial Windows Unity Editor experimental research pipeline.
+A reusable Configure → Record → Observe → Review workflow for researchers using Pupil Labs Neon and their own Unity experiment. No specific game, scene or object is required. Installation does not start recording.
 
-This branch adds research workflow code beyond the earlier public previews. Earlier hardware results do not validate its newest geometry/UI changes, and the submitted store edition remains separate. Earlier previews may leave Missing Script references after saving/reopening a scene. Back up affected scenes, re-add only the broken component, and restore its fields/callbacks. Existing broken references are not automatically migrated.
+## Start
 
-Record anonymous participant sessions, head/camera pose, explicitly connected interaction events and available Neon eye/pupil data. Review finished sessions in English offline HTML with linked local video and optional manual annotations.
+Open **Tools > GazeFlow > Start Here**. Choose a private output folder, opt into recording, confirm an anonymous participant and run a short test. The yellow Live Observation Marker records start/end intervals and observer notes. After Stop, review the generated offline HTML, video and timeline; add multiple human annotations, export JSON to save and import it to resume.
 
-## Start here
+Original eye/pupil fields, head pose, connected events, optional media and offsets remain separate evidence streams. Missing data remains missing. No automatic fixation, attention or cognitive-state inference is claimed.
 
-1. Install with Unity Package Manager **Install/Add package from disk** and select this `package.json`. The tested Unity version is **6000.3.23f1**.
-2. Open **Tools → Neon Research → Setup and Recording Settings**.
-3. Choose a fresh output folder, enable **Record on Unity Play (opt-in)**, leave Neon/media off for your first test, then **Save project settings**.
-4. Open **Tools → Neon Research → Open Live Monitor**. Press Play, confirm an anonymous participant and click **Mark observation** during a short test.
-5. Stop normally. The session folder and HTML open when auto-open is enabled.
+## Optional spatial gaze
 
-No Git, headset, Neon, Python or FFmpeg is needed for that first data-only check. Installation alone does not start acquisition.
+Install official Neon XR Core and matching `com.binyanxu.gazeflow.neonxr` beta. Its **Neon XR Setup** binds your actual tracked head and existing official provider, creates an independent research recorder, and optionally configures explicit cross-scene sources. Author research targets and connect behavior yourself.
 
-Read [the integration and workflow guide](Documentation~/workflow.md) for setup, eye-data acceptance, event wiring, optional media and annotation steps. The repository's Quick Start includes a full beginner walkthrough and troubleshooting.
+Desktop Gaze Adjustment adds a reversible local direction offset and optional visual reference on any authored Transform. Save is not measured accuracy or official Companion calibration. Image-space X/Y and pupil traces are not rewritten.
 
-## Offline annotation
+## Documentation
 
-Pause/drag video → mark current frame → choose a label or enter a description → add the annotation. Video and experiment clocks are shown together. **Add another annotation here** preserves previous records. The order is **eye timeline → Manual annotations → interval export → Game log**.
+- [Installation and Quick Start](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/release/gazeflow-0.2.0-beta.1/QUICKSTART.md)
+- [Generic XR setup](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/release/gazeflow-0.2.0-beta.1/docs/universal-neon-xr-setup.md)
+- [Illustrated controls](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/release/gazeflow-0.2.0-beta.1/docs/illustrated-quickstart.md)
+- [Validation and limits](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/release/gazeflow-0.2.0-beta.1/VALIDATION.md)
 
-Export annotation **JSON** before closing and import it to resume. CSV is for analysis only. Video and JSON remain separate local files; copy the whole session folder.
+Core data-only checks do not require a headset SDK. Python/FFmpeg for optional local media must be installed separately; capture needs explicit consent. Standalone player/mobile/macOS/Linux support and quantitative synchronization/physical accuracy are not established by this beta.
 
-## Research readiness
-
-Real-device compatibility, physical pupil units, timing and full-duration capture remain unvalidated. Gaze is not mapped to Unity objects; no fixation/saccade or cognitive-state classifier is included. Interactions require explicit callbacks. Optional capture requires separately configured Python/FFmpeg and per-session confirmation.
-
-Acquisition is off by default. Settings/data are project-local. See the [MIT License](LICENSE.md) for the plugin's software licensing terms. Third-party materials retain their own licenses; demonstration media and research data are excluded. See [dependency notices](<Third Party Notices.md>) for the licensing scope. It is not an official vendor product or an approved Asset Store submission.
+This UPM line does not replace existing signed preview archives or the separate Asset Store submission. MIT; see LICENSE.md and Third Party Notices.md.

@@ -7,7 +7,7 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
  const replay=path.join(root,'Replay'),videos=path.join(root,'Video');fs.mkdirSync(replay,{recursive:true});fs.mkdirSync(videos,{recursive:true});
  const template=fs.readFileSync(path.join(project,'Runtime/Resources/NeonResearchOfflineReplay.txt'),'utf8');
  const data={version:1,session:'20990101T000000000Z-abcdef01',participant:'SYNTHETIC-ONLY',duration:12,media:{video_offset_s:2},
-  events:[['event_id','session_time_s','event_type','object_id','detail'],['phase1','.5','experiment_phase_start','Main Menu AR','Synthetic phase'],['phase2','2.5','gaze_validation_start','synthetic-validation','Synthetic phase'],['1','3','grab_start','synthetic-cup','Synthetic event'],['phase3','4','grabbing_tutorial_started','grabbing_tutorial','Synthetic phase'],['phase4','6','experiment_phase_start','LocomotionTutorial','Synthetic phase'],['phase5','9','experiment_phase_start','Room 1','Synthetic phase']],
+  events:[['event_id','session_time_s','event_type','object_id','detail'],['phase1','.5','experiment_phase_start','Preparation','Synthetic phase'],['phase2','2.5','gaze_validation_start','synthetic-validation','Synthetic phase'],['1','3','grab_start','synthetic-cup','Synthetic event'],['phase3','4','grabbing_tutorial_started','grabbing_tutorial','Synthetic phase'],['phase4','6','experiment_phase_start','Task A','Synthetic phase'],['phase5','9','experiment_phase_start','Task B','Synthetic phase']],
   regions:[['start_session_s','end_session_s','region','source'],['0','12','Synthetic room','synthetic']],gaze:[]};
  const report=path.join(replay,'study-replay.html');fs.writeFileSync(report,template.replace('__STUDY_DATA__',JSON.stringify(data).replace(/</g,'\\u003c')));
  const ffmpeg=process.env.STUDY_FFMPEG;if(!ffmpeg)throw Error('Set STUDY_FFMPEG to an installed FFmpeg executable; this test never downloads one.');
@@ -28,9 +28,9 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
   await page.goto(pathToFileURL(report).href);assert.equal(await page.locator('#error').innerText(),'');assert.equal(await count(),0);
   assert.equal(await page.locator('#phaseButtons button').count(),5);
   await page.locator('#phaseButtons button').first().click();assert.equal(await page.locator('#cursor').inputValue(),'0.5');
-  assert.match(await page.locator('#phaseStatus').innerText(),/First tutorial room/);
+  assert.match(await page.locator('#phaseStatus').innerText(),/Preparation/);
   await page.locator('#phaseButtons button').last().click();assert.equal(await page.locator('#cursor').inputValue(),'9');
-  assert.match(await page.locator('#phaseStatus').innerText(),/Room 1/);
+  assert.match(await page.locator('#phaseStatus').innerText(),/Task B/);
   assert.deepEqual(await page.locator('.review-data > .panel').evaluateAll(panels=>panels.map(p=>p.id)),['timelinePanel','annotationPanel','intervalExportPanel','targetPanel','gameLogPanel'],'Annotations immediately follow eye data; targets are available and game log stays last.');
   await page.locator('#annotationAdvanced').evaluate(e=>{e.open=true;});
   // Missing required fields and invalid bounds cannot create a record.
@@ -68,7 +68,7 @@ const {chromium}=require(process.env.STUDY_PLAYWRIGHT||'playwright');
   // Both the known relative path and manual file picker work offline.
   await page.locator('#loadSessionVideo').click();await page.waitForFunction(()=>document.getElementById('sessionVideo').readyState>=1);
   await seek(5);await page.waitForFunction(()=>Math.abs(document.getElementById('sessionVideo').currentTime-3)<.12);
-  await page.locator('#phaseButtons button').filter({hasText:'Movement tutorial'}).click();await page.waitForFunction(()=>Math.abs(document.getElementById('sessionVideo').currentTime-4)<.12);
+  await page.locator('#phaseButtons button').filter({hasText:'Task A'}).click();await page.waitForFunction(()=>Math.abs(document.getElementById('sessionVideo').currentTime-4)<.12);
   assert.equal(await page.locator('#sessionVideo').evaluate(v=>v.paused),true);
   await seek(5);await page.waitForFunction(()=>Math.abs(document.getElementById('sessionVideo').currentTime-3)<.12);
   await page.locator('#sessionVideo').evaluate(v=>{v.currentTime=6;});await page.waitForFunction(()=>Math.abs(Number(document.getElementById('cursor').value)-8)<.15);

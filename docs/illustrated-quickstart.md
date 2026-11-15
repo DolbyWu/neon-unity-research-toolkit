@@ -1,6 +1,6 @@
 # Illustrated quickstart: recording, gaze adjustment and observation
 
-**Research Pipeline branch · updated 2026-11-15 · Windows Unity Editor.** These screenshots show the current desktop controls, not a new stable release or an Asset Store edition. Start with an independent project copy and the [installation instructions](research-pipeline-tutorial.md#2-install-this-branch). Your own project supplies its XR rig, scenes, task and interaction bindings.
+**GazeFlow beta candidate · updated 2026-11-15 · Windows Unity Editor.** Screenshots show research-pipeline controls retained in the beta; the beta also adds **Tools > GazeFlow > Start Here** and **Neon XR Setup**. This is not an Asset Store edition. Start in an independent copy with the [current installation instructions](../QUICKSTART.md). Your project supplies its XR rig, scenes and task. See [generic XR setup](universal-neon-xr-setup.md) for references on arbitrary authored objects.
 
 **Screenshot privacy:** local addresses/paths use placeholders, and recorded eye traces, counts and event rows have been removed from the public monitor image. The images illustrate interface locations only; they are not sample research data or evidence of accuracy. Extra Unity menu entries depend on the host project.
 

@@ -10,6 +10,7 @@ public sealed class NeonStudySettings
 {
     public bool enabled = false;
     public bool recordOnPlay = false;
+    public bool openResearchPanelsOnPlay = false;
     public string condition = "baseline";
     public string outputRoot = "NeonResearchData";
     public bool archiveEnabled = true;

@@ -22,24 +22,15 @@ jobs:
         run: node Tools/Test-Documentation.cjs
       - name: Build UPM archive
         shell: pwsh
-        run: ./Tools/Build-Package.ps1
-      - name: Test isolated store edition
+        run: ./Tools/Build-UpmPackages.ps1
+      - name: Inspect both UPM beta payloads
         shell: pwsh
-        run: python Tools/Test-StorePackage.py -v
-      - name: Build isolated store candidate
-        shell: pwsh
-        run: python Tools/Build-StorePackage.py
+        run: python Tools/Test-UpmPackages.py
       - name: Upload preview package
         uses: actions/upload-artifact@v4
         with:
-          name: upm-preview
-          path: Artifacts/*.tgz
-          if-no-files-found: error
-      - name: Upload unsigned store candidate
-        uses: actions/upload-artifact@v4
-        with:
-          name: gazeflow-store-candidate-UNVALIDATED
+          name: gazeflow-upm-beta
           path: |
-            Artifacts/Store/*.tgz
-            Artifacts/Store/candidate-evidence.json
+            Artifacts/*.tgz
+            Artifacts/SHA256SUMS.txt
           if-no-files-found: error

@@ -18,6 +18,7 @@ namespace NeonResearch
             using(new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
             {
                 settings.recordOnPlay=EditorGUILayout.Toggle("Record on Unity Play (opt-in)",settings.recordOnPlay);
+                settings.openResearchPanelsOnPlay=EditorGUILayout.Toggle("Open monitor + observer on Play",settings.openResearchPanelsOnPlay);
                 settings.enabled=EditorGUILayout.Toggle("Receive Neon gaze (opt-in)",settings.enabled);
                 settings.outputRoot=EditorGUILayout.TextField("Output folder",settings.outputRoot);
                 if(GUILayout.Button("Choose data folder")){string selected=EditorUtility.OpenFolderPanel("Select an independent study data folder",StudyExportSession.OutputRoot,"");if(!string.IsNullOrEmpty(selected))settings.outputRoot=selected;}

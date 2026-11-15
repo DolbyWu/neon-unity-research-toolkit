@@ -1,4 +1,12 @@
-# 0.1.0-preview.4 — 7 November 2026
+# Release notes
+
+## 0.2.0-beta.1 portable UPM candidate
+
+Project-independent Configure → Record → Observe → Review workflow. Adds Start Here, explicit official Neon/head setup, dedicated-root scene binding and visual references on arbitrary objects. Retains cyan gaze adjustment, yellow observer intervals, offline annotations and cursor-linked offset reports. Recording and media remain opt-in.
+
+This candidate is not yet a signed release or new hardware acceptance claim. Original study projects, signed archives and store submission stay unchanged. Install matching core/adapter versions in an independent project; see [Quick Start](QUICKSTART.md), [XR setup](docs/universal-neon-xr-setup.md) and [Validation](VALIDATION.md).
+
+## Historical 0.1.0-preview.4 — 7 November 2026
 
 Public pilot-use preview of the unofficial Neon Unity Research Toolkit. Windows Unity Editor 6000.3.23f1 is the tested environment. This is a GitHub preview release, not Asset Store approval or vendor certification.
 

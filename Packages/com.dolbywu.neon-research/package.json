@@ -1,7 +1,7 @@
 {
   "name": "com.dolbywu.neon-research",
-  "version": "0.2.0-exp.1",
-  "displayName": "Neon Research Toolkit (Unofficial Preview)",
+  "version": "0.2.0-beta.1",
+  "displayName": "GazeFlow — Neon Research Toolkit (Unofficial Beta)",
   "description": "Independent Unity + Neon study recording, participant intake, raw events/head pose, offline video review and manual annotations. Windows Editor preview; opt-in acquisition.",
   "unity": "6000.3",
   "author": {

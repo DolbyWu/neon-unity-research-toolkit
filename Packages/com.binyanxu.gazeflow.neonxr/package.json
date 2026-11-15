@@ -1,15 +1,15 @@
 {
   "name": "com.binyanxu.gazeflow.neonxr",
-  "version": "0.2.0-exp.1",
-  "displayName": "GazeFlow Neon XR Adapter (Experimental)",
-  "description": "Optional official Neon XR bridge for research target ray-hit logging. Install Neon XR Core separately. Hardware validation pending.",
+  "version": "0.2.0-beta.1",
+  "displayName": "GazeFlow Neon XR Adapter (Unofficial Beta)",
+  "description": "Official Neon XR bridge for research rays, optional local gaze adjustment, authored references and explicit scene bindings. Configure and validate on your own hardware.",
   "unity": "6000.3",
   "author": {
     "name": "Binyan Michelle Xu"
   },
   "license": "MIT",
   "dependencies": {
-    "com.dolbywu.neon-research": "0.2.0-exp.1",
+    "com.dolbywu.neon-research": "0.2.0-beta.1",
     "com.pupil-labs.neon-xr.core": "2.0.0"
   }
 }

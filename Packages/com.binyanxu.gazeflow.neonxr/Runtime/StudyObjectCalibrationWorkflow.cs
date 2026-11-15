@@ -10,9 +10,9 @@ namespace NeonResearch.NeonXR
         public enum Phase { Idle, Collecting, Countdown, Verifying, Review, Error, Done }
         public NeonXRResearchProvider provider;
         public StudyResearchTarget[] objects=new StudyResearchTarget[3];
-        public string[] roleNames={"Chess","Card","Box"};
+        public string[] roleNames={"Reference A","Reference B","Reference C"};
         public Phase State {get;private set;}
-        public string Message {get;private set;}="Bind three actual tutorial targets before calibration.";
+        public string Message {get;private set;}="Bind three actual reference targets before this optional check.";
         public double CountdownRemaining {get;private set;}=3;
         public event Action Finished;
         private Vector3[] aimPoints,positions;private Quaternion[] rotations;private string session,calibration;private Transform head;private double countdown=-1,lastTick=-1;
@@ -29,7 +29,7 @@ namespace NeonResearch.NeonXR
             session=StudyExportSession.SessionId;calibration=provider.calibrationId;head=provider.headReference;
             positions=objects.Select(t=>t.transform.position).ToArray();rotations=objects.Select(t=>t.transform.rotation).ToArray();
             aimPoints=objects.Select(t=>AimPoint(t,head.position,check.objectCollisionMask,check.objectRayDistance)).ToArray();
-            check.BeginObjectTargets(calibration,objects,aimPoints,false);State=Phase.Collecting;Message="ROUND 1: wearer looks at the small centre cue on Chess, Card, then Box. Click Capture once for EACH object. Do not move/grab the objects yet.";
+            check.BeginObjectTargets(calibration,objects,aimPoints,false);State=Phase.Collecting;Message="ROUND 1: follow the cue on each of your three configured reference objects in order. Click Capture once for EACH object. Keep the objects still.";
         }
         public static Vector3 AimPoint(StudyResearchTarget target,Vector3 head,int mask,float range)
         {
@@ -74,7 +74,7 @@ namespace NeonResearch.NeonXR
                 if(Check.WaitingForSignal||!Check.HasRecentValidSignal){countdown=-1;CountdownRemaining=3;Message="ROUND 2 waiting for fresh worn eye data. Countdown will restart; no click needed.";return;}
                 if(!Check.ReusesReferenceGeometry){Check.Abort();State=Phase.Error;Message="Object geometry changed; repeat calibration.";return;}
                 if(!continuous)countdown=-1;if(countdown<0)countdown=now;CountdownRemaining=Math.Max(0,3-(now-countdown));
-                Message="ROUND 2 starts in "+CountdownRemaining.ToString("F1")+" s. Look at Chess, then Card, then Box as each cue pulses. Do not move them.";
+                Message="ROUND 2 starts in "+CountdownRemaining.ToString("F1")+" s. Look at your three configured reference objects in order as each cue pulses. Keep them still.";
                 if(CountdownRemaining==0){try{Check.StartAutomaticVerificationSequence(0);State=Phase.Verifying;Message="ROUND 2: follow the pulsing cues; NEW samples and actual target IDs are checked. No clicks needed.";}catch(Exception error){State=Phase.Error;Message=error.Message;}}
             }
             if(State==Phase.Verifying&&!Check.Running){State=Phase.Review;Message=Check.LastReport!=null&&Check.LastReport.passed?"NEW object verification PASSED. Review target names, hit fractions and coverage, then Approve & continue tutorial.":"NEW object verification FAILED. Retry or explicitly continue unverified. A fitted correction is not an accuracy pass.";}

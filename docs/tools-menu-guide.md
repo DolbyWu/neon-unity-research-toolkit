@@ -4,6 +4,8 @@ Menu-only cleanup, 2026-11-15. No runtime acquisition, tutorial, correction, obs
 
 ## Daily operation
 
+The beta adds **Tools > GazeFlow > Start Here** as the beginner entry point, and **Tools > GazeFlow > Neon XR Setup** with the adapter. The latter binds explicitly selected scene sources and creates optional visual references without experiment-specific assets. Earlier cleanup notes below describe the retained menu groups.
+
 - **Tools > GazeFlow > Desktop Gaze Adjustment**: the single current gaze-control entry. Show/nudge/Save/Hide and the integrated host's Start tutorial control remain here.
 - **Tools > GazeFlow > Live Observation Marker**: start/end intervals and observer notes.
 - **Tools > Neon Research > Open Live Monitor**: recent gaze/pupil and recording status.

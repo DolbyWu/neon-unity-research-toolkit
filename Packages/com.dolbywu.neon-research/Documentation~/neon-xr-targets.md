@@ -1,6 +1,6 @@
-# Experimental Neon XR research targets · 0.2.0-exp.1
+# Neon XR research targets · 0.2.0-beta.1 candidate
 
-This development prototype adds object-level ray-hit review to GazeFlow. The submitted Asset Store preview.6 is unchanged on `store/0.1.0-preview.6`. This branch is not a replacement submission or a validated research release.
+This free UPM beta adds object-level research-ray review. The submitted store edition remains separate. For the current project-independent setup, source bindings and optional authored reference, start with the [generic setup guide](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/release/gazeflow-0.2.0-beta.1/docs/universal-neon-xr-setup.md). No specific game or named object is required. Extra adjustment/validation is optional, not a recording gate; save is not measured accuracy. The technical notes below describe the retained ray/export contracts.
 
 ## What is implemented
 
@@ -26,12 +26,12 @@ Use Unity 6000.3.23f1. Do not install alongside the Asset Store edition: it shar
    ```
 
 3. Follow the official Addressables/import/build and NeonXR prefab setup. The upstream package adds Addressables, Input System and XR Interaction Toolkit dependencies; compatibility with the host's existing XR packages must be checked. No official files or native binaries are redistributed here.
-4. Install `com.binyanxu.gazeflow.neonxr-0.2.0-exp.1.tgz` (or its package.json from disk). Its manifest expects the development core and official Core 2.0.0 already installed.
+4. Install the matching `com.binyanxu.gazeflow.neonxr-0.2.0-beta.1.tgz` candidate (or its package.json from disk). Its manifest expects the matching beta core and official Core 2.0.0 already installed. Candidate local archives are unsigned; no historical signed-release status is inherited.
 5. Configure official mount calibration and its provider. Add **Neon XR Research Provider (Experimental)** to a GameObject. Assign `neon` to the official `NeonGazeDataProvider`, and `headReference` to the same tracked head/camera Transform used by the official gaze visualizer. Never substitute the XR rig root for the moving head.
-6. Give `calibrationId` a versioned study identifier. Leave `mappingVerified` OFF until a known-target trial confirms the mapping for this mounting/setup. The flag records an operator declaration, not measured quality.
+6. Give `calibrationId` a versioned mount/study identifier. Leave `mappingVerified` OFF. Usable unverified rays still record; an accepted mapping requires a compatible new measured check and explicit review through its controls, not manually ticking an Inspector flag.
 7. Add **Research Target** to each object; preserve its name and assign a stable unique ID, group and explicit event aliases. Child colliders can belong to a parent target. Solid colliders are eligible by default. Existing trigger AOI volumes require `includeTriggerColliders`; they export as `authored_trigger_volume`, not visible surfaces. Do not change gameplay physics to detect gaze. Include intervening solid occluders in the collision mask: excluded layers cannot block the ray. Prefab templates marked `requiresSpawnIdentity` must be registered after instantiation with `StudyTargetSpawnIdentity.Register(instance, authoredSpawnSiteId, instanceKey)`; the host owns deterministic, non-reused instance keys.
 8. Add exactly one **Gaze Target Recorder**, assign its provider before Play, and configure distance/mask. Multiple enabled recorders are flagged and do not produce target assignments. Runtime provider reassignment requires disabling/re-enabling the recorder.
-9. Open **Tools > GazeFlow > Research Target Setup (Experimental)** and check configuration. For a demo, import the **Three research targets** sample and choose **Tools > GazeFlow > Create Three-Target Demo**. It creates synthetic scene objects only, never synthetic research eye samples.
+9. Open **Tools > GazeFlow > Advanced > Setup > Research Target Setup (Experimental)** and check configuration. For a demo, import the **Three research targets** sample and choose **Tools > GazeFlow > Create Three-Target Demo**. It creates synthetic scene objects only, never synthetic research eye samples.
 10. Enable the existing recording opt-in, confirm the participant, and run a short session. Mark/grab objects through the existing interaction adapter using the same stable IDs. Stop normally; open `Replay/study-replay.html`, inspect **Research target hits**, click a callback, mark the time and add a reflection/annotation. Export annotation JSON before closing.
 
 Official setup: https://docs.pupil-labs.com/neon/neon-xr/neon-xr-core-package/
@@ -49,7 +49,7 @@ Official setup: https://docs.pupil-labs.com/neon/neon-xr/neon-xr-core-package/
 
 ## Pointer display, catalogue and filtering
 
-With the optional adapter installed, open **Tools > GazeFlow > Neon XR > Gaze Pointer**. During Play, use **Hide gaze pointer / Show gaze pointer** to hide or restore the official dot and line. This is not a calibration control, and does not stop eye tracking, AOI recording or Gaze Monitor. Open the window manually when needed; hiding is a temporary Play-mode change, not a saved calibration setting.
+With the adapter installed, open **Tools > GazeFlow > Desktop Gaze Adjustment**. During Play, **Hide gaze pointer / Show gaze pointer** controls the cyan research-ray cursor without stopping acquisition or AOI recording. The same panel supplies optional local direction nudges and a separate save receipt; neither hiding nor saving measures accuracy. Original official rays remain available alongside corrected research rays. Your independently configured SDK/gameplay callbacks are not silently recalibrated.
 
 `target_catalog.csv` exports configured names, labels, stable IDs, groups, explicit legacy aliases, declared behavior kinds, hierarchy descriptors and geometry policy. Configured-but-unobserved targets do not constitute gaze or behavior evidence. The catalogue covers loaded scene objects (including inactive objects with enabled research components), retaining snapshots across scene changes within a session. It is not a scan of every unused prefab or dynamic factory.
 

@@ -8,6 +8,8 @@ An unofficial, open-source research plugin for **Pupil Labs Neon + Unity**. Gaze
 
 **Start here:** [Quick Start](QUICKSTART.md) · [Illustrated controls](docs/illustrated-quickstart.md) · [Generic XR setup](docs/universal-neon-xr-setup.md) · [Validation](VALIDATION.md)
 
+**Maintainer handoff:** [Resume the pending beta hardware check](docs/resume-beta-hardware-20261115.md). The draft PR remains held; preparation captures are not completed wearer acceptance tests.
+
 ## The workflow
 
 1. **Configure:** choose a private data folder, current Companion connection and optional media channels.

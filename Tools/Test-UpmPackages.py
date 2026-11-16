@@ -27,6 +27,9 @@ for name in ('com.dolbywu.neon-research', 'com.binyanxu.gazeflow.neonxr'):
             assert 'package/Runtime/Resources/NeonResearchOfflineReplay.txt' in names
             assert 'package/Editor/LiveObservationWindow.cs' in names
             assert 'package/Editor/GazeFlowWelcomeWindow.cs' in names
+            for source in ('StudyObjectHitExport.cs','StudySessionSegments.cs'):
+                assert 'package/Runtime/'+source in names
+            assert 'package/Editor/StudyObjectOwnershipReplay.cs' in names
         else:
             assert manifest['dependencies']['com.dolbywu.neon-research'] == version
             for source in ('StudyNeonXRBindings.cs','StudyGazeReferencePoint.cs'):

@@ -1,5 +1,11 @@
 # Validation and known limitations
 
+## 0.2.0-beta.2 portable integration — 16 November 2026
+
+The independent short-path project installing the two actual beta.2 tarballs passed **97/97 Unity EditMode tests** (zero failures/skips), with the pinned official Neon XR Core. A second fresh project installing only the actual core tarball, without the SDK/adapter, passed **88/88**. This includes the new ownership, surface policy, segment/export tests and the retained portable adapter/serialization checks. Reviewed-sample checks passed **14/14**. Nine synthetic browser suites passed: object ownership, object-hit evidence, annotation-folder saving, session segments, target review, gaze-offset reports, evidence review, offline replay and video/manual annotations.
+
+These are fresh beta.2 software results, not a wearer session or measured spatial precision. [Beta.2 acceptance](docs/beta-0.2.0-beta2-acceptance.md) records remaining physical-device and browser permission steps. The previous beta.1 results below are historical. No main promotion, signed release or store rebuild is implied.
+
 ## 0.2.0-beta.1 portable candidate — 15 November 2026
 
 Independent core-host checks passed **72/72**. The final source host with pinned official Neon XR SDK/adapter passed **81/81**. A fresh project installed from the actual two beta tarballs also passed **81/81**, including setup guards, source ambiguity/disablement, manual-offset rebinding, non-physical references and both new public components' scene save/reopen. Five browser suites passed video/annotation, offset, AOI and evidence-review regressions. Generic-rig hardware and visual acceptance remain pending; prior study sessions do not pass those new steps automatically. See the [candidate acceptance checklist](docs/beta-0.2.0-acceptance.md).

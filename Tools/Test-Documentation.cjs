@@ -20,7 +20,7 @@ for(const name of ['NeonResearchSetup.cs','StudyLiveMonitor.cs','StudyParticipan
 }
 assert.ok(!/escape[\s-]?room/i.test(fs.readFileSync(path.join(pkg,'package.json'),'utf8')),'Package metadata has standalone wording.');
 const candidateVersion=JSON.parse(fs.readFileSync(path.join(pkg,'package.json'),'utf8')).version;
-assert.equal(candidateVersion,'0.2.0-beta.1');
+assert.equal(candidateVersion,'0.2.0-beta.2');
 assert.equal(JSON.parse(fs.readFileSync(path.join(root,'Packages/com.binyanxu.gazeflow.neonxr/package.json'),'utf8')).dependencies['com.dolbywu.neon-research'],candidateVersion);
 assert.ok(readme.includes('Start Here')&&readme.includes('Neon XR Setup'),'Current generic entry points are documented.');
 console.log('PASS: '+files.length+' Markdown files, '+checkedLinks+' local links, beginner milestones and standalone UI wording.');

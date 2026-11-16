@@ -1,5 +1,9 @@
 # Release notes
 
+## 0.2.0-beta.2 candidate — 16 November 2026
+
+Portable object ownership and matching HTML/CSV hit exports, configurable Tutorial/Study partitions, own-surface collider scope and optional versioned annotation saving to an authorized session folder. No experiment assets, participant data, case-specific analysis scripts or automatic cognitive inference are bundled. Existing physical interactions and raw recordings are preserved. Independent installed-artifact checks passed; physical-device regression remains pending. This is not an Asset Store update or a signed release.
+
 ## 0.2.0-beta.1 portable UPM candidate
 
 Project-independent Configure → Record → Observe → Review workflow. Adds Start Here, explicit official Neon/head setup, dedicated-root scene binding and visual references on arbitrary objects. Retains cyan gaze adjustment, yellow observer intervals, offline annotations and cursor-linked offset reports. Recording and media remain opt-in.

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0-beta.2 candidate — object evidence and review
+
+- Explicit ancestor statistics ownership preserves raw child IDs, independent parts and callback provenance. HTML and automatic object-hit/detail CSV exports use the same normalized records; unresolved identities remain explicit.
+- Optional, explicitly configured analysis-start region partitions Tutorial / Study / Unassigned without resetting clocks or inferring a boundary from scene names. Unconfigured and legacy generic sessions retain full-session behavior.
+- Optional own-collider-only targets support authored information surfaces without changing physics or occlusion.
+- Offline annotation JSON can be saved as versioned, read-back-verified snapshots in an explicitly authorized session folder; download/import fallback remains available.
+- Updated reviewed-sample filtering retains tutorial audit records but excludes them from primary training windows when a boundary is configured. No participant data or case-specific inference tools are bundled.
+- Independent installed-package and physical-device regression results are recorded separately; this entry is not hardware acceptance or an Asset Store update.
+
 ## 0.2.0-beta.1 candidate — portable workflow
 
 - Added an opt-in Start Here hub and monitor/observer auto-open setting after recording starts. Recording, device acquisition and media stay disabled by default.

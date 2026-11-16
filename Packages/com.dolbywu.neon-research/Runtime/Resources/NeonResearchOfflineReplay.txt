@@ -13,7 +13,9 @@ body{max-width:1600px}.review-layout{display:grid;grid-template-columns:minmax(0
 .ratingField{grid-column:1/-1;display:grid;gap:10px}.ratingChoices{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px}.ratingChoices button{color:var(--observation-yellow);border-color:var(--observation-yellow);min-height:44px;padding:8px 2px;font-weight:650}.ratingChoices button[aria-pressed=true]{background:var(--observation-yellow);color:var(--observation-ink);border:2px solid #3b310b;box-shadow:0 3px 0 var(--observation-edge)}.ratingChoices button:focus-visible{outline:2px solid #edf6fa;outline-offset:2px}.ratingAnchors{display:flex;justify-content:space-between;gap:12px;color:#a7bac7;font-size:12px}#intensityReadout{font-weight:650;color:var(--observation-yellow)}#intensityLegacy{margin:0;font-size:12px}#intensityClear{font-size:12px;padding:5px 8px}@media(max-width:600px){.ratingChoices{grid-template-columns:repeat(5,minmax(0,1fr))}}
 .review-left{min-width:0;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}.review-left .video-panel{position:static;max-height:none;overflow:visible}@media(max-width:1050px){.review-left{position:static;max-height:none;overflow:visible}}
 .adjustmentStats{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}.adjustmentStats>div{flex:1;min-width:140px;background:#101923;padding:12px;border-radius:8px}.adjustmentStats strong{display:block;color:#25e6f5;font-size:23px;margin-top:4px}.adjustmentStats small{color:#a7bac7}#adjustmentHistory{max-height:230px;overflow:auto}#adjustmentHistory button{font-size:12px;text-align:left;margin:3px 0;width:100%;overflow-wrap:anywhere}#adjustmentActive,#adjustmentSaved{white-space:pre-wrap;overflow-wrap:anywhere}#gazeAdjustmentReport h2{color:#25e6f5}#gazeAdjustmentReport .adjustmentCurrent{color:#25e6f5}#gazeAdjustmentReport summary{cursor:pointer}#adjustmentWarning{white-space:pre-wrap}
+#annotationFolderStatus{overflow-wrap:anywhere}#annotationsSaveFolder{background:#236b62;font-weight:650}
 </style></head><body>
+<style>#targetSummary table{min-width:1150px}#targetSummary th{min-width:95px;word-break:normal}#targetSummary td:nth-child(1){min-width:160px}#targetSummary td:nth-child(2){min-width:260px;white-space:nowrap}#targetSummary td:nth-child(3){min-width:140px}#targetSummary td:nth-child(8),#targetSummary td:nth-child(9){min-width:220px}</style>
 <div class="tag">NEON / OFFLINE STUDY REPLAY</div><h1>Replay a study, one moment at a time</h1>
 <p class="muted" id="session">Loading local data…</p><p id="error" role="alert"></p>
 <div class="panel"><div class="row"><button id="play" class="primary">Play</button><label>Speed <select id="speed"><option>1</option><option>2</option><option>4</option></select> ×</label><input id="cursor" type="range" min="0" value="0" step="0.01" aria-label="Replay time"><output id="clock"></output></div>
@@ -42,7 +44,7 @@ body{max-width:1600px}.review-layout{display:grid;grid-template-columns:minmax(0
 <small class="muted">Pupil values use documented Neon wire-protocol millimetres; this receiver has not been physically validated. Gaze uses scene-image pixels, not VR targets. No fixation, saccade or cognitive-state detection. Display traces are pixel-decimated and may miss brief peaks. Invalid samples, connection changes and gaps over 0.1 s break the trace. Vertical scales adapt to the visible interval.</small></div>
 <div class="panel" id="annotationPanel"><h2>Manual annotations <span id="annotationCount"></span></h2>
 <h3>Live researcher observations</h3><p class="muted">Recorded during play: start/end clicks and observer notes. These are observations, not confirmed cognitive states. Review a segment with the player, then save their explanation and optional confusion rating separately.</p><div id="liveObservationList"></div><hr>
-<p class="muted">Pause or drag the video, mark the frame, then choose a label OR enter a description. Times are filled automatically. Add the annotation, then export JSON to keep it. Labels are human notes, not automatic cognitive-state diagnoses.</p>
+<p class="muted">Pause or drag the video, mark the frame, then choose a label OR enter a description. Times are filled automatically. Add the annotation, then save JSON to this session folder or download it. Labels are human notes, not automatic cognitive-state diagnoses.</p>
 <div class="row"><button id="annotationUseCursor">Mark current frame / time</button><button id="annotationUseSelection">Use selected interval</button><button id="annotationNext" class="primary">Add another annotation here</button><button id="annotationNew">Clear form</button></div>
 <p id="annotationMode" class="muted">NEW annotation — saved annotations will be kept.</p>
 <p id="annotationDraftTime" class="notice">No frame marked yet. Use the video button or mark the current timeline time.</p>
@@ -66,17 +68,21 @@ body{max-width:1600px}.review-layout{display:grid;grid-template-columns:minmax(0
 <label>Observed evidence / behavior (optional)<textarea id="annotationEvidence" maxlength="10000"></textarea></label>
 </div></details><datalist id="annotationLabels"><option value="Confusion"><option value="Engagement"><option value="Insight"><option value="Frustration"><option value="Uncertainty"><option value="Other"></datalist>
 <div class="row"><button id="annotationSave" class="primary">Add annotation</button><button id="annotationCancel" disabled>Cancel edit</button></div>
-<p id="annotationMessage" role="status">No annotations yet. Changes stay in this tab until you export them.</p>
+<p id="annotationMessage" role="status">No annotations yet. Changes stay in this tab until saved to a folder or downloaded.</p>
+<div class="row"><button id="annotationsSaveFolder" class="primary">Save JSON to session folder</button><button id="annotationsChangeFolder">Choose / change session folder</button></div>
+<p><label><input id="annotationsFolderAuto" type="checkbox" checked> After choosing a folder, also save when I add, edit or delete an annotation</label></p>
+<p id="annotationFolderStatus" class="notice muted" role="status" aria-live="polite"></p>
 <div id="annotationList"></div>
 <div class="row"><button id="annotationsExport" class="primary">Export annotations JSON (save / resume)</button><button id="annotationsCsv">Export annotations CSV</button><label class="fileLabel">Import annotations JSON<input id="annotationsImport" type="file" accept=".json,application/json"></label></div>
 <label class="fileLabel">Merge another annotator JSON (keep current records)<input id="annotationsMerge" type="file" accept=".json,application/json"></label>
 <details><summary>Compare overlapping annotations / reconciliation</summary><p class="muted">Temporal overlap is not evidence of agreement or causation. Point annotations compare only at the same instant. Reconciliation creates a NEW linked note; neither original is overwritten. This is offline exchange, not real-time collaboration.</p><div id="annotationComparison"></div></details>
-<p class="notice muted">Export JSON before closing this page, and save it in this session folder. Reopen the HTML and import that JSON to continue. CSV is for analysis, not re-import. Import replaces the current annotation list only after validation and confirmation. Browser downloads do not silently update the HTML, original data or a previous JSON file. Do not rely on browser cache. No data is uploaded.</p></div>
+<p class="notice muted">Save JSON to the session folder before closing, or use Export annotations JSON to download a copy. Folder saving needs a supported desktop browser and your explicit permission. Select the session folder containing export_manifest.json (one level above Replay); JSON files are saved in its Replay folder, beside the HTML. Each save creates a new dated version; earlier JSON, HTML and raw recordings are not overwritten. Reopen the HTML, import the JSON you want to resume, then choose the same session folder again. CSV is for analysis, not re-import. Do not rely on browser cache. No data is uploaded.</p></div>
 <div class="panel" id="intervalExportPanel"><h2>Select and export an interval</h2><div class="row"><label>Start (seconds) <input id="start" type="number" min="0" step="0.001" value="0"></label><label>End (seconds) <input id="end" type="number" min="0" step="0.001"></label><button id="bundle" class="primary">Export interval JSON (complete bundle)</button><button id="gazeCsv">Gaze CSV</button><button id="eventCsv">Game events CSV</button><button id="regionCsv">Regions CSV</button></div>
+<div id="analysisScopeControls" hidden><div class="row"><button id="scopeStudy" class="primary">Study · default analysis</button><button id="scopeTutorial">Tutorial · exported, not analyzed</button><button id="scopeFull">Full session · archive / diagnostics</button></div><p id="analysisScopeStatus" class="notice"></p><p><a id="analysisScopeManifest">Open tutorial / study export manifest</a></p></div>
 <p id="selection"></p><small class="muted">Intervals use [start, end); events at the end are separate boundary context. Corrected mode extracts aligned samples only. Unaligned samples are counted by receive time, not mixed into corrected traces. JSON includes methods, original columns, regions and boundary events. CSV text is formula-escaped; original recordings are unchanged. Your browser controls download location.</small></div>
 <div class="panel" id="targetPanel" hidden><details id="targetDisclosure"><summary>Research target hits · experimental<span class="disclosureMeta" id="targetOverview">Expand to review targets, mapping quality and exports.</span></summary>
 <div id="spatialValidationReview"></div>
-<h3>Approximate object hits · low precision / unverified</h3><p class="notice">These geometric observations remain available even if calibration verification fails. They are NOT accepted AOI, fixation or attention measurements. No hit, occlusion and missing gaze remain distinct.</p><button id="approximateExport">Export approximate callbacks CSV · selected interval</button><div id="approximateHits"></div><h3>Observed ray-hit statistics · accuracy status separate</h3><label>Quality view <select id="targetQualityMode"><option value="observed">All usable ray observations (default)</option><option value="verified">Verified / accepted AOI only</option></select></label>
+<h3>Approximate object hits · low precision / unverified</h3><p class="notice">These geometric observations remain available even if calibration verification fails. They are NOT accepted AOI, fixation or attention measurements. No hit, occlusion and missing gaze remain distinct.</p><button id="approximateExport">Export approximate callbacks CSV · selected interval</button><div id="approximateHits"></div><h3>Observed ray-hit statistics · accuracy status separate</h3><label>Statistics <select id="targetGranularity"><option value="object">Objects (explicit ownership)</option><option value="raw">Raw child targets</option></select></label><p id="ownershipStatus" class="muted"></p><label>Quality view <select id="targetQualityMode"><option value="observed">All usable ray observations (default)</option><option value="verified">Verified / accepted AOI only</option></select></label>
 <p class="notice">Ray hits are not fixations or inferred attention. Times below use Unity callback time, independently of the eye-trace time selector. Usable official rays are recorded without an extra accuracy test. Observed hits are NOT automatically verified. The verified-only view requires measured mapping approval. Invalid data and gaps over 0.1 s do not contribute covered time.</p>
 <p class="muted">Geometry: solid_surface means an existing solid collider surface; authored_trigger_volume means an explicitly configured interaction/AOI volume, NOT necessarily a visible object surface. Solid colliders still occlude targets behind them. Raw target CSV preserves hit_geometry; older recordings without this field have unspecified geometry.</p>
 <p id="targetQuality"></p><div id="targetSummary"></div>
@@ -101,6 +107,7 @@ const phases=events.map(e=>{const kind=get(D.events,e.r,'event_type'),scene=get(
 const regions=rows(D.regions).map(r=>({a:number(r[0]),b:number(r[1]),name:r[2],r})).filter(r=>finite(r.a)&&finite(r.b)&&r.b>r.a).sort((a,b)=>a.a-b.a);
 const samples=[];
 for(const source of D.gaze){const table=source.table;for(const r of rows(table)){const read=k=>get(table,r,k);samples.push({source:source.source,table,r,receive:number(read('receive_session_time_s')),aligned:read('time_alignment_status')==='time_echo_estimated'?number(read('aligned_session_time_s')):NaN,valid:read('sample_quality')==='basic_valid_not_full_eye_quality_assessment',eyes:String(read('eye_state_available')).toLowerCase()==='true',epoch:source.source+':'+read('connection_epoch'),x:number(read('gaze_x_px')),y:number(read('gaze_y_px')),l:number(read('pupil_left_mm')),rr:number(read('pupil_right_mm'))});}}
+const analysisScope=D.analysisSegments?.schema==='gazeflow-session-segments-v1'&&D.analysisSegments.session_id===D.session&&finite(D.analysisSegments.study_start_s)&&D.analysisSegments.study_start_s>=0&&D.analysisSegments.study_start_s<=duration?D.analysisSegments:null;
 let basis='aligned',ordered=[],viewA=0,viewB=Math.max(duration,.001),cursor=0,playing=false,lastFrame=0,dragStart=null;
 let annotations=[],deletedAnnotations=[],editingAnnotation=null,annotationsDirty=false,annotationRevision=0;
 let annotationsCreatedUtc=new Date().toISOString();const video=$('sessionVideo');
@@ -116,7 +123,9 @@ function selectedEvents(b){return events.filter(e=>e.t>=b.a&&e.t<b.b).map(e=>e.r
 function regionAt(t){return regions.find(r=>t>=r.a&&t<r.b)?.name||'Unknown / outside region log';}
 function describe(e){return ['event_type','puzzle','object_id','outcome','detail'].map(k=>get(D.events,e.r,k)).filter(Boolean).join(' · ');}
 function select(a,b){$('start').value=Math.max(0,a);$('end').value=Math.min(duration,b);updateSelection();draw();}
-function updateSelection(){renderTargets();const b=bounds();for(const id of ['bundle','gazeCsv','eventCsv','regionCsv','zoom'])$(id).disabled=!b;if(!b){$('selection').textContent='Enter a valid range: 0 <= start < end <= session duration.';$('events').replaceChildren();return;}
+function selectionScope(b){if(!analysisScope?.enabled)return{segment:'unsegmented',primary_analysis_eligible:null};const start=analysisScope.study_start_s;return{segment:!b?'unavailable':b.b<=start?'tutorial':b.a>=start?'study':'mixed_tutorial_and_study',primary_analysis_eligible:!!b&&analysisScope.primary_analysis_available&&b.a>=start,boundary_region:analysisScope.boundary_region,study_start_s:start,time_basis:'original_session_seconds_not_reset'};}
+function renderAnalysisScope(){if(!analysisScope?.enabled)return;$('analysisScopeControls').hidden=false;const b=bounds(),s=selectionScope(b);$('scopeStudy').disabled=!analysisScope.primary_analysis_available;$('scopeTutorial').disabled=analysisScope.study_start_s<=0;$('analysisScopeStatus').textContent=`Study starts at ${humanTime(analysisScope.study_start_s)} (first recorded ${analysisScope.boundary_region} entry). Current selection: ${s.segment}. ${s.primary_analysis_eligible?'Eligible for primary study analysis.':'NOT a primary study-analysis interval.'} Tutorial and full media remain exported. Session/video/annotation timestamps have not been reset.${!analysisScope.primary_analysis_available?' No study entry was recorded; use Tutorial to review/export this session.':''}`;const link=$('analysisScopeManifest'),path=analysisScope.manifest_relative;if(typeof path==='string'&&/^\.\.\/Analysis\/SessionSegments-[A-Za-z0-9_-]+\/segments\.json$/.test(path))link.href=path;else link.hidden=true;}
+function updateSelection(){renderAnalysisScope();renderTargets();const b=bounds();for(const id of ['bundle','gazeCsv','eventCsv','regionCsv','zoom'])$(id).disabled=!b;if(!b){$('selection').textContent=analysisScope?.enabled&&!analysisScope.primary_analysis_available?'No recorded study entry. Tutorial is retained; select Tutorial to review or export it.':'Enter a valid range: 0 <= start < end <= session duration.';$('events').replaceChildren();return;}
 const selected=chosen(),ev=selectedEvents(b),unaligned=samples.filter(s=>!finite(s.aligned)&&s.receive>=b.a&&s.receive<b.b).length;
 $('selection').textContent=`Interval ${fmt(b.a)} — ${fmt(b.b)} · ${selected.length} gaze samples · ${ev.length} game events · ${unaligned} unaligned samples (counted by receive time)`;
 const table=document.createElement('table');const head=document.createElement('tr');for(const label of ['Time (seconds)','Event / object / outcome']){const th=document.createElement('th');th.textContent=label;head.append(th);}table.append(head);
@@ -139,7 +148,7 @@ canvas.onpointerdown=e=>{dragStart=timeAt(e);canvas.setPointerCapture(e.pointerI
 function download(name,text,type){const url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
 function csv(table){return '\ufeff'+table.map(r=>r.map(v=>{let s=String(v??'');if(/^[\s]*[=+@-]/.test(s)&&!finite(number(s)))s="'"+s;return '"'+s.replaceAll('"','""')+'"';}).join(',')).join('\r\n');}
 function fragment(){const b=bounds();if(!b)throw Error('Invalid selection');const selected=chosen(),grouped=D.gaze.map(g=>({source:g.source,table:[g.table[0],...selected.filter(s=>s.source===g.source).map(s=>s.r)]}));return {schema:'study-offline-selection-v1',session:D.session,start_s:b.a,end_s:b.b,interval:'[start,end)',time_basis:basis,method:basis==='aligned'?'time_echo_estimated; excludes unaligned samples':'receive_time_diagnostic_only_not_corrected',unaligned_receive_count:samples.filter(s=>!finite(s.aligned)&&s.receive>=b.a&&s.receive<b.b).length,limitations:'No fixation/saccade/cognitive labels. Pupil wire-protocol units; not physically validated. Raw region intervals retained; overlap selection. End boundary events are context, not within interval.',gaze_targets:targetTable.length?[targetTable[0],...targetRows.filter(s=>s.t>=b.a&&s.t<b.b).map(s=>s.r)]:[],gaze_target_time_basis:'unity_callback_time_NOT_device_or_hardware_sync',events:[D.events[0],...selectedEvents(b)],end_boundary_events:[D.events[0],...events.filter(e=>Math.abs(e.t-b.b)<1e-9).map(e=>e.r)],regions:[D.regions[0],...regions.filter(r=>r.a<b.b&&r.b>b.a).map(r=>r.r)],gaze:grouped};}
-function exportPart(kind){const f=fragment(),name=`selection-${f.start_s.toFixed(3)}-${f.end_s.toFixed(3)}-${basis}`;f.target_catalog=targetCatalog;f.target_filters=targetFilterSpec();f.filtered_gaze_targets=targetTable.length?[targetTable[0],...targetRows.filter(s=>s.t>=f.start_s&&s.t<f.end_s&&targetMatches(s.id)&&($('targetQualityMode').value!=='verified'||s.valid&&s.verified)).map(s=>s.r)]:[];if(kind==='bundle')download(name+'.json',JSON.stringify(f), 'application/json');else if(kind==='gaze'){const columns=[...new Set(f.gaze.flatMap(g=>g.table[0]||[]))];const table=[['source_neon_folder',...columns]];for(const g of f.gaze)for(const r of rows(g.table))table.push([g.source,...columns.map(c=>get(g.table,r,c)??'')]);download(name+'-gaze.csv',csv(table),'text/csv;charset=utf-8');}else download(name+'-'+kind+'.csv',csv(f[kind]),'text/csv;charset=utf-8');}
+function exportPart(kind){const f=fragment(),name=`selection-${f.start_s.toFixed(3)}-${f.end_s.toFixed(3)}-${basis}`;f.target_catalog=targetCatalog;f.target_filters=targetFilterSpec();f.filtered_gaze_targets=targetTable.length?[targetTable[0],...targetRows.filter(s=>s.t>=f.start_s&&s.t<f.end_s&&targetMatches(s)&&($('targetQualityMode').value!=='verified'||s.valid&&s.verified)).map(s=>s.r)]:[];if(kind==='bundle')download(name+'.json',JSON.stringify(f), 'application/json');else if(kind==='gaze'){const columns=[...new Set(f.gaze.flatMap(g=>g.table[0]||[]))];const table=[['source_neon_folder',...columns]];for(const g of f.gaze)for(const r of rows(g.table))table.push([g.source,...columns.map(c=>get(g.table,r,c)??'')]);download(name+'-gaze.csv',csv(table),'text/csv;charset=utf-8');}else download(name+'-'+kind+'.csv',csv(f[kind]),'text/csv;charset=utf-8');}
 // Local video: no upload, fetch, embedded media bytes or automatic recording.
 function videoStatus(){
  if(!videoName)return;
@@ -192,7 +201,7 @@ $('videoTogglePlay').onclick=()=>{if(!videoReady())return;if(!video.paused)pause
 $('videoFullscreen').onclick=async()=>{try{if(!videoReady())throw Error('Load the session video first.');if(!video.requestFullscreen)throw Error('Fullscreen is unavailable in this browser.');await video.requestFullscreen();}catch(e){$('videoStatus').textContent=e.message;}};
 $('videoReviewSeek').oninput=()=>{if(!videoReady())return;pausePlayback();timelineSeekTarget=null;video.currentTime=Math.max(0,Math.min(video.duration,number($('videoReviewSeek').value)));setCursor(video.currentTime+videoOffset,true);};
 const annotationMessage=(text,warn=false)=>{$('annotationMessage').textContent=text;$('annotationMessage').className=warn?'warn':'';};
-function applyOffset(value,method){if(!finite(value)||Math.abs(value)>Math.max(duration,1))throw Error('Video offset must be a finite number within the session duration.');pausePlayback();videoOffset=value;videoTimingMethod=method;$('videoOffset').value=value;syncVideo();videoStatus();updateReviewClocks();annotationsDirty=true;annotationRevision++;annotationMessage('Video timing changed. Existing annotations keep their original experiment times. Export JSON to retain the new offset.');}
+function applyOffset(value,method){if(!finite(value)||Math.abs(value)>Math.max(duration,1))throw Error('Video offset must be a finite number within the session duration.');pausePlayback();videoOffset=value;videoTimingMethod=method;$('videoOffset').value=value;syncVideo();videoStatus();updateReviewClocks();annotationsDirty=true;annotationRevision++;annotationMessage('Video timing changed. Existing annotations keep their original experiment times. Save JSON to retain the new offset.');autoSaveAnnotationFolder();}
 $('applyVideoOffset').onclick=()=>{try{applyOffset(number($('videoOffset').value),'operator_adjusted_not_hardware_verified');}catch(e){$('videoStatus').textContent=e.message;}};
 $('videoMetadata').onchange=async()=>{try{
  const file=$('videoMetadata').files[0];if(!file)return;if(file.size>1024*1024)throw Error('Capture timing file is too large.');
@@ -255,7 +264,7 @@ function validateAnnotation(a){
  }
  return result;
 }
-function annotationChanged(message){annotationsDirty=true;annotationRevision++;renderAnnotations();draw();annotationMessage(message+' Export JSON to save these changes.');}
+function annotationChanged(message){annotationsDirty=true;annotationRevision++;renderAnnotations();draw();annotationMessage(message+' Save JSON to keep these changes.');autoSaveAnnotationFolder();}
 const cursorPoint=()=>Math.min(duration,Math.round(cursor*1000)/1000);
 function annotationMode(){ $('annotationMode').textContent=editingAnnotation?'EDITING an existing annotation. Use Add another annotation here for a NEW record.':`NEW annotation #${annotations.length+1} — ${annotations.length} saved in this tab. Previous annotations will not be replaced.`; }
 function draftTimeSummary(){
@@ -324,6 +333,74 @@ $('annotationSave').onclick=()=>{try{
 }catch(e){annotationMessage(e.message,true);}};
 function annotationBundle(){return{schema:'neon-study-annotations-v2',session:D.session,participant_id:D.participant||'',duration_s:duration,time_base:'session_seconds',interval_convention:'[start,end); equal start/end denotes a point',revision:annotationRevision,created_utc:annotationsCreatedUtc,exported_utc:new Date().toISOString(),video:{file_name:videoName||videoReferenceName,offset_s:videoOffset,timing_method:videoTimingMethod},method:'Manual human coding only. Sources and interpretations are not automatic cognitive-state diagnoses. Raw recordings unchanged.',annotations:annotations.map(a=>({...a})),deleted_annotations:deletedAnnotations};}
 function canExportAnnotations(){if(annotationDraftDirty){annotationMessage('Save or cancel unapplied annotation form changes before exporting.',true);return false;}return true;}
+// Explicit folder permission only. No fetch, local server, cached handles or silent writes.
+let annotationFolder=null,annotationFolderPicking=false,annotationFolderPending=0,annotationFolderTail=Promise.resolve();
+let annotationFolderLast='',annotationFolderFailure='',annotationFolderSavedIdentity=null;
+const annotationFolderSupported=()=>typeof window.showDirectoryPicker==='function'&&window.isSecureContext;
+function renderAnnotationFolderStatus(){
+ const supported=annotationFolderSupported(),busy=annotationFolderPicking||annotationFolderPending>0;
+ $('annotationsSaveFolder').disabled=!supported||busy;$('annotationsChangeFolder').disabled=!supported||busy;
+ const guidance='Select this session folder containing export_manifest.json, NOT Participants or Replay. Files go into Replay, beside the HTML. Permission is requested again after reopening the page.';
+ let text=!supported?'Direct folder saving is unavailable in this browser/context. Open the local HTML in desktop Microsoft Edge or Chrome, or use Export annotations JSON and select the destination yourself.':annotationFolder?'Folder: '+annotationFolder.name+'/Replay. Each save creates a new version; earlier files stay unchanged.':guidance;
+ if(annotationFolderPicking)text+=' Waiting for folder selection / permission.';
+ if(annotationFolderPending)text+=' '+annotationFolderPending+' JSON save(s) pending — keep this page open.';
+ if(annotationFolderLast)text+=' Last verified save: '+annotationFolderLast+'.';
+ if(annotationFolder&&annotationSaveIdentity(annotationBundle())!==annotationFolderSavedIdentity)text+=' Current accepted changes are not yet saved to this folder.';
+ if(annotationFolderFailure)text+=' NOT SAVED: '+annotationFolderFailure+' Your annotations remain in this tab; retry Save JSON or export a download.';
+ $('annotationFolderStatus').textContent=text;$('annotationFolderStatus').className='notice '+(annotationFolderFailure?'warn':'muted');
+}
+async function checkedAnnotationReplayFolder(folder){
+ let file;try{file=await(await folder.getFileHandle('export_manifest.json')).getFile();}
+ catch(e){if(e.name==='NotFoundError')throw Error('Choose the session folder containing export_manifest.json, one level ABOVE Replay. No annotation file was written.');throw e;}
+ if(file.size>128*1024)throw Error('Session manifest exceeds the size limit.');
+ const manifest=JSON.parse(await file.text());
+ if(manifest.closed!==true||manifest.sessionId!==D.session||String(manifest.participantId??'')!==String(D.participant||'')||!finite(manifest.durationSeconds)||Math.abs(manifest.durationSeconds-duration)>1e-6)throw Error('Folder does not match this closed session, participant and duration. No annotation file was written.');
+ return await folder.getDirectoryHandle('Replay');
+}
+async function chooseAnnotationFolder(){
+ if(!annotationFolderSupported())throw Error('Direct folder saving requires a supported desktop browser. Use the JSON download fallback.');
+ annotationFolderPicking=true;renderAnnotationFolderStatus();
+ try{
+  const folder=await window.showDirectoryPicker({id:'gazeflow-annotations',mode:'readwrite'});
+  await checkedAnnotationReplayFolder(folder);
+  annotationFolder=folder;annotationFolderLast='';annotationFolderFailure='';annotationFolderSavedIdentity=null;return true;
+ }catch(e){if(e.name==='AbortError')return false;throw e;}
+ finally{annotationFolderPicking=false;renderAnnotationFolderStatus();}
+}
+function annotationSaveIdentity(bundle){const {exported_utc,...state}=bundle;return JSON.stringify(state);}
+function queueAnnotationFolderSave(){
+ if(!annotationFolder)return Promise.resolve();
+ const folder=annotationFolder,bundle=annotationBundle(),text=JSON.stringify(bundle,null,2),identity=annotationSaveIdentity(bundle);
+ if(new Blob([text]).size>10*1024*1024){annotationFolderFailure='Annotation JSON exceeds the 10 MiB limit.';renderAnnotationFolderStatus();return Promise.resolve();}
+ const uuid=globalThis.crypto.randomUUID(),stamp=bundle.exported_utc.replace(/[^0-9TZ]/g,'');
+ const name=safeFilename+'-annotations-r'+bundle.revision+'-'+stamp+'-'+uuid+'.json';
+ annotationFolderPending++;renderAnnotationFolderStatus();
+ const job=annotationFolderTail.then(async()=>{
+  const replay=await checkedAnnotationReplayFolder(folder);
+  // A fresh UUID path plus an existence check: never open an earlier JSON for writing.
+  try{await replay.getFileHandle(name);throw Error('Save filename already exists; no earlier JSON was overwritten.');}catch(e){if(e.name!=='NotFoundError')throw e;}
+  const handle=await replay.getFileHandle(name,{create:true});let writer=null;
+  try{writer=await handle.createWritable();await writer.write(text);await writer.close();writer=null;}
+  catch(e){if(writer)try{await writer.abort();}catch{}throw e;}
+  if(await(await handle.getFile()).text()!==text)throw Error('Saved file did not pass the read-back check.');
+  if(annotationSaveIdentity(annotationBundle())===identity)annotationsDirty=false;
+  annotationFolderLast=folder.name+'/Replay/'+name;annotationFolderFailure='';annotationFolderSavedIdentity=identity;
+ }).catch(e=>{
+  annotationsDirty=true;annotationFolderFailure=e.message||String(e);
+ }).finally(()=>{annotationFolderPending--;renderAnnotationFolderStatus();});
+ annotationFolderTail=job;return job;
+}
+function autoSaveAnnotationFolder(){
+ if(annotationFolder&&$('annotationsFolderAuto').checked)queueAnnotationFolderSave();
+ else renderAnnotationFolderStatus();
+}
+$('annotationsSaveFolder').onclick=async()=>{
+ if(!canExportAnnotations())return;
+ try{if(!annotationFolder&&!await chooseAnnotationFolder())return;if(canExportAnnotations())await queueAnnotationFolderSave();}
+ catch(e){annotationFolderFailure=e.message||String(e);renderAnnotationFolderStatus();}
+};
+$('annotationsChangeFolder').onclick=async()=>{try{await chooseAnnotationFolder();}catch(e){annotationFolderFailure=e.message||String(e);renderAnnotationFolderStatus();}};
+renderAnnotationFolderStatus();
 $('annotationsExport').onclick=()=>{if(!canExportAnnotations())return;download(safeFilename+'-annotations-r'+annotationRevision+'.json',JSON.stringify(annotationBundle(),null,2),'application/json');annotationsDirty=false;annotationMessage('JSON download requested. Keep the file in this session folder and import it to resume. If you cancel the download, export again. The HTML and earlier exports were not overwritten.');};
 $('annotationsCsv').onclick=()=>{if(!canExportAnnotations())return;const keys=['id','start_s','end_s','video_time_s','video_offset_s',...Object.keys(annotationFields),'participant_intensity','intensity_source','intensity_scale','intensity_input_method','confusion_rating_1_5','confusion_rating_source','related_observation_id','review_status','record_revision','related_ids','revisions','created_utc','updated_utc'];download(safeFilename+'-annotations-r'+annotationRevision+'.csv',csv([['session','time_base',...keys],...annotations.map(a=>[D.session,'session_seconds',...keys.map(k=>typeof a[k]==='object'&&a[k]!==null?JSON.stringify(a[k]):a[k])])]),'text/csv;charset=utf-8');annotationMessage('Analysis CSV download requested. Export JSON as well to resume editing; CSV is not a save/resume format.');};
 $('annotationsImport').onchange=async()=>{try{
@@ -339,11 +416,12 @@ $('annotationsImport').onchange=async()=>{try{
  if((annotations.length||annotationsDirty||annotationDraftDirty)&&!confirm('Replace the current annotation list and video offset with this JSON? Export current annotations first if you need to keep them.'))return;
  pausePlayback();annotations=validated;deletedAnnotations=tombstones;annotationRevision=bundle.revision;annotationsCreatedUtc=bundle.created_utc;videoReferenceName=timing.file_name;videoOffset=timing.offset_s;videoTimingMethod=timing.timing_method;$('videoOffset').value=videoOffset;annotationsDirty=false;resetAnnotationForm();renderAnnotations();setCursor(cursor);
  annotationMessage(`Loaded ${annotations.length} annotations and saved video offset. Raw recordings unchanged. Video files are not embedded; load the matching video separately.${videoReferenceName?' Saved video reference: '+videoReferenceName:''}`);
+ renderAnnotationFolderStatus();
 }catch(e){annotationMessage('Import rejected; existing annotations retained. '+e.message,true);}finally{$('annotationsImport').value='';}};
 $('annotationsMerge').onchange=async()=>{try{const file=$('annotationsMerge').files[0];if(!file)return;if(file.size>10*1024*1024)throw Error('JSON exceeds 10 MiB.');if(annotationDraftDirty)throw Error('Save or cancel the current draft first.');const b=JSON.parse(await file.text());if(!['neon-study-annotations-v1','neon-study-annotations-v2'].includes(b.schema)||b.session!==D.session||b.time_base!=='session_seconds'||b.duration_s!==duration||(D.participant&&b.participant_id!==D.participant)||!Array.isArray(b.annotations)||b.annotations.length>10000)throw Error('Incompatible session/schema.');const incoming=b.annotations.map(validateAnnotation);if(new Set(incoming.map(a=>a.id)).size!==incoming.length)throw Error('Duplicate incoming IDs.');let candidate=[...annotations];for(const a of incoming){const old=candidate.find(x=>x.id===a.id);if(!old){candidate.push(a);continue;}if(JSON.stringify(old)===JSON.stringify(a))continue;candidate.push({...a,id:'merge-'+globalThis.crypto.randomUUID(),related_ids:[...new Set([...a.related_ids,a.id])],review_status:'disputed'});}if(candidate.length>10000||new Blob([JSON.stringify({...annotationBundle(),annotations:candidate})]).size>10*1024*1024-4096)throw Error('Merged annotations exceed limits.');const removed=b.deleted_annotations??[];if(!Array.isArray(removed)||removed.length>10000)throw Error('Invalid deletion audit.');const validatedRemoved=removed.map(d=>{if(typeof d.deleted_utc!=='string'||!finite(Date.parse(d.deleted_utc)))throw Error('Invalid deletion date.');return {record:validateAnnotation(d.record),deleted_utc:d.deleted_utc};});if(deletedAnnotations.length+validatedRemoved.length>10000)throw Error('Too many deletion records.');if(new Blob([JSON.stringify({...annotationBundle(),annotations:candidate,deleted_annotations:[...deletedAnnotations,...validatedRemoved]})]).size>10*1024*1024-4096)throw Error('Merged annotation and deletion history exceeds save/resume limit.');deletedAnnotations.push(...validatedRemoved);annotations=candidate;annotationChanged('Merged annotations without replacing existing records or applying another author\'s deletions. Conflicting ID revisions are retained as disputed linked records. Video offset remains unchanged.');}catch(e){annotationMessage('Merge rejected; current records retained. '+e.message,true);}finally{$('annotationsMerge').value='';}};
-window.addEventListener('beforeunload',e=>{if(annotationsDirty||annotationDraftDirty){e.preventDefault();e.returnValue='';}});
+window.addEventListener('beforeunload',e=>{if(annotationsDirty||annotationDraftDirty||annotationFolderPending){e.preventDefault();e.returnValue='';}});
 // BEGIN TARGET METRICS: conservative consecutive-callback coverage; not fixation duration.
-const targetTable=D.gazeTargets||[],targetRows=targetTable.length?rows(targetTable).map(r=>({r,t:number(get(targetTable,r,'session_time_s')),id:get(targetTable,r,'target_id')||'',source:get(targetTable,r,'source'),calibration:get(targetTable,r,'calibration_id'),valid:String(get(targetTable,r,'ray_valid')).toLowerCase()==='true',status:get(targetTable,r,'status'),correction:get(targetTable,r,'correction_id')||'',verified:targetTable[0].includes('mapping_verified')?String(get(targetTable,r,'mapping_verified')).toLowerCase()==='true':String(get(targetTable,r,'ray_valid')).toLowerCase()==='true'&&/^(operator_verified|explicit_initial_approval|explicit_reconfirmation_after_head_rebind)$/.test(get(targetTable,r,'verification_status')||'')})).filter(s=>finite(s.t)&&s.t>=0&&s.t<=duration).sort((a,b)=>a.t-b.t):[];
+const targetTable=D.gazeTargets||[],targetRows=targetTable.length?rows(targetTable).map((r,i)=>({r,rawIndex:i+1,t:number(get(targetTable,r,'session_time_s')),id:get(targetTable,r,'target_id')||'',source:get(targetTable,r,'source'),calibration:get(targetTable,r,'calibration_id'),valid:String(get(targetTable,r,'ray_valid')).toLowerCase()==='true',status:get(targetTable,r,'status'),correction:get(targetTable,r,'correction_id')||'',verified:targetTable[0].includes('mapping_verified')?String(get(targetTable,r,'mapping_verified')).toLowerCase()==='true':String(get(targetTable,r,'ray_valid')).toLowerCase()==='true'&&/^(operator_verified|explicit_initial_approval|explicit_reconfirmation_after_head_rebind)$/.test(get(targetTable,r,'verification_status')||'')})).filter(s=>finite(s.t)&&s.t>=0&&s.t<=duration&&(!targetTable[0].includes('session_id')||!get(targetTable,s.r,'session_id')||get(targetTable,s.r,'session_id')===D.session)).sort((a,b)=>a.t-b.t):[];
 // Spatial offsets are session-local metadata. Never add degrees to scene-image pixels.
 const adjustmentData=D.gazeAdjustments||{},adjustmentModels=new Map(),adjustmentDuplicates=new Set();
 for(const m of Array.isArray(adjustmentData.models)?adjustmentData.models:[]){if(!m||m.session_id!==D.session||typeof m.id!=='string'||!m.id)continue;if(adjustmentModels.has(m.id))adjustmentDuplicates.add(m.id);else adjustmentModels.set(m.id,m);}
@@ -389,9 +467,85 @@ if((D.spatialValidations||[]).length)$('targetPanel').hidden=false;
 else validationReview.textContent='No quantitative spatial validation report in this session. Operator approval alone is not a measured accuracy result.';
 function aliasArray(value){try{const a=JSON.parse(value||'[]');return Array.isArray(a)?a.filter(v=>typeof v==='string'):[];}catch{return[];}}
 for(const [table,records] of [[targetCatalog,rows(targetCatalog)],[targetTable,rows(targetTable)]])for(const row of records){const id=get(table,row,'target_id');if(!id)continue;const old=targetInfo.get(id)||{};targetInfo.set(id,{id,name:get(table,row,'target_name')||old.name||get(table,row,'target_label')||id,group:get(table,row,'target_group')||old.group||'',aliases:[...new Set([...(old.aliases||[]),...aliasArray(get(table,row,'legacy_object_ids'))])]});}
-function targetFilterSpec(){return{target_id:$('targetFilter').value,group:$('targetGroupFilter').value,interaction_kind:$('targetInteractionFilter').value,mapping_quality:$('targetQualityMode').value,association_rule:'exact_target_id_or_explicit_legacy_alias; events_within_half_open_selected_interval; NOT_causation'};}
-function targetMatches(id){const f=targetFilterSpec(),info=targetInfo.get(id)||{group:'',aliases:[]};if(f.target_id&&id!==f.target_id||f.group&&info.group!==f.group)return false;if(f.interaction_kind){const b=bounds();if(!b)return false;return events.some(e=>e.t>=b.a&&e.t<b.b&&get(D.events,e.r,'event_type')===f.interaction_kind&&[id,...info.aliases].includes(get(D.events,e.r,'object_id')));}return true;}
-function qualityTargetRows(){return $('targetQualityMode').value==='verified'?targetRows.map(s=>({...s,valid:s.valid&&s.verified})):targetRows;}
+// Object statistics require explicit identity links. Never infer ownership from a shared name.
+const ownerCandidates=new Map(),ownerConflicts=new Set(),objectOwners=new Map(),ownershipRules=new Map();
+function addOwner(child,owner,rule){
+ if(!child||!owner||child===owner||!targetInfo.has(child)||!targetInfo.has(owner)||typeof rule!=='string'||!rule)return;
+ if(ownerCandidates.has(child)&&ownerCandidates.get(child)!==owner){ownerConflicts.add(child);return;}
+ ownerCandidates.set(child,owner);ownershipRules.set(child,rule);
+}
+for(const [table,records] of [[targetCatalog,rows(targetCatalog)],[targetTable,rows(targetTable)]])for(const row of records){
+ const owner=get(table,row,'statistics_owner_id');if(owner&&!targetInfo.has(owner))targetInfo.set(owner,{id:owner,name:get(table,row,'statistics_owner_name')||owner,group:get(table,row,'statistics_owner_group')||'',aliases:[]});
+}
+for(const [table,records] of [[targetCatalog,rows(targetCatalog)],[targetTable,rows(targetTable)]])for(const row of records)
+ addOwner(get(table,row,'target_id'),get(table,row,'statistics_owner_id'),get(table,row,'statistics_owner_rule'));
+if(D.targetOwnership?.schema==='gazeflow-reviewed-target-ownership-v1'&&D.targetOwnership.session_id===D.session)
+ for(const link of Array.isArray(D.targetOwnership.links)?D.targetOwnership.links:[])if(link)addOwner(link.child_id,link.owner_id,link.rule);
+for(const [child] of ownerCandidates){
+ const seen=new Set();let current=child,ok=true;
+ while(ownerCandidates.has(current)){if(seen.has(current)||ownerConflicts.has(current)){ok=false;break;}seen.add(current);current=ownerCandidates.get(current);}
+ if(ok&&!ownerConflicts.has(current)&&current!==child)objectOwners.set(child,current);else ownerConflicts.add(child);
+}
+let objectStatistics=true;
+const statisticsId=id=>objectStatistics?(objectOwners.get(id)||id):id;
+const statisticsIds=()=>[...new Set([...targetInfo.keys()].map(statisticsId).concat(objectStatistics?[...canonicalObjectInfo.keys()]:[]))];
+const objectAliases=new Map();
+for(const [id,info] of targetInfo){const owner=objectOwners.get(id)||id;if(!objectAliases.has(owner))objectAliases.set(owner,new Set());for(const alias of [id,...(info.aliases||[])])objectAliases.get(owner).add(alias);}
+const objectExportHeader=['raw_callback_record','session_time_s','raw_target_id','raw_target_name','raw_target_group','object_id','object_name','object_group','ownership_status','ownership_rule','source','calibration_id','correction_id','mapping_verified','hit_geometry','hit_x','hit_y','hit_z','query_collider_path','statistics_key','raw_hit_x','raw_hit_y','raw_hit_z','session_id','participant_id'];
+const authoritativeObjectTable=D.objectHitData?.schema==='gazeflow-object-hit-export-v1'&&D.objectHitData.session_id===D.session&&Array.isArray(D.objectHitData.table)?D.objectHitData.table:[];
+const hasAuthoritativeObjects=authoritativeObjectTable.length>0,objectRecordByIndex=new Map(),canonicalObjectInfo=new Map();
+for(const record of rows(authoritativeObjectTable)){
+ const index=number(get(authoritativeObjectTable,record,'raw_callback_record')),id=get(authoritativeObjectTable,record,'statistics_key'),objectId=get(authoritativeObjectTable,record,'object_id'),rawId=get(authoritativeObjectTable,record,'raw_target_id');
+ if(!Number.isSafeInteger(index)||index<1||!id||targetTable[index]?.[targetTable[0].indexOf('target_id')]!==rawId)continue;
+ objectRecordByIndex.set(index,record);
+ if(!canonicalObjectInfo.has(id))canonicalObjectInfo.set(id,{id,objectId,name:(objectId?'':'Unresolved owner: ')+(get(authoritativeObjectTable,record,'object_name')||rawId),group:get(authoritativeObjectTable,record,'object_group')||'',aliases:targetInfo.get(objectId)?.aliases||[]});
+}
+function rowStatisticsId(s){return !objectStatistics?s.id:hasAuthoritativeObjects?(objectRecordByIndex.has(s.rawIndex)?get(authoritativeObjectTable,objectRecordByIndex.get(s.rawIndex),'statistics_key'):s.id):statisticsId(s.id);}
+const catalogueStates=new Map();
+for(const row of rows(targetCatalog)){const id=get(targetCatalog,row,'target_id'),state=String(get(targetCatalog,row,'active')).toLowerCase();if(!catalogueStates.has(id))catalogueStates.set(id,new Set());if(state==='true'||state==='false')catalogueStates.get(id).add(state);}
+function catalogueState(id){
+ const key=objectStatistics?(canonicalObjectInfo.get(id)?.objectId||id.replace(/^unresolved:/,'')):id,states=catalogueStates.get(key);
+ return !states?.size?'Not recorded':states.size>1?'Mixed catalogue snapshots (not activation history)':states.has('true')?'Active at catalogue snapshot(s)':'Inactive at catalogue snapshot(s)';
+}
+function linkedBehaviorCount(id,b){
+ const info=statisticsInfo(id),ids=new Set([id,...(info?.aliases||[])]);
+ return events.filter(e=>e.t>=b.a&&e.t<b.b&&/^(grab_start|grab_end|release|place|placement|rotate|rotation|button|press|puzzle|attempt|legacy_interaction)(_|$)/.test(get(D.events,e.r,'event_type')||'')&&ids.has(get(D.events,e.r,'object_id'))).length;
+}
+function displayedTargetSummaries(){
+ const b=bounds();if(!b)return[];const m=targetMetrics(qualityTargetRows(),b.a,b.b),summaries=new Map(m.targets.map(t=>[t.id,t]));
+ const observed=new Set(targetRows.filter(s=>s.valid&&s.status==='target_hit'&&s.t>=b.a&&s.t<b.b&&(!hasAuthoritativeObjects||objectRecordByIndex.has(s.rawIndex))).map(rowStatisticsId));
+ for(const id of statisticsIds())if(!summaries.has(id))summaries.set(id,{id,first:null,count:0,visits:0,seconds:0});
+ const scope=$('targetVisibility')?.value||'activity';
+ return [...summaries.values()].filter(t=>targetMatches(t.id)).map(t=>({...t,interactions:linkedBehaviorCount(t.id,b),snapshot:catalogueState(t.id)})).filter(t=>scope==='all'||scope==='hits'&&t.count>0||scope==='activity'&&(t.count>0||t.interactions>0||observed.has(t.id))).map(t=>({...t,evidence:t.count>0?(objectStatistics&&canonicalObjectInfo.get(t.id)?.objectId===''?'Recorded raw hit; object owner unresolved':'Recorded hit'):observed.has(t.id)?'Recorded hits excluded by quality view':t.interactions>0?'Linked interaction only; no hit recorded':'Configured only; no hit or linked interaction in selected interval'}));
+}
+function normalizedObjectRecord(s){
+ if(hasAuthoritativeObjects)return objectRecordByIndex.get(s.rawIndex)||null;
+ const id=objectOwners.get(s.id)||s.id,info=targetInfo.get(id),read=k=>get(targetTable,s.r,k)||'',coordinate=v=>finite(number(v))?String(number(v)):/^'[-+]/.test(v)&&finite(number(v.slice(1)))?String(number(v.slice(1))):'';
+ return [String(s.rawIndex),String(s.t),s.id,read('target_name'),read('target_group'),id,info?.name||s.id,info?.group||'',objectOwners.has(s.id)?'explicit_legacy_html_link':'raw_target_identity_no_extra_grouping',ownershipRules.get(s.id)||'raw_target_identity',s.source,s.calibration,s.correction,String(s.verified),read('hit_geometry'),coordinate(read('hit_x')),coordinate(read('hit_y')),coordinate(read('hit_z')),read('query_collider_path'),id,read('hit_x'),read('hit_y'),read('hit_z'),D.session,D.participant||''];
+}
+function objectHitExportTable(){
+ const b=bounds();if(!b)return[objectExportHeader];const selected=targetRows.filter(s=>s.t>=b.a&&s.t<b.b&&s.valid&&s.status==='target_hit'&&targetMatches(s)&&($('targetQualityMode').value!=='verified'||s.verified));
+ return [hasAuthoritativeObjects?authoritativeObjectTable[0]:objectExportHeader,...selected.map(normalizedObjectRecord).filter(Boolean)];
+}
+function initializeObjectEvidenceControls(){
+ const label=document.createElement('label');label.textContent='Table rows ';const select=document.createElement('select');select.id='targetVisibility';
+ for(const [value,text]of [['activity','Hits or linked interactions (default)'],['hits','Recorded hits only'],['all','Full configured catalogue']])select.append(new Option(text,value));label.append(select);$('targetSummary').before(label);select.onchange=renderTargets;
+ const note=document.createElement('p');note.className='muted';note.textContent='A catalogue snapshot is not an activation timeline. Hidden configured targets remain available under Full configured catalogue. An interaction does not prove a gaze hit; zero is not filled from behavior.';$('targetSummary').before(note);
+ const hitButton=document.createElement('button');hitButton.id='objectHitsExport';hitButton.textContent='Object hit records CSV (selected interval)';hitButton.onclick=()=>download('gaze_object_hits-selected.csv',csv(objectHitExportTable()),'text/csv;charset=utf-8');$('targetExport').before(hitButton);
+ $('targetExport').textContent='Raw callback diagnostics CSV (all statuses)';
+ if(hasAuthoritativeObjects){const p=document.createElement('p');p.className='muted';p.textContent='Full-session object CSVs were also saved with this replay: ';for(const [key,text]of [['hit_csv_relative','Object hit records'],['summary_csv_relative','Object hit summary']]){const href=D.objectHitData[key];if(typeof href==='string'&&/^\.\.\/Analysis\/ObjectStatistics-[A-Za-z0-9_-]+\/gaze_object_(hits|summary)\.csv$/.test(href)){const a=document.createElement('a');a.href=href;a.textContent=text;p.append(a,' ');}}$('targetExport').after(p);}
+}
+function statisticsInfo(id){const info=objectStatistics?(canonicalObjectInfo.get(id)||targetInfo.get(id)):targetInfo.get(id);return info?{...info,aliases:objectStatistics&&!hasAuthoritativeObjects?[...(objectAliases.get(id)||[])]:info.aliases}:null;}
+function ownershipExportTable(selected){
+ return [[...targetTable[0],'analysis_object_id','analysis_object_name','analysis_object_group','analysis_ownership_rule','analysis_ownership_status'],...selected.map(s=>{const r=s.valid&&s.status==='target_hit'?normalizedObjectRecord(s):null,h=hasAuthoritativeObjects?authoritativeObjectTable[0]:objectExportHeader;const cell=k=>r?r[h.indexOf(k)]||'':'';return [...s.r,cell('object_id'),cell('object_name'),cell('object_group'),cell('ownership_rule'),r?cell('ownership_status'):'not_a_valid_hit'];})];
+}
+function currentOwnershipReport(){return {schema:'gazeflow-object-statistics-v1',statistics_level:objectStatistics?'objects':'raw_targets',rule:'explicit_ownership_only; no name matching; raw callbacks unchanged; no fixation or accuracy inference',links:[...objectOwners].map(([child_id,owner_id])=>({child_id,owner_id,rule:ownershipRules.get(child_id)})),excluded_conflicts:[...ownerConflicts],historical_review:D.targetOwnership?.provenance||null};}
+const fragmentBeforeObjectStatistics=fragment;
+fragment=function(){const f=fragmentBeforeObjectStatistics(),m=targetMetrics(qualityTargetRows(),f.start_s,f.end_s);return {...f,target_object_ownership:currentOwnershipReport(),target_statistics:m.targets.map(t=>({...t,name:statisticsInfo(t.id)?.name||t.id,group:statisticsInfo(t.id)?.group||''}))};};
+const fragmentBeforeObjectHits=fragment;fragment=function(){return {...fragmentBeforeObjectHits(),object_hit_records:objectHitExportTable(),object_hit_records_scope:'selected half-open interval, current target/group/interaction/quality filters; original callbacks retained separately'};};
+function targetFilterSpec(){return{statistics_level:$('targetGranularity').value,target_id:$('targetFilter').value,group:$('targetGroupFilter').value,interaction_kind:$('targetInteractionFilter').value,mapping_quality:$('targetQualityMode').value,association_rule:'exact_target_id_or_explicit_legacy_alias; events_within_half_open_selected_interval; NOT_causation'};}
+function targetMatches(id){id=typeof id==='object'?rowStatisticsId(id):statisticsId(id);const f=targetFilterSpec(),info=statisticsInfo(id)||{group:'',aliases:[]};if(f.target_id&&id!==f.target_id||f.group&&info.group!==f.group)return false;if(f.interaction_kind){const b=bounds();if(!b)return false;return events.some(e=>e.t>=b.a&&e.t<b.b&&get(D.events,e.r,'event_type')===f.interaction_kind&&[id,...info.aliases].includes(get(D.events,e.r,'object_id')));}return true;}
+function qualityTargetRows(){return targetRows.map(s=>({...s,id:rowStatisticsId(s),valid:s.valid&&(!hasAuthoritativeObjects||s.status!=='target_hit'||objectRecordByIndex.has(s.rawIndex))&&($('targetQualityMode').value!=='verified'||s.verified)}));}
 function targetMetrics(list,a,b){
  const result=new Map();let valid=0,covered=0,previous=null;
  for(const s of list){
@@ -415,7 +569,7 @@ function targetMetrics(list,a,b){
 // END TARGET METRICS
 function renderTargets(){
  if(!targetTable.length)return;$('targetPanel').hidden=false;
- renderApproximate();
+ renderApproximate();$('ownershipStatus').textContent=(objectStatistics?'Object view: ':'Raw child view: ')+objectOwners.size+' explicit child-to-object links; '+ownerConflicts.size+' conflicting/cyclic links excluded. Object counts use the same recorded callbacks, not additional gaze samples. '+(D.targetOwnership?.warning||'');
  const b=bounds();if(!b){$('targetSummary').replaceChildren();$('targetEvents').replaceChildren();$('targetQuality').textContent='Select a valid interval.';$('targetExport').disabled=true;return;}
  $('targetExport').disabled=false;
  const inRange=targetRows.filter(s=>s.t>=b.a&&s.t<b.b),m=targetMetrics(qualityTargetRows(),b.a,b.b);
@@ -424,19 +578,23 @@ function renderTargets(){
  const verifiedCount=inRange.filter(s=>s.valid&&s.verified).length;$('targetQuality').textContent+=` ${verifiedCount} mapping-verified callbacks; ${inRange.filter(s=>s.valid&&!s.verified).length} usable callbacks without verified spatial accuracy. View: ${$('targetQualityMode').value==='verified'?'verified only':'all observed rays'}.`;
  const candidates=inRange.filter(s=>get(targetTable,s.r,'candidate_status')==='target_hit').length;if(candidates)$('targetQuality').textContent+=` ${candidates} UNVERIFIED candidate-hit callbacks are preserved in candidate_* CSV columns and interval bundles, excluded from accepted target counts/coverage.`;
  const table=document.createElement('table'),header=document.createElement('tr');
- for(const name of ['Object name','Unique target ID','Group','First hit (session s)','Hit callbacks','Observed visits','Same-target covered s']){const th=document.createElement('th');th.textContent=name;header.append(th);}table.append(header);
- const summaries=new Map(m.targets.map(t=>[t.id,t]));for(const id of targetInfo.keys())if(!summaries.has(id))summaries.set(id,{id,first:null,count:0,visits:0,seconds:0});
- for(const target of summaries.values()){if(!targetMatches(target.id))continue;const info=targetInfo.get(target.id)||{name:target.id,group:''},tr=document.createElement('tr');for(const value of [info.name,target.id,info.group,finite(target.first)?target.first.toFixed(3):'Not observed',target.count,target.visits,target.seconds.toFixed(3)]){const td=document.createElement('td');td.textContent=value;tr.append(td);}if(finite(target.first))tr.onclick=()=>setCursor(target.first);table.append(tr);}$('targetSummary').replaceChildren(table);
- const log=document.createElement('div'),shown=inRange.filter(s=>targetMatches(s.id)&&($('targetQualityMode').value!=='verified'||s.valid&&s.verified));
- for(const s of shown.slice(0,500)){const info=targetInfo.get(s.id),button=document.createElement('button');button.textContent=`${fmt(s.t)} · ${info?info.name+' ['+s.id+'] · '+info.group:s.id||s.status} · ${get(targetTable,s.r,'hit_geometry')||'geometry unspecified'} · ${s.verified?'MAPPING VERIFIED':get(targetTable,s.r,'spatial_accuracy_status')||s.status||'accuracy unspecified'}`;button.onclick=()=>setCursor(s.t);log.append(button);}
+ for(const name of ['Object name','Unique target ID','Group','First hit (session s)','Hit callbacks','Observed visits','Same-target covered s','Evidence in selected interval','Catalogue snapshot status']){const th=document.createElement('th');th.textContent=name;header.append(th);}table.append(header);
+ const summaries=new Map(displayedTargetSummaries().map(t=>[t.id,t]));
+ for(const target of summaries.values()){if(!targetMatches(target.id))continue;const info=statisticsInfo(target.id)||{name:target.id,group:''},tr=document.createElement('tr');for(const value of [info.name,target.id,info.group,finite(target.first)?target.first.toFixed(3):'No recorded hit in interval',target.count,target.visits,target.seconds.toFixed(3),target.evidence,target.snapshot]){const td=document.createElement('td');td.textContent=value;tr.append(td);}if(finite(target.first))tr.onclick=()=>setCursor(target.first);table.append(tr);}$('targetSummary').replaceChildren(table);
+ const log=document.createElement('div'),shown=inRange.filter(s=>targetMatches(s)&&($('targetQualityMode').value!=='verified'||s.valid&&s.verified));
+ for(const s of shown.slice(0,500)){const info=statisticsInfo(rowStatisticsId(s)),button=document.createElement('button');button.textContent=`${fmt(s.t)} · ${info?info.name+' ['+rowStatisticsId(s)+'] · '+info.group+(rowStatisticsId(s)!==s.id?' · raw child ['+s.id+']':''):s.id||s.status} · ${get(targetTable,s.r,'hit_geometry')||'geometry unspecified'} · ${s.verified?'MAPPING VERIFIED':get(targetTable,s.r,'spatial_accuracy_status')||s.status||'accuracy unspecified'}`;button.onclick=()=>setCursor(s.t);log.append(button);}
  if(shown.length>500){const note=document.createElement('p');note.textContent='Showing first 500 callbacks; CSV includes the complete selected interval.';log.append(note);}$('targetEvents').replaceChildren(log);
 }
-for(const id of [...targetInfo.keys()].sort()){const option=document.createElement('option');option.value=id;option.textContent=targetInfo.get(id).name+' ['+id+']';$('targetFilter').append(option);}
-for(const group of [...new Set([...targetInfo.values()].map(s=>s.group).filter(Boolean))].sort()){const option=document.createElement('option');option.value=group;option.textContent=group;$('targetGroupFilter').append(option);}
+function refreshStatisticsOptions(){const selected=$('targetFilter').value;$('targetFilter').replaceChildren(new Option('All targets / statuses',''));for(const id of statisticsIds().sort()){const option=document.createElement('option');option.value=id;option.textContent=(statisticsInfo(id)?.name||id)+' ['+id+']';$('targetFilter').append(option);}if([...$('targetFilter').options].some(o=>o.value===selected))$('targetFilter').value=selected;}
+initializeObjectEvidenceControls();
+const objectSummaryButton=document.createElement('button');objectSummaryButton.id='objectSummaryExport';objectSummaryButton.textContent='Export counts CSV for current view';$('targetExport').after(objectSummaryButton);
+objectSummaryButton.onclick=()=>{if(!bounds())return;const table=[['statistics_level','statistics_key','object_name','object_group','first_hit_session_s','hit_callbacks','observed_visits','same_target_covered_s','start_s','end_s','quality_view','meaning','evidence','catalogue_snapshot_status','object_id','session_id','participant_id']];const b=bounds();for(const t of displayedTargetSummaries()){const info=statisticsInfo(t.id);table.push([objectStatistics?'objects':'raw_targets',t.id,info?.name||t.id,info?.group||'',t.first,t.count,t.visits,t.seconds,b.a,b.b,$('targetQualityMode').value,'ray_hit_statistics_NOT_fixation_or_attention',t.evidence,t.snapshot,objectStatistics?(canonicalObjectInfo.get(t.id)?.objectId??t.id):'',D.session,D.participant||'']);}download('target-counts-'+(objectStatistics?'objects':'raw')+'.csv',csv(table),'text/csv;charset=utf-8');};
+refreshStatisticsOptions();$('targetGranularity').onchange=()=>{objectStatistics=$('targetGranularity').value==='object';refreshStatisticsOptions();renderTargets();};
+for(const group of [...new Set([...targetInfo.values(),...canonicalObjectInfo.values()].map(s=>s.group).filter(Boolean))].sort()){const option=document.createElement('option');option.value=group;option.textContent=group;$('targetGroupFilter').append(option);}
 for(const kind of [...new Set(events.map(e=>get(D.events,e.r,'event_type')).filter(Boolean))].sort()){const option=document.createElement('option');option.value=kind;option.textContent=kind;$('targetInteractionFilter').append(option);}
 $('targetFilter').onchange=renderTargets;$('targetQualityMode').onchange=renderTargets;
 $('targetGroupFilter').onchange=renderTargets;$('targetInteractionFilter').onchange=renderTargets;
-$('targetExport').onclick=()=>{const b=bounds();if(!b||!targetTable.length)return;download('gaze-targets-selected.csv',csv([targetTable[0],...targetRows.filter(s=>s.t>=b.a&&s.t<b.b&&targetMatches(s.id)&&($('targetQualityMode').value!=='verified'||s.valid&&s.verified)).map(s=>s.r)]),'text/csv');};
+$('targetExport').onclick=()=>{const b=bounds();if(!b||!targetTable.length)return;download('gaze-targets-selected.csv',csv(ownershipExportTable(targetRows.filter(s=>s.t>=b.a&&s.t<b.b&&targetMatches(s)&&($('targetQualityMode').value!=='verified'||s.valid&&s.verified)))),'text/csv');};
 function approximateSelection(){const table=D.gazeApproximate||[],b=bounds();return {table,list:table.length&&b?rows(table).filter(r=>{const t=number(get(table,r,'session_time_s'));return finite(t)&&t>=b.a&&t<b.b&&targetMatches(get(table,r,'target_id')||'');}):[]};}
 function renderApproximate(){const box=$('approximateHits');box.replaceChildren();const {table,list}=approximateSelection();$('approximateExport').disabled=!bounds()||!table.length;const hits=list.filter(r=>get(table,r,'status')==='target_hit'&&get(table,r,'target_id'));const p=document.createElement('p');p.textContent=`${list.length} low-precision callbacks · ${hits.length} approximate hit callbacks · ${new Set(hits.map(r=>get(table,r,'target_id'))).size} objects. Shown separately; not included in accepted AOI statistics.`;box.append(p);const area=document.createElement('div');area.style.maxHeight='220px';area.style.overflow='auto';for(const r of hits.slice(0,200)){const button=document.createElement('button');const t=number(get(table,r,'session_time_s'));button.textContent=humanTime(t)+' · '+get(table,r,'target_name')+' ['+get(table,r,'target_id')+'] · '+get(table,r,'target_group')+' · UNVERIFIED';button.onclick=()=>{pausePlayback();setCursor(t);};area.append(button);}box.append(area);if(!table.length)box.append(document.createTextNode('No approximate export in this session. Historical recordings are not reconstructed or relabeled.'));}
 $('approximateExport').onclick=()=>{const {table,list}=approximateSelection();if(table.length)download('gaze-targets-approximate-selected.csv',csv([table[0],...list]),'text/csv');};
@@ -470,6 +628,13 @@ $('session').textContent=`Session ${D.session} · Duration ${fmt(duration)} · $
 const aligned=samples.filter(s=>finite(s.aligned)).length;$('quality').textContent=`Session: time-aligned ${aligned} / ${samples.length}; unaligned ${samples.length-aligned}. ${samples.length?'Alignment is estimated; inspect the original quality columns.':'No eye data recorded: regions and game events are still available.'} Manifest publication failures: ${D.manifestPublishFailures||0}. A closed session is not proof of complete data; review any recording errors.`;
 if(D.recordingError)$('quality').textContent+=' RECORDING ERROR: '+D.recordingError;
 for(const source of D.gaze)$('quality').textContent+=` ${source.source}: queue drops ${source.queueDropped||0}, status ${source.status||'unknown'}.`;
-$('cursor').max=duration;$('play').disabled=duration<=0;$('end').value=duration;rebuild();updateSelection();setCursor(0);window.addEventListener('resize',draw);
+function chooseScope(a,b){pausePlayback();select(a,b);viewA=a;viewB=Math.max(a+.001,b);setCursor(a);draw();}
+$('scopeStudy').onclick=()=>chooseScope(analysisScope.study_start_s,duration);
+$('scopeTutorial').onclick=()=>chooseScope(0,analysisScope.study_start_s);
+$('scopeFull').onclick=()=>chooseScope(0,duration);
+const baseScopedFragment=fragment;fragment=function(){return {...baseScopedFragment(),analysis_scope:selectionScope(bounds()),session_segments:analysisScope};};
+const baseScopedAnnotations=annotationBundle;annotationBundle=function(){return {...baseScopedAnnotations(),analysis_scope_policy:analysisScope,annotation_scope_rule:'Original session seconds. Each annotation retains its original time; tutorial annotations are retained but excluded from primary study samples.'};};
+const initialStart=analysisScope?.enabled?analysisScope.study_start_s:0;
+$('cursor').max=duration;$('play').disabled=duration<=0;$('start').value=initialStart;$('end').value=duration;viewA=initialStart<duration?initialStart:0;rebuild();updateSelection();setCursor(initialStart<duration?initialStart:0);window.addEventListener('resize',draw);
 }catch(e){document.getElementById('error').textContent='Unable to load report: '+e.message+'. Preserve the original data and regenerate the report in Unity.';}
 </script></body></html>

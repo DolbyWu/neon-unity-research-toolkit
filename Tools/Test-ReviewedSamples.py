@@ -68,6 +68,28 @@ class ReviewedSamplesTests(unittest.TestCase):
         self.assertEqual(self.build("aoi",require_aoi=True)["included_samples"],0)
         self.assertEqual(self.build("video",require_video=True)["included_samples"],0)
         self.assertEqual(self.build("covered-video",require_video=True,video_duration=5)["included_samples"],1)
+    def test_tutorial_kept_in_annotation_audit_but_not_primary_training_samples(self):
+        self.manifest["analysisStartRegion"]="Pre-room"
+        (self.session/"export_manifest.json").write_text(json.dumps(self.manifest))
+        self.csv(self.session/"region_intervals.csv",[dict(start_session_s=4,end_session_s=14,region="Pre-room")])
+        result=self.build("segmented")
+        self.assertEqual(result["included_samples"],1)
+        self.assertEqual(builder.table(self.root/"segmented/samples.csv")[0]["annotation_id"],"b")
+        self.assertIn("tutorial_excluded_from_primary_analysis",(self.root/"segmented/audit.csv").read_text())
+        self.assertEqual(len(builder.table(self.root/"segmented/curated_intervals.csv")),len(self.bundle["annotations"]))
+        self.assertEqual(result["parameters"]["analysis_scope"]["study_start_s"],4)
+        self.assertIn("region_intervals.csv",result["input_sha256"])
+    def test_configured_no_pre_room_entry_is_not_mistaken_for_task_data(self):
+        self.manifest["analysisStartRegion"]="Pre-room"
+        (self.session/"export_manifest.json").write_text(json.dumps(self.manifest))
+        result=self.build("tutorial-only")
+        self.assertEqual(result["included_samples"],0)
+        self.assertFalse(result["parameters"]["analysis_scope"]["primary_analysis_available"])
+    def test_unconfigured_region_names_do_not_silently_change_analysis_scope(self):
+        self.csv(self.session/"region_intervals.csv",[dict(start_session_s=4,end_session_s=14,region="Pre-room")])
+        result=self.build("unconfigured-names")
+        self.assertEqual(result["included_samples"],2)
+        self.assertFalse(result["parameters"]["analysis_scope"]["enabled"])
     def test_confusion_rating_and_observer_link_preserved_without_legacy_scale_conversion(self):
         first=self.bundle["annotations"][0]
         first.update(confusion_rating_1_5=4,confusion_rating_source="participant_retrospective_self_report",related_observation_id="obs-"+"a"*32)

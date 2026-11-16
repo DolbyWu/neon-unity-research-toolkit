@@ -1,6 +1,6 @@
 {
   "name": "com.binyanxu.gazeflow.neonxr",
-  "version": "0.2.0-beta.1",
+  "version": "0.2.0-beta.2",
   "displayName": "GazeFlow Neon XR Adapter (Unofficial Beta)",
   "description": "Official Neon XR bridge for research rays, optional local gaze adjustment, authored references and explicit scene bindings. Configure and validate on your own hardware.",
   "unity": "6000.3",
@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "com.dolbywu.neon-research": "0.2.0-beta.1",
+    "com.dolbywu.neon-research": "0.2.0-beta.2",
     "com.pupil-labs.neon-xr.core": "2.0.0"
   }
 }

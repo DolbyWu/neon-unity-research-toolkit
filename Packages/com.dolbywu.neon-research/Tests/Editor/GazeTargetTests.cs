@@ -49,6 +49,28 @@ namespace NeonResearch.Tests
                 var nextRows=StudySequenceAnalysis.Rows(Path.Combine(next,"gaze_targets.csv")).ToArray();Assert.That(Array.FindAll(nextRows,r=>r[status]=="target_hit").Length,Is.EqualTo(1));Assert.That(File.ReadAllText(Path.Combine(folder,"gaze_targets.csv")),Is.EqualTo(previous));
             }finally{UnityEngine.Object.DestroyImmediate(a);UnityEngine.Object.DestroyImmediate(b);}
         }
+        [Test] public void ExplicitObjectOwnerAddsStatisticsMetadataWithoutChangingRawHitOrPhysics()
+        {
+            Target();blocker=new GameObject("Diary");var owner=blocker.AddComponent<StudyResearchTarget>();owner.targetId="diary";owner.targetGroup="notes";
+            target.transform.SetParent(blocker.transform,true);var leaf=target.GetComponent<StudyResearchTarget>();var collider=target.GetComponent<Collider>();
+            Assert.That(leaf.ResolveStatisticsOwner(out _),Is.SameAs(leaf),"No implicit ancestor/name merge.");
+            leaf.statisticsOwner=owner;leaf.statisticsOwnerRule="synthetic_explicit_visual_leaf";Physics.SyncTransforms();
+            string folder=StudyExportSession.EnsureStarted(root);StudyTargetCatalog.Snapshot();
+            Assert.That(StudyGazeTargetLog.Record(Sample(),~0,10,out string id),Is.True);Assert.That(id,Is.EqualTo(leaf.targetId));Assert.That(collider.isTrigger,Is.False);
+            StudyGazeTargetLog.Flush();StudyGazeTargetLog.Close();var data=StudySequenceAnalysis.Rows(Path.Combine(folder,"gaze_targets.csv")).ToArray();
+            Assert.That(data[1].Length,Is.EqualTo(data[0].Length));Assert.That(data[1][Array.IndexOf(data[0],"target_id")],Is.EqualTo(leaf.targetId));Assert.That(data[1][Array.IndexOf(data[0],"statistics_owner_id")],Is.EqualTo("diary"));
+            Assert.That(data[1][Array.IndexOf(data[0],"statistics_owner_name")],Is.EqualTo("Diary"));
+            Assert.That(File.ReadAllText(Path.Combine(folder,"target_catalog.csv")),Does.Contain("statistics_owner_id"));
+        }
+        [Test] public void OwnershipRejectsUnrelatedOrCyclicLinksAndLeavesIndependentChildSeparate()
+        {
+            Target();blocker=new GameObject("same display name");var other=blocker.AddComponent<StudyResearchTarget>();other.targetId="other";
+            var leaf=target.GetComponent<StudyResearchTarget>();leaf.statisticsOwner=other;
+            Assert.That(leaf.ResolveStatisticsOwner(out string reason),Is.Null);Assert.That(reason,Is.EqualTo("invalid_owner_chain"));
+            target.transform.SetParent(blocker.transform,true);leaf.statisticsOwner=null;
+            Assert.That(leaf.ResolveStatisticsOwner(out _),Is.SameAs(leaf),"Independent nested targets stay independent unless explicitly linked.");
+            leaf.statisticsOwner=other;other.statisticsOwner=leaf;Assert.That(leaf.ResolveStatisticsOwner(out _),Is.Null);
+        }
         private StudyGazeRaySample Sample(bool valid = true) => new StudyGazeRaySample { worldRay = new Ray(new Vector3(1000,1000,1000),Vector3.forward), valid = valid,
             source = "synthetic_test_not_participant_data", status = valid ? "synthetic" : "mapping_unverified", calibrationId = "synthetic-calibration" };
         [Test] public void TargetLoggingIsOptInAndDoesNotStartSession()
@@ -62,6 +84,26 @@ namespace NeonResearch.Tests
             blocker = GameObject.CreatePrimitive(PrimitiveType.Cube); blocker.transform.position = new Vector3(1000,1000,1001.5f); Physics.SyncTransforms();
             StudyGazeTargetLog.Record(Sample(), ~0, 10, out string id); Assert.That(id, Is.Empty);
             StudyGazeTargetLog.Flush(); Assert.That(ReadLive(Path.Combine(StudyExportSession.Folder,"gaze_targets.csv")), Does.Contain("non_target_occluder"));
+        }
+        [Test] public void OwnColliderOnlyPanelExcludesChildFrameAndStillBlocksObjectsBehindIt()
+        {
+            Target();var panel=target.GetComponent<StudyResearchTarget>();panel.targetGroup="puzzle_panel";panel.includeChildColliders=false;
+            blocker=GameObject.CreatePrimitive(PrimitiveType.Cube);blocker.name="Decorative frame";blocker.transform.position=new Vector3(1001.5f,1000,1003);blocker.transform.localScale=new Vector3(.2f,1,.1f);blocker.transform.SetParent(target.transform,true);
+            var behind=GameObject.CreatePrimitive(PrimitiveType.Cube);behind.transform.position=new Vector3(1001.5f,1000,1005);behind.AddComponent<StudyResearchTarget>().targetId="behind-panel";
+            try{
+                Physics.SyncTransforms();Assert.That(StudyGazeTargetLog.Query(Sample().worldRay,~0,10).target,Is.SameAs(panel));
+                var ray=new Ray(new Vector3(1001.5f,1000,1000),Vector3.forward);var excluded=StudyGazeTargetLog.Query(ray,~0,10);Assert.That(excluded.status,Is.EqualTo("non_target_occluder"));Assert.That(excluded.target,Is.Null,"A decorative child does not inherit the panel AOI or reveal a target behind it.");
+                panel.includeChildColliders=true;Assert.That(StudyGazeTargetLog.Query(ray,~0,10).target,Is.SameAs(panel),"Default descendant ownership remains backwards compatible.");
+                panel.includeChildColliders=false;var childTarget=blocker.AddComponent<StudyResearchTarget>();childTarget.targetId="independent-child";Assert.That(StudyGazeTargetLog.Query(ray,~0,10).target,Is.SameAs(childTarget),"Explicit child targets keep their own identity.");
+            }finally{UnityEngine.Object.DestroyImmediate(behind);}
+        }
+        [TestCase("clue")][TestCase("puzzle_panel")] public void InformationGroupsAndOwnColliderPolicySurviveCsvAndReplayExport(string group)
+        {
+            Target();var panel=target.GetComponent<StudyResearchTarget>();panel.targetGroup=group;panel.includeChildColliders=false;
+            string folder=StudyExportSession.EnsureStarted(root);StudyTargetCatalog.Snapshot();Assert.That(StudyGazeTargetLog.Record(Sample(),~0,10,out _),Is.True);StudyExportSession.Finish();
+            var catalog=StudySequenceAnalysis.Rows(Path.Combine(folder,"target_catalog.csv")).ToArray();Assert.That(catalog[1][Array.IndexOf(catalog[0],"include_child_colliders")],Is.EqualTo("False"));
+            string export=Directory.GetDirectories(Path.Combine(folder,"Analysis"),"ObjectStatistics-*").Single();var hits=StudySequenceAnalysis.Rows(Path.Combine(export,"gaze_object_hits.csv")).ToArray();Assert.That(hits[1][Array.IndexOf(hits[0],"object_group")],Is.EqualTo(group));
+            Assert.That(File.ReadAllText(Path.Combine(folder,"Replay/study-replay.html")),Does.Contain(group));
         }
         [Test] public void DuplicateTargetIdsAreRejectedInsteadOfSilentlyMerged()
         {

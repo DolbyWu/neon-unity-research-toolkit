@@ -1,0 +1,26 @@
+// Synthetic callback/owner evidence only. No participant data, devices or uploads.
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {pathToFileURL}=require('node:url'),{chromium}=require('playwright');
+(async()=>{
+ const root=path.resolve(__dirname,'..'),out=path.resolve(root,'../../Artifacts/object-hit-evidence');fs.mkdirSync(out,{recursive:true});
+ const template=fs.readFileSync(path.join(root,'Runtime/Resources/NeonResearchOfflineReplay.txt'),'utf8');
+ const th=['session_time_s','source','ray_valid','status','target_id','target_name','target_group','calibration_id','correction_id','mapping_verified'],tr=(t,id,valid=true,status='target_hit')=>[String(t),'synthetic',String(valid),status,id,id,'raw','mount','','false'];
+ const oh=['raw_callback_record','session_time_s','raw_target_id','raw_target_name','raw_target_group','object_id','object_name','object_group','ownership_status','ownership_rule','source','calibration_id','correction_id','mapping_verified','hit_geometry','hit_x','hit_y','hit_z','query_collider_path','statistics_key','raw_hit_x','raw_hit_y','raw_hit_z','session_id','participant_id'];
+ const or=(index,t,raw,id,name,status)=>[String(index),String(t),raw,raw,'raw',id,name,'objects',status,'per_callback_owner','synthetic','mount','','False','solid_surface','-1','0','1','collider',id||'unresolved:'+raw,'-1','0','1','SYNTHETIC-EVIDENCE','SYNTHETIC'];
+ const data={session:'SYNTHETIC-EVIDENCE',participant:'SYNTHETIC',duration:5,gaze:[],regions:[['start_session_s','end_session_s','region']],events:[['session_time_s','event_type','object_id'],['1.01','grab_start','p'],['2','grab_start','zero']],
+ targetCatalog:[['target_id','target_name','target_group','active','statistics_owner_id','statistics_owner_rule'],['p','Diary','notes','False','',''],['a','Visuals','mesh','False','p','static_catalogue'],['q','Other object','other','False','',''],['lid','Independent lid','parts','False','',''],['zero','Interacted but no hit','props','False','',''],['menu','SDK menu','helpers','False','',''],['slot','Inactive slot','helpers','False','','']],
+ gazeTargets:[th,tr(1,'a'),tr(1.05,'a'),tr(1.1,'lid'),tr(1.15,'',false,'stale_or_disconnected'),tr(1.2,'',true,'non_target_occluder'),tr(2.5,'a')],
+ objectHitData:{schema:'gazeflow-object-hit-export-v1',session_id:'SYNTHETIC-EVIDENCE',table:[oh,or(1,1,'a','p','Diary','explicit_ancestor_owner'),or(2,1.05,'a','q','Other object','explicit_ancestor_owner'),or(3,1.1,'lid','lid','Independent lid','raw_target_is_object'),or(6,2.5,'a','','Visuals','unresolved_recorded_owner')]}};
+ const file=path.join(out,'synthetic-object-hit-evidence.html');fs.writeFileSync(file,template.replace('__STUDY_DATA__',JSON.stringify(data)));
+ const browser=await chromium.launch({channel:'msedge',headless:true});try{
+  const page=await browser.newPage({acceptDownloads:true,viewport:{width:1450,height:1100}}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(pathToFileURL(file).href);assert.equal(await page.locator('#error').textContent(),'');await page.locator('#targetDisclosure').evaluate(e=>e.open=true);
+  const rows=()=>page.locator('#targetSummary tr').evaluateAll(r=>r.slice(1).map(t=>[...t.cells].map(v=>v.textContent)));
+  let table=await rows();assert.ok(!table.some(r=>r[1]==='menu'||r[1]==='slot'));assert.equal(table.find(r=>r[1]==='p')[4],'1');assert.equal(table.find(r=>r[1]==='q')[4],'1','Per-callback ownership must override a static catalogue.');assert.equal(table.find(r=>r[1]==='lid')[4],'1');assert.match(table.find(r=>r[1]==='zero')[7],/interaction only/i);assert.match(table.find(r=>r[1]==='zero')[8],/snapshot/);
+  await page.locator('#targetVisibility').selectOption('all');table=await rows();assert.equal(table.find(r=>r[1]==='menu')[4],'0');assert.match(table.find(r=>r[1]==='menu')[7],/Configured only/);assert.match(table.find(r=>r[1]==='menu')[8],/Inactive at catalogue/);
+  await page.locator('#targetVisibility').selectOption('hits');table=await rows();assert.equal(table.length,4);assert.ok(!table.some(r=>r[1]==='zero'));
+  await page.locator('#targetFilter').selectOption('q');const pending=page.waitForEvent('download');await page.locator('#objectHitsExport').click();const csv=fs.readFileSync(await(await pending).path(),'utf8');assert.equal(csv.trim().split(/\r?\n/).length,2);assert.match(csv,/"a","a","raw","q","Other object"/);
+  const download=page.waitForEvent('download');await page.locator('#bundle').click();const bundle=JSON.parse(fs.readFileSync(await(await download).path(),'utf8'));const exported=bundle.object_hit_records;assert.equal(exported.length,2);assert.equal(exported[1][exported[0].indexOf('object_id')],'q');assert.equal(exported[1][exported[0].indexOf('raw_target_id')],'a');
+  await page.locator('#targetFilter').selectOption('');await page.locator('#targetGranularity').selectOption('raw');table=await rows();assert.equal(table.find(r=>r[1]==='a')[4],'3');
+  assert.deepEqual(errors,[]);console.log('PASS: evidence-only default, full catalogue snapshot labels, hit-only scope, per-callback versus static ownership, independent lid, unresolved identity, filtered CSV/JSON alignment and raw-view preservation.');
+ }finally{await browser.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,6 +1,6 @@
 # GazeFlow — Neon Research Toolkit for Unity
 
-**0.2.0-beta.1 candidate · unofficial · Windows Unity Editor 6000.3.23f1.**
+**0.2.0-beta.2 candidate · unofficial · Windows Unity Editor 6000.3.23f1.**
 
 A reusable Configure → Record → Observe → Review workflow for researchers using Pupil Labs Neon and their own Unity experiment. No specific game, scene or object is required. Installation does not start recording.
 
@@ -18,10 +18,10 @@ Desktop Gaze Adjustment adds a reversible local direction offset and optional vi
 
 ## Documentation
 
-- [Installation and Quick Start](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/release/gazeflow-0.2.0-beta.1/QUICKSTART.md)
-- [Generic XR setup](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/release/gazeflow-0.2.0-beta.1/docs/universal-neon-xr-setup.md)
-- [Illustrated controls](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/release/gazeflow-0.2.0-beta.1/docs/illustrated-quickstart.md)
-- [Validation and limits](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/release/gazeflow-0.2.0-beta.1/VALIDATION.md)
+- [Installation and Quick Start](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/codex/gazeflow-beta2-integration-20261116/QUICKSTART.md)
+- [Generic XR setup](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/codex/gazeflow-beta2-integration-20261116/docs/universal-neon-xr-setup.md)
+- [Illustrated controls](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/codex/gazeflow-beta2-integration-20261116/docs/illustrated-quickstart.md)
+- [Validation and limits](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/codex/gazeflow-beta2-integration-20261116/VALIDATION.md)
 
 Core data-only checks do not require a headset SDK. Python/FFmpeg for optional local media must be installed separately; capture needs explicit consent. Standalone player/mobile/macOS/Linux support and quantitative synchronization/physical accuracy are not established by this beta.
 

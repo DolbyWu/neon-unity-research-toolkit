@@ -4,11 +4,13 @@
 
 An unofficial, open-source research plugin for **Pupil Labs Neon + Unity**. GazeFlow brings available eye/pupil data, head pose, explicitly connected task events, optional local video/audio and human annotations into one participant/session workflow. It aims to lower technical barriers without presenting human interpretation as automatically detected cognition.
 
-**Candidate:** `0.2.0-beta.1` · **Scope:** Windows Unity Editor `6000.3.23f1` · **Status:** independent source and tarball-install checks passed; generic-rig hardware/visual acceptance remains pending before promotion to main. See the [acceptance checklist](docs/beta-0.2.0-acceptance.md). This is the free UPM line, not an Asset Store submission or a replacement for official Neon XR Core.
+**Candidate:** `0.2.0-beta.2` · **Scope:** Windows Unity Editor `6000.3.23f1` · **Status:** independent packaged core checks passed 88/88; packaged official-SDK/adapter checks passed 97/97. Physical-device acceptance remains pending before promotion to main. See the [current acceptance checklist](docs/beta-0.2.0-beta2-acceptance.md). This is the free UPM line, not an Asset Store submission or a replacement for official Neon XR Core.
 
 **Start here:** [Quick Start](QUICKSTART.md) · [Illustrated controls](docs/illustrated-quickstart.md) · [Generic XR setup](docs/universal-neon-xr-setup.md) · [Validation](VALIDATION.md)
 
-**Maintainer handoff:** [Resume the pending beta hardware check](docs/resume-beta-hardware-20261115.md). The draft PR remains held; preparation captures are not completed wearer acceptance tests.
+**New in beta.2:** [Object identities and CSVs](docs/object-statistics-ownership.md) · [Tutorial / Study scope](docs/tutorial-study-segments.md) · [Save annotation JSON beside HTML](docs/annotation-folder-saving.md) · [Information surfaces](docs/information-surface-aoi.md).
+
+**Maintainer handoff:** [Current beta.2 results and next hardware steps](docs/beta-0.2.0-beta2-acceptance.md). The [older beta.1 handoff](docs/resume-beta-hardware-20261115.md) is historical context only. Main promotion remains held; preparation captures are not completed wearer acceptance tests.
 
 ## The workflow
 
@@ -45,7 +47,7 @@ Back up your project and test an independent copy first. Do not install beside a
 In **Window > Package Manager > Install/Add package from Git URL**, install the core:
 
 ```text
-https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.dolbywu.neon-research#release/gazeflow-0.2.0-beta.1
+https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.dolbywu.neon-research#codex/gazeflow-beta2-integration-20261116
 ```
 
 For 3D research gaze and desktop adjustment, install official Neon XR Core at the inspected commit, then the matching adapter:
@@ -55,7 +57,7 @@ https://github.com/pupil-labs/neon-xr.git?path=/com.pupil-labs.neon-xr.core#f4de
 ```
 
 ```text
-https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.binyanxu.gazeflow.neonxr#release/gazeflow-0.2.0-beta.1
+https://github.com/DolbyWu/neon-unity-research-toolkit.git?path=/Packages/com.binyanxu.gazeflow.neonxr#codex/gazeflow-beta2-integration-20261116
 ```
 
 Use the same core/adapter version. A branch is movable; retain the exact resolved commit and lockfile for reproducible studies. Official Core requires its own XR/dependency/mount configuration; entering an IP in the raw recorder is not a substitute.

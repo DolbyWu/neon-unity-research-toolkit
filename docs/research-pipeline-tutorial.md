@@ -171,8 +171,8 @@ Optional **participant intensity** uses yellow **1–10 integer buttons**. Click
 
 ### Save, resume and export
 
-- **Export annotations JSON** is the authoritative save/resume action. Save the downloaded file beside your private session. The offline browser page cannot silently overwrite its original HTML or raw recording files.
-- Reopen the same session HTML and **Import annotations JSON** to restore records, revisions, ratings, links and saved video offset. Export again after changes. Unsaved browser-memory annotations can be lost when closing/reloading.
+- **Save JSON to session folder** writes a new dated annotation version into Replay, beside the HTML. First select the closed session folder containing export_manifest.json and authorize access; its exact identity is checked. Accepted changes can then save automatically. Wait for **Last verified save** before closing. **Export annotations JSON** remains the download fallback. See [folder saving](annotation-folder-saving.md).
+- Reopen the same session HTML and **Import annotations JSON** to restore records, revisions, ratings, links and saved video offset. Select the folder again to resume direct saving. Unsaved browser-memory annotations and unfinished drafts can be lost when closing/reloading.
 - **Export annotations CSV** produces an analysis table, including the separate confusion rating and observation link. Keep JSON too; CSV is not the restore format.
 - Select an experiment-time interval to export raw eye/event data, filtered target records or the complete interval JSON bundle. The bundle includes overlapping observer intervals and currently saved manual annotations. Filters do not change original CSVs.
 - Target/group/interaction filters use stable identities or explicit aliases, not fuzzy name matching. A target callback or pupil change is not a fixation, attention, comprehension or a diagnosed cognitive state.

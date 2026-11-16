@@ -1,0 +1,4 @@
+episode,participant_intensity,rating_scale,label_review_status,duration_s,pupil_availability_median_mm,pupil_screened_median_mm,pupil_screened_change_from_previous20s_mm,screened_pupil_coverage,target_switches_per_s,grab_starts,matched_unlabelled_same_region_references,reference_pupil_median_mm,difference_from_unlabelled_references_mm
+Confusion,7,1_10_integer,draft,6.471242400000051,4.3631805,4.3803160000000005,0.028543750000000756,0.8081910206299586,0.6181193274416623,1,5,4.5752655,-0.1949494999999999
+Stuck,10,1_10_integer,draft,47.36542510000004,4.628612499999999,4.63278325,-0.06127024999999975,0.7362977810579279,0.23223691071654692,1,2,4.632866249999999,-8.299999999916707e-05
+Uncertain,8,1_10_integer,draft,341.5071190086219,4.49228575,4.517175,-0.02627099999999949,0.8006980879162363,0.7818285041175355,32,0,,

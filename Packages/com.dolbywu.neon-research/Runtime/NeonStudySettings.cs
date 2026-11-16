@@ -11,6 +11,7 @@ public sealed class NeonStudySettings
     public bool enabled = false;
     public bool recordOnPlay = false;
     public string condition = "baseline";
+    public string analysisStartRegion = "";
     public string outputRoot = "NeonResearchData";
     public bool archiveEnabled = true;
     public bool archiveAutoOpen = true; // Editor: open the finished session folder and offline HTML, not the archive dashboard.

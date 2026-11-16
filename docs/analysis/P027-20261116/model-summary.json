@@ -1,0 +1,101 @@
+{
+  "schema": "gazeflow-pilot-aggregate-summary-v1",
+  "case": "P027",
+  "date": "2026-11-16",
+  "n_participants": 1,
+  "n_sessions": 1,
+  "full_callbacks": 38095,
+  "full_target_hit_records": 16136,
+  "study_target_hit_records": 12726,
+  "primary_window_s": 5,
+  "eligible_windows": 251,
+  "selected_k": 2,
+  "k_candidates": [
+    {
+      "k": 2,
+      "silhouette": 0.2863624296263853,
+      "minimum_cluster_windows": 79,
+      "minimum_size_rule_pass": true,
+      "sse": 1161.9533184109132
+    },
+    {
+      "k": 3,
+      "silhouette": 0.24877783908056048,
+      "minimum_cluster_windows": 19,
+      "minimum_size_rule_pass": true,
+      "sse": 965.8691021798583
+    },
+    {
+      "k": 4,
+      "silhouette": 0.2809614596163197,
+      "minimum_cluster_windows": 18,
+      "minimum_size_rule_pass": true,
+      "sse": 826.0466385660918
+    },
+    {
+      "k": 5,
+      "silhouette": 0.2756368012478533,
+      "minimum_cluster_windows": 6,
+      "minimum_size_rule_pass": false,
+      "sse": 732.6300079200385
+    }
+  ],
+  "sensitivity_window_sizes": [
+    {
+      "window_s": 10,
+      "selected_k": 2,
+      "silhouette": 0.4253517524457513,
+      "eligible_windows": 123,
+      "pattern_region_NMI": 0.04688033236504123
+    },
+    {
+      "window_s": 20,
+      "selected_k": 2,
+      "silhouette": 0.37292881703552955,
+      "eligible_windows": 60,
+      "pattern_region_NMI": 0.1803989228890604
+    }
+  ],
+  "pupil_availability_coverage": 0.9988324933412669,
+  "pupil_heuristic_screen_coverage": 0.8012547922806148,
+  "mapping_verified_callbacks": 0,
+  "meaning": "Deidentified aggregates; not training data, a cognitive-state classifier, measured spatial accuracy or generalization evidence",
+  "exclusions": [
+    "raw native pupil/gaze rows",
+    "five-second personal trajectories",
+    "exact human annotation IDs and investigator identities",
+    "source recordings/audio/video/transcripts",
+    "participant demographic records and contact information",
+    "full study assets/source",
+    "absolute local paths and live endpoints"
+  ],
+  "episode_pattern_overlap_aggregate": [
+    {
+      "label": "Confusion",
+      "modeled_seconds": 6.4712424,
+      "pattern_seconds": {
+        "P01": 6.4712424
+      },
+      "interpretation": "Post-hoc contextual overlap, not predicted labels"
+    },
+    {
+      "label": "Stuck",
+      "modeled_seconds": 39.9752087,
+      "pattern_seconds": {
+        "P01": 34.9752087,
+        "P02": 5
+      },
+      "unmodeled_seconds": 7.3902164,
+      "interpretation": "Post-hoc contextual overlap, not predicted labels"
+    },
+    {
+      "label": "Uncertain",
+      "modeled_seconds": 326.7722613,
+      "pattern_seconds": {
+        "P01": 175,
+        "P02": 151.7722613
+      },
+      "interpretation": "Mixed long annotation; not a homogeneous training state"
+    }
+  ]
+}

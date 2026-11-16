@@ -1,0 +1,5 @@
+event_set,outcome,n_events,median_post_change_mm,meaning
+all_quality_eligible_overlap_retained,WrongMove,26,0.013551375000000476,"Within-event association, not outcome-caused physiology; event neighborhoods may overlap in the all-events set"
+all_quality_eligible_overlap_retained,RightMove,8,0.06241362500000003,"Within-event association, not outcome-caused physiology; event neighborhoods may overlap in the all-events set"
+isolated_only,WrongMove,5,0.2320190000000002,"Within-event association, not outcome-caused physiology; event neighborhoods may overlap in the all-events set"
+isolated_only,RightMove,0,,"Within-event association, not outcome-caused physiology; event neighborhoods may overlap in the all-events set"

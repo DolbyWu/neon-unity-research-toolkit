@@ -10,6 +10,30 @@ namespace EscapeRoom.ReflectiveAgent.Tests
 {
     public sealed class AoiCorrectionIntegrationTests
     {
+        [Test] public void ReviewedInformationSurfaceConfigurationPreservesExistingIdentityAndGameplay()
+        {
+            var go=GameObject.CreatePrimitive(PrimitiveType.Cube);go.name="Synthetic puzzle lid";
+            try{
+                var body=go.AddComponent<Rigidbody>();body.isKinematic=true;var collider=go.GetComponent<Collider>();var target=go.AddComponent<StudyResearchTarget>();target.targetId="existing-lid-id";target.legacyObjectIds=new[]{"existing-behavior-id"};target.linkedBehaviorKinds=new[]{"grab_start","grab_end"};
+                var type=AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("GazeFlowInformationSurfaceConfiguration")).First(t=>t!=null);
+                var configured=(StudyResearchTarget)type.GetMethod("ConfigureSurface").Invoke(null,new object[]{go,"puzzle_panel","new-id-must-not-replace-existing"});
+                Assert.That(configured,Is.SameAs(target));Assert.That(target.targetId,Is.EqualTo("existing-lid-id"));Assert.That(go.name,Is.EqualTo("Synthetic puzzle lid"));Assert.That(target.targetGroup,Is.EqualTo("puzzle_panel"));Assert.That(target.includeChildColliders,Is.False);
+                Assert.That(target.legacyObjectIds,Is.EqualTo(new[]{"existing-behavior-id"}));Assert.That(target.linkedBehaviorKinds,Is.EqualTo(new[]{"grab_start","grab_end"}));Assert.That(go.GetComponents<Collider>().Length,Is.EqualTo(1));Assert.That(collider.isTrigger,Is.False);Assert.That(body.isKinematic,Is.True);
+            }finally{UnityEngine.Object.DestroyImmediate(go);}
+        }
+        [Test] public void VisualStatisticsOwnerIsExplicitAndPhysicalPartsStaySeparate()
+        {
+            var root=new GameObject("Synthetic diary");var child=new GameObject("Visuals");child.transform.SetParent(root.transform);var leaf=child.AddComponent<StudyResearchTarget>();leaf.targetId="synthetic-leaf";var owner=root.AddComponent<StudyResearchTarget>();owner.targetId="synthetic-owner";
+            try
+            {
+                var type=Type.GetType("GazeFlowObjectStatisticsBinding, Assembly-CSharp",true);var bind=type.GetMethod("BindVisualLeaf");
+                Assert.That((bool)bind.Invoke(null,new object[]{leaf,owner}),Is.True);Assert.That(leaf.statisticsOwner,Is.SameAs(owner));
+                leaf.statisticsOwner=null;child.AddComponent<Rigidbody>().isKinematic=true;
+                Assert.That((bool)bind.Invoke(null,new object[]{leaf,owner}),Is.False,"An independent physical body must not be grouped automatically.");Assert.That(leaf.statisticsOwner,Is.Null);
+                UnityEngine.Object.DestroyImmediate(child.GetComponent<Rigidbody>());child.name="Independently named button";
+                Assert.That((bool)bind.Invoke(null,new object[]{leaf,owner}),Is.False,"Arbitrary descendants are not automatically grouped.");
+            }finally{UnityEngine.Object.DestroyImmediate(root);}
+        }
         [Test] public void CurrentToolsStayDirectWhileLegacyAndDiagnosticsAreGrouped()
         {
             Type Find(string name)=>AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType(name)).First(t=>t!=null);

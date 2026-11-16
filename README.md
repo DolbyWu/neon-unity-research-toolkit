@@ -1,10 +1,16 @@
 # GazeFlow — Research Pipeline
 
+**Exploratory analysis example (2026-11-16):** [P027 deidentified aggregate results and analysis methods](docs/analysis/P027-20261116/README.md), with an [offline reproduction recipe](Tools/PilotAnalysis/README.md). This is an n=1 pilot example, not a trained cognitive-state classifier. Public artifacts exclude raw sensor rows, personal trajectories, profiles and audio/video.
+
+**Tutorial / Study separation (2026-11-16):** continuous recordings and original timestamps are preserved. In the research trial, data before the first recorded **Pre-room** entry is exported as Tutorial; the replay and reviewed-sample builder default to Study. Both segments and unassigned-time rows remain available. See the [scope and export guide](docs/tutorial-study-segments.md).
+
+**Local annotation saving (2026-11-16):** **Save JSON to session folder** writes annotation snapshots beside the HTML after an explicit folder/permission choice. Session identity is checked; accepted changes can then save automatically as new dated versions. The download/import workflow remains available. See the [folder-saving guide](docs/annotation-folder-saving.md). This local research-branch change is not a package release.
+
 **Latest workflow update (2026-11-14): official Neon XR first.** Extra gaze correction/validation is optional, not a recording gate. The independent host shows its grabbing station quietly while the researcher optionally adjusts gaze, confirms **Save gaze adjustment**, hides the pointer and clicks **Start tutorial**; then the original movement tutorial and main task follow. A yellow lower-object reference supports visual alignment without changing physics. Fresh worn official rays and object hits are recorded whether or not extra spatial QA was performed; spatial accuracy/approval stays separate. See [today's changes and checks](docs/research-pipeline-update-20261114.md) and [official-first workflow and limits](docs/official-first-workflow.md). This is a branch update, not a new release or hardware acceptance pass.
 
 **UI and replay update (2026-11-15):** bright cyan desktop direction buttons, simplified Tools menus, and a left-column **Gaze offset report** linked to the replay cursor. The report retains adjustment/save/reset history and supports JSON/CSV exports; original Neon X/Y and pupil traces are unchanged. Applied angles are not measured accuracy. See the [desktop adjustment and replay guide](docs/desktop-gaze-adjustment.md) and [Tools menu guide](docs/tools-menu-guide.md). Unity core checks: **72/72**; isolated host checks: **45/45**; offline replay/video/annotation/AOI browser checks passed. No new hardware accuracy claim, package version bump or signed release is implied.
 
-**Initial experimental snapshot:** 2026-11-13, 13:38 EST (18:38 UTC) · **Latest update:** 2026-11-15 (America/New_York)
+**Initial experimental snapshot:** 2026-11-13, 13:38 EST (18:38 UTC) · **Latest update:** 2026-11-16 (America/New_York)
 
 **Branch:** `feature/research-pipeline-20261113-1338-est`
 
@@ -104,7 +110,7 @@ Open the new session's `Replay/study-replay.html`. **Manual annotations** stays 
 
 Under **Live researcher observations**, select **Review segment / add player response** or **Play this interval**. Review the actual video if it covers the selected experiment time. Ask what happened and what the player was thinking, enter their explanation, optionally record confusion from **1 = not confused** to **5 = very confused**, then add the annotation.
 
-Use **Export annotations JSON** to save/resume and CSV for analysis. Import the JSON into the same session's HTML to continue editing. Merely typing, closing the browser or saving a CSV does not save a resumable annotation project. The offline page does not silently rewrite raw files.
+Use **Save JSON to session folder** to save beside the HTML: choose the closed session folder containing export_manifest.json once, authorize access and wait for **Last verified save**. Accepted changes can then save automatically; every save is a new dated version. **Export annotations JSON** remains the download fallback. Reopen the same session's HTML, import the JSON to continue editing and select its folder again. CSV is for analysis. Merely typing or saving a CSV does not preserve an unfinished annotation draft. See the [folder-saving guide](docs/annotation-folder-saving.md).
 
 Audio recording and speech transcription are separate. **This standalone package does not currently include a cloud transcription button or automatically transcribe recorded audio.** A study-specific helper, if present elsewhere, is not part of this branch's portable workflow.
 

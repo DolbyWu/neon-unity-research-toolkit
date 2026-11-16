@@ -12,7 +12,7 @@ public static class StudyExportSession
 {
     private static readonly object Gate = new object();
     private static string folder, sessionId;
-    private static string participantId, companionRecordingId;
+    private static string participantId, companionRecordingId, analysisStartRegion;
     private static long startTicks, eventCount, poseCount;
     private static bool closed;
     private static bool requestedVideo, requestedAudio;
@@ -37,7 +37,7 @@ public static class StudyExportSession
             StudyLiveObservations.Reset();
             StudyMonitorData.Reset();
             events = poses = anchors = null;
-            folder = sessionId = participantId = companionRecordingId = null; startTicks = eventCount = poseCount = 0; closed = false;
+            folder = sessionId = participantId = companionRecordingId = analysisStartRegion = null; startTicks = eventCount = poseCount = 0; closed = false;
             manifestPublishFailures=0; lastManifestError="";
             recordingError="";
             requestedVideo = requestedAudio = false;
@@ -74,6 +74,7 @@ public static class StudyExportSession
             requestedAudio = rootOverride == null && config.mediaRecordingEnabled && config.mediaRecordMicrophone;
             participantId = string.IsNullOrWhiteSpace(config.participantId) ? "technical-test" : config.participantId;
             companionRecordingId = config.companionRecordingId ?? "";
+            analysisStartRegion = config.analysisStartRegion ?? "";
             Directory.CreateDirectory(root);
             var drive = new DriveInfo(Path.GetPathRoot(root));
             if (drive.IsReady && drive.AvailableFreeSpace < 2L * 1024 * 1024 * 1024)
@@ -155,7 +156,7 @@ public static class StudyExportSession
             StudySequence.Flush();
             StudyGazeTargetLog.Flush();
             var metadata = new Manifest { sessionId = sessionId, closed = closed,
-                participantId = participantId, companionRecordingIdManualUnverified = companionRecordingId,
+                participantId = participantId, companionRecordingIdManualUnverified = companionRecordingId, analysisStartRegion = analysisStartRegion,
                 durationSeconds = Seconds, behaviorEventCount = eventCount, headPoseCount = poseCount,
                 condition = StudySessionSettings.Condition, unityVersion = Application.unityVersion,
                 applicationVersion = Application.version,
@@ -200,7 +201,7 @@ public static class StudyExportSession
     [Serializable] private sealed class Manifest
     {
         public string schemaVersion = "1", sessionId, condition, unityVersion, applicationVersion;
-        public string participantId, companionRecordingIdManualUnverified;
+        public string participantId, companionRecordingIdManualUnverified, analysisStartRegion;
         public bool closed;
         public double durationSeconds;
         public long behaviorEventCount, headPoseCount;

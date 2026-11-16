@@ -24,7 +24,7 @@ Read [the integration and workflow guide](Documentation~/workflow.md) for setup,
 
 Pause/drag video → mark current frame → choose a label or enter a description → add the annotation. Video and experiment clocks are shown together. **Add another annotation here** preserves previous records. The order is **eye timeline → Manual annotations → interval export → Game log**.
 
-Export annotation **JSON** before closing and import it to resume. CSV is for analysis only. Video and JSON remain separate local files; copy the whole session folder.
+Use **Save JSON to session folder** to write annotations beside the HTML after choosing and authorizing the closed session folder containing export_manifest.json. Accepted changes can then save automatically as new dated versions; wait for **Last verified save**. The JSON download remains available if folder saving is unsupported. Reopen the HTML and import the saved JSON to resume, then select the folder again. CSV is for analysis only. Video and JSON remain separate local files; copy the whole session folder.
 
 ## Research readiness
 

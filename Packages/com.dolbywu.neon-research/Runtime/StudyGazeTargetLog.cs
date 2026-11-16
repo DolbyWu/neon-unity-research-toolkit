@@ -13,7 +13,7 @@ namespace NeonResearch
         private static StudyResearchTarget ResolveTarget(Collider collider)
         {
             foreach (var item in collider.GetComponentsInParent<StudyResearchTarget>())
-                if (item.isActiveAndEnabled) return item;
+                if (item.isActiveAndEnabled) return item.includeChildColliders || item.transform == collider.transform ? item : null;
             return null;
         }
         public static bool Finite(Vector3 v) => Finite(v.x) && Finite(v.y) && Finite(v.z);
@@ -67,8 +67,9 @@ namespace NeonResearch
                 if (writer == null)
                 {
                     writer = new StreamWriter(Path.Combine(StudyExportSession.Folder, "gaze_targets.csv"), false);
-                    writer.WriteLine("session_time_s,source,device_timestamp_ms,rtcp_synchronized,ray_valid,status,target_id,target_group,target_label,hit_x,hit_y,hit_z,calibration_id,timestamp_semantics,device_time_semantics,session_id,unity_frame,ray_origin_x,ray_origin_y,ray_origin_z,ray_direction_x,ray_direction_y,ray_direction_z,target_name,legacy_object_ids,linked_behavior_kinds,hit_geometry,verification_id,verification_status,correction_id,raw_ray_origin_x,raw_ray_origin_y,raw_ray_origin_z,raw_ray_direction_x,raw_ray_direction_y,raw_ray_direction_z,ray_processing,candidate_status,candidate_target_id,candidate_target_name,candidate_target_group,candidate_hit_x,candidate_hit_y,candidate_hit_z,candidate_hit_geometry,candidate_quality,mapping_verified,spatial_accuracy_status,query_collider_path");
+                    writer.WriteLine("session_time_s,source,device_timestamp_ms,rtcp_synchronized,ray_valid,status,target_id,target_group,target_label,hit_x,hit_y,hit_z,calibration_id,timestamp_semantics,device_time_semantics,session_id,unity_frame,ray_origin_x,ray_origin_y,ray_origin_z,ray_direction_x,ray_direction_y,ray_direction_z,target_name,legacy_object_ids,linked_behavior_kinds,hit_geometry,verification_id,verification_status,correction_id,raw_ray_origin_x,raw_ray_origin_y,raw_ray_origin_z,raw_ray_direction_x,raw_ray_direction_y,raw_ray_direction_z,ray_processing,candidate_status,candidate_target_id,candidate_target_name,candidate_target_group,candidate_hit_x,candidate_hit_y,candidate_hit_z,candidate_hit_geometry,candidate_quality,mapping_verified,spatial_accuracy_status,query_collider_path,statistics_owner_id,statistics_owner_name,statistics_owner_group,statistics_owner_rule,statistics_owner_status");
                 }
+                string ownerStatus="no_target_hit";var objectOwner=target==null?null:target.ResolveStatisticsOwner(out ownerStatus);
                 writer.WriteLine(NeonStudyRecorder.Csv(StudyExportSession.Seconds, sample.source, sample.deviceTimestampMs > 0 ? (object)sample.deviceTimestampMs : "",
                     sample.rtcpSynchronized, valid, status, target == null ? "" : target.targetId,
                     target == null ? "" : target.targetGroup, target == null ? "" : target.DisplayName,
@@ -92,7 +93,8 @@ namespace NeonResearch
                     string.IsNullOrEmpty(sample.correctionId)?"uncorrected_or_unavailable":"head_local_direction_rotation_origin_unchanged",
                     candidateStatus,candidate==null?"":candidate.targetId,candidate==null?"":candidate.gameObject.name,candidate==null?"":candidate.targetGroup,
                     candidate==null?"":(object)candidatePoint.x,candidate==null?"":(object)candidatePoint.y,candidate==null?"":(object)candidatePoint.z,candidateGeometry,
-                    candidateStatus.Length==0?"":"UNVERIFIED_CANDIDATE_NOT_ACCEPTED_AOI",valid&&sample.mappingVerified,sample.verificationStatus??"not_measured",colliderPath??""));
+                    candidateStatus.Length==0?"":"UNVERIFIED_CANDIDATE_NOT_ACCEPTED_AOI",valid&&sample.mappingVerified,sample.verificationStatus??"not_measured",colliderPath??"",
+                    objectOwner==null?"":objectOwner.targetId,objectOwner==null?"":objectOwner.gameObject.name,objectOwner==null?"":objectOwner.targetGroup,target==null?"":target.statisticsOwnerRule,ownerStatus));
                 if(candidateStatus.Length>0)
                 {
                     if(approximateWriter==null)

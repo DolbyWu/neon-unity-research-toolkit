@@ -19,3 +19,6 @@ VerificationProject/ProjectSettings/*
 **/UserSettings/
 **/*.log
 .DS_Store
+**/__pycache__/
+**/__pycache__.meta
+Tools/PilotAnalysis/p027-exploratory-latest.json

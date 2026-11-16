@@ -7,6 +7,46 @@
   "note": "New files retain source text and Unity metadata. Narrow zero-context patches retain source SHA-256 and baseline SHA-256; headers are canonical relative paths. source_sha256 fingerprints original source bytes. artifact_sha256 and meta_sha256 fingerprint published UTF-8 text payloads with LF line endings as stored in Git; normalize CRLF to LF when auditing a Windows checkout. Changed artifacts fingerprint narrow patch text, not patched host source.",
   "files": [
     {
+      "path": "Assets/Editor/GazeFlowInformationSurfaceConfiguration.cs",
+      "state": "new",
+      "source_sha256": "6dee9ce92c77893ca9bd5384989468d7aef67d589c7906f8d60ad93e488d989f",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Editor/GazeFlowInformationSurfaceConfiguration.cs",
+      "artifact_sha256": "6dee9ce92c77893ca9bd5384989468d7aef67d589c7906f8d60ad93e488d989f",
+      "meta_path": "Source/Assets/Editor/GazeFlowInformationSurfaceConfiguration.cs.meta",
+      "meta_sha256": "bc2cefb26ffe73cc7e3f99bce2bf39ee6a7a79cbedfcf363c7983c6519c6cc87"
+    },
+    {
+      "path": "Assets/Editor/GazeFlowInformationSurfaceAudit.cs",
+      "state": "new",
+      "source_sha256": "336a79fceba5bf7ef1cde5c250b8287b5eb7dfcfe379412afe5d4f49709763f2",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Editor/GazeFlowInformationSurfaceAudit.cs",
+      "artifact_sha256": "336a79fceba5bf7ef1cde5c250b8287b5eb7dfcfe379412afe5d4f49709763f2",
+      "meta_path": "Source/Assets/Editor/GazeFlowInformationSurfaceAudit.cs.meta",
+      "meta_sha256": "3b93f74c6efc6221a634e7669e3e7e61ec0167e060469b95289752c67114ebff"
+    },
+    {
+      "path": "Assets/Scripts/GazeFlowObjectStatisticsBinding.cs",
+      "state": "new",
+      "source_sha256": "98925b54314ef672df667455df7900d71c68ac2a0177d408c5e510574b53f7f4",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Scripts/GazeFlowObjectStatisticsBinding.cs",
+      "artifact_sha256": "98925b54314ef672df667455df7900d71c68ac2a0177d408c5e510574b53f7f4",
+      "meta_path": "Source/Assets/Scripts/GazeFlowObjectStatisticsBinding.cs.meta",
+      "meta_sha256": "a751ba9f74d7a50fef1307e560006552b815ad133c8bf67541d0aca3d5de35b9"
+    },
+    {
+      "path": "Assets/Editor/GazeFlowObjectOwnershipCoverage.cs",
+      "state": "new",
+      "source_sha256": "fd4e083a89b53a9ca03b5d295ccf8f1ad995b1fc7c9f74403c62fb908df3bc97",
+      "baseline_sha256": null,
+      "artifact_path": "Source/Assets/Editor/GazeFlowObjectOwnershipCoverage.cs",
+      "artifact_sha256": "fd4e083a89b53a9ca03b5d295ccf8f1ad995b1fc7c9f74403c62fb908df3bc97",
+      "meta_path": "Source/Assets/Editor/GazeFlowObjectOwnershipCoverage.cs.meta",
+      "meta_sha256": "d9b68814fb5658b556b5c571dbd2948fc5b0c90df78425cbef5ee945ce59dbd9"
+    },
+    {
       "path": "Assets/Scripts/GazeFlowHostHeadBinding.cs",
       "state": "new",
       "source_sha256": "3e05ff3cb1341a705f5734cf73534418375b2737aa4f9a4fdf3068cc43c25148",
@@ -215,10 +255,10 @@
     {
       "path": "Assets/Tests/EditMode/ReflectiveAgent/AoiCorrectionIntegrationTests.cs",
       "state": "new",
-      "source_sha256": "b7d8a1c0db107a84ae8576804cf5d908991e8796840a1ca8b5aaa7c32008bc8b",
+      "source_sha256": "7a459388162fe36b9b643d3357b3705eca7e6f72018c1355044c7de657c50ed0",
       "baseline_sha256": null,
       "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiCorrectionIntegrationTests.cs",
-      "artifact_sha256": "b7d8a1c0db107a84ae8576804cf5d908991e8796840a1ca8b5aaa7c32008bc8b",
+      "artifact_sha256": "7a459388162fe36b9b643d3357b3705eca7e6f72018c1355044c7de657c50ed0",
       "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiCorrectionIntegrationTests.cs.meta",
       "meta_sha256": "9ff79584bde660819c9845dc8a11bae9e8f607c014b126b5be0f1b42fdc6df43"
     },
@@ -306,9 +346,9 @@
       "path": "Assets/Tests/EditMode/ReflectiveAgent/AoiObjectCalibrationTests.cs",
       "state": "new",
       "baseline_sha256": null,
-      "source_sha256": "856b1b6eb720fa707549b76dda42b5c4b78216ed821f1f04d1a1faebfd1607a5",
+      "source_sha256": "d430dee0812f365a2d17d48db73fe6126edfa75e3ea638db7379ee22eaa62499",
       "artifact_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiObjectCalibrationTests.cs",
-      "artifact_sha256": "856b1b6eb720fa707549b76dda42b5c4b78216ed821f1f04d1a1faebfd1607a5",
+      "artifact_sha256": "d430dee0812f365a2d17d48db73fe6126edfa75e3ea638db7379ee22eaa62499",
       "meta_path": "Source/Assets/Tests/EditMode/ReflectiveAgent/AoiObjectCalibrationTests.cs.meta",
       "meta_sha256": "08aa807ee9aa7c81fe1a8fc33591e068d83e875263ee63b52ae0fc8a6dd1a186"
     },
@@ -379,5 +419,5 @@
       "baseline_sha256": "2e627c0ee5f5ebf123d386b5f45dbee9db654ec935e5e53cd758deb9e27743cf"
     }
   ],
-  "latest_source_update": "2026-11-15: menu-only cleanup; current gaze/observer entry points retained; duplicate pointer menu aliases removed; older calibration/helpers grouped under Advanced/Legacy, checks under Diagnostics, setup under Setup. 43 targeted host checks passed. Runtime/data/official SDKs unchanged."
+  "latest_source_update": "2026-11-16: explicit visual-leaf object statistics links and a read-only authored-scene coverage audit added; host synthetic checks 46 passed. Raw target IDs, gameplay physics and historical CSV files retained. Prior menu organization remains."
 }

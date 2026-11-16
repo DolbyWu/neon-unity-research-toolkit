@@ -19,7 +19,12 @@ public static class StudyOfflineReplay
     }
 
     public static string BuildWithTemplate(string folder, string template)
+        => BuildNamedWithTemplate(folder,template,"study-replay.html");
+
+    /// <summary>Separate derived review beside the original replay; sensor/behavior CSV files are never rewritten.</summary>
+    public static string BuildNamedWithTemplate(string folder,string template,string outputName)
     {
+        if(!System.Text.RegularExpressions.Regex.IsMatch(outputName??"",@"\Astudy-replay(?:-[A-Za-z0-9_-]+)?\.html\z"))throw new ArgumentException("Invalid replay file name.");
         var manifest = JObject.Parse(File.ReadAllText(Path.Combine(folder, "export_manifest.json")));
         if (manifest.Value<bool?>("closed") != true) throw new InvalidOperationException("Stop the session before creating a replay.");
         double duration = manifest.Value<double?>("durationSeconds") ?? 0;
@@ -32,8 +37,12 @@ public static class StudyOfflineReplay
         const string marker = "__STUDY_DATA__";
         int split = template.IndexOf(marker, StringComparison.Ordinal);
         if (split < 0 || split != template.LastIndexOf(marker, StringComparison.Ordinal)) throw new InvalidDataException("Invalid replay template.");
-        string output = Path.Combine(folder, "Replay"); Directory.CreateDirectory(output);
-        string path = Path.Combine(output, "study-replay.html"), temporary = path + ".partial";
+        string output = Path.Combine(folder, "Replay");StudyArchivePaths.RequireContainedUnlinked(folder,output);Directory.CreateDirectory(output);
+        string path = Path.Combine(output, outputName), temporary = path + ".partial";
+        StudyArchivePaths.RequireContainedUnlinked(folder,path);StudyArchivePaths.RequireContainedUnlinked(folder,temporary);
+        var ownership=ReadTargetOwnership(folder,manifest.Value<string>("sessionId")??Path.GetFileName(folder));
+        var objectHitData=StudyObjectHitExport.Build(folder,manifest.Value<string>("sessionId")??Path.GetFileName(folder),duration,ownership,Guid.NewGuid().ToString("N"));
+        var analysisSegments=StudySessionSegments.Build(folder,manifest,duration,objectHitData);
         using (var stream = new StreamWriter(temporary, false, new UTF8Encoding(false)))
         {
             stream.Write(template.Substring(0,split));
@@ -47,6 +56,9 @@ public static class StudyOfflineReplay
                 json.WritePropertyName("media"); ReadVideoTiming(folder, manifest.Value<string>("sessionId") ?? Path.GetFileName(folder), duration).WriteTo(json);
                 json.WritePropertyName("manifestPublishFailures"); json.WriteValue(manifest.Value<int?>("manifestPublishFailures")??0);
                 json.WritePropertyName("recordingError"); json.WriteValue(manifest.Value<string>("recordingError")??"");
+                json.WritePropertyName("targetOwnership");ownership.WriteTo(json);
+                json.WritePropertyName("objectHitData");objectHitData.WriteTo(json);
+                json.WritePropertyName("analysisSegments");analysisSegments.WriteTo(json);
                 json.WritePropertyName("gazeAdjustments"); ReadGazeAdjustments(folder,manifest.Value<string>("sessionId")??Path.GetFileName(folder),duration).WriteTo(json);
                 json.WritePropertyName("spatialValidations"); json.WriteStartArray();
                 string validationFolder=Path.Combine(folder,"Calibration");
@@ -97,6 +109,22 @@ public static class StudyOfflineReplay
         }
         StudyAtomicFile.Publish(temporary,path);
         return path;
+    }
+    private static JObject ReadTargetOwnership(string folder,string session)
+    {
+        var result=new JObject{["schema"]="gazeflow-reviewed-target-ownership-v1",["links"]=new JArray(),["warning"]=""};
+        try
+        {
+            string path=Path.Combine(folder,"Analysis","target-object-ownership.json");
+            StudyArchivePaths.RequireContainedUnlinked(folder,path);if(!File.Exists(path))return result;
+            if(new FileInfo(path).Length>1024*1024)throw new InvalidDataException("Ownership report too large.");
+            var data=JObject.Parse(File.ReadAllText(path));
+            if(data.Value<string>("schema")!="gazeflow-reviewed-target-ownership-v1"||data.Value<string>("session_id")!=session||!(data["links"] is JArray links)||links.Count>10000)throw new InvalidDataException("Wrong ownership session/schema.");
+            result=data;
+        }
+        catch(Exception error) when(error is IOException||error is InvalidDataException||error is UnauthorizedAccessException||error is JsonException)
+        {result["warning"]="Reviewed object ownership unavailable or invalid; raw identities are retained.";}
+        return result;
     }
     // Optional evidence only: bounded, session-checked reads. Never reconstruct or rewrite historical rays.
     private static JObject ReadGazeAdjustments(string folder,string session,double duration)

@@ -1,5 +1,7 @@
 # Desktop gaze adjustment (experimental)
 
+For parent/visual-child ID differences in counts, see [object statistics ownership](object-statistics-ownership.md). This is independent of gaze direction correction and does not approve spatial accuracy.
+
 This optional Unity Editor tool keeps official Neon XR reception/mapping and adds a reversible local direction adjustment for research rays. It is **not** the official Companion Offset Correction, a replacement for mount calibration, a fixation detector or an automatic accuracy guarantee. The phone still streams; no phone interaction is required for these local controls.
 
 ## Open and use

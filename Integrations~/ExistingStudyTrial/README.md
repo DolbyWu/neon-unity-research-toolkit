@@ -8,7 +8,7 @@ The portable toolkit lives under the repository's `Packages/` directory. Start w
 
 ## Contents
 
-- `Source/Assets/`: **19** newly authored bridge, tutorial-entry, reference/observer controls and synthetic-test C# files with their original Unity `.meta` identities. This is a reference tree, not an automatic installer.
+- `Source/Assets/`: **23** newly authored bridge, tutorial-entry, reference/observer controls, explicit object-statistics binding/coverage, reviewed information-surface configuration/audit and synthetic-test C# files with their original Unity `.meta` identities. This is a reference tree, not an automatic installer.
 - `Patches/Assets/`: **22** zero-context patches for existing logging, consent guards, tutorial placement/progress, initial orientation, dynamic pin identity and legacy Editor/test namespace/menu integration.
 
 The pin-manager patch omits a cosmetic comment-only encoding conversion from the legacy source; its research-code changes are preserved. Therefore its recorded source fingerprint describes the full trial source, while the published patch deliberately leaves that unrelated baseline comment untouched. Published patches are checked read-only against the recorded local baseline before handoff.
@@ -19,6 +19,10 @@ The pin-manager patch omits a cosmetic comment-only encoding conversion from the
 None of these files are automatically imported by Unity from this tilde-suffixed directory.
 
 ## Host-specific dependencies and guards
+
+The 2026-11-16 object-statistics follow-up adds a trial-only visual-leaf owner binder and a read-only authored-scene coverage check. It preserves raw target IDs, colliders and independent behavior objects. See [object statistics ownership](../../docs/object-statistics-ownership.md). The original beta release and historical CSV files are not modified by this reference.
+
+The later information-surface follow-up adds checkpointed, exact-identity configuration of the blackboard front as **clue**, and the whiteboard/lid puzzle surfaces as **puzzle_panel**, with own-collider-only scope. Decorative frame/back surfaces and independent sockets remain separate. See [information-surface AOIs](../../docs/information-surface-aoi.md). Host synthetic calibration fixtures are positioned away from real loaded scenes so those scenes cannot accidentally occlude their test rays. The original authored scene/assets and private checkpoint reports are not part of this source reference.
 
 The reference code depends on the existing study's authored scenes, initialization/bootstrap, player logger, tutorial gates, prompt zones, event wrappers, spawn manager and Meta interaction classes. These are not supplied here.
 

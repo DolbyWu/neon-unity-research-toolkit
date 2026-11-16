@@ -1,5 +1,34 @@
 # Changelog
 
+## Separate tutorial from primary study analysis - 2026-11-16
+
+- Preserve continuous recordings and original session time. Configure the first recorded region entry as the study boundary; the research trial uses Pre-room. A configured session without that entry remains tutorial-only.
+- Default the offline replay to Study. Keep Tutorial and Full session available with explicit analysis-scope provenance. Write reconciled Tutorial, Study and Unassigned CSV partitions plus per-segment object summaries without changing raw sources, media or previous exports.
+- Apply the same cutoff in the reviewed-sample builder, preserving excluded tutorial labels in its audit and marking interval scope explicitly. Never infer the boundary from scene load or assign unaligned eye rows by receive time.
+
+## Explicit information-surface collider scope - 2026-11-16
+
+- Add Include Child Colliders (default true for existing targets). Own-collider-only panels exclude decorative descendants while preserving their occlusion and any explicitly independent child target. Export the scope in the target catalogue.
+- Add query/export regressions for clue and puzzle-panel metadata. The optional existing-study reference separately configures only three reviewed information surfaces with a checkpointed identity-based tool; no historical target observations or accuracy approvals are fabricated.
+
+## Optional local annotation folder saving - 2026-11-16
+
+- Add a permission-based session-folder JSON save in the offline replay. Check session/participant/duration/closed manifest, save beside the HTML and verify by reading back. Keep the download fallback and existing save/resume format.
+- Once a folder is chosen, optionally save accepted annotation edits and video-offset changes as queued, unique dated versions. Never overwrite earlier JSON or raw recordings; surface failures and pending writes explicitly. Folder access is not cached across reloads.
+- Add synthetic browser/filesystem coverage for permission/cancellation, wrong-folder rejection, native write/read, immutable saves, queueing, draft handling, restore and fallback. No local helper, API key or upload is added.
+
+## Evidence-based target table and matched hit CSVs - 2026-11-16
+
+- Default to recorded hits or explicitly linked interactions; retain a hit-only view and full configured catalogue with evidence and snapshot-state labels. Do not interpret snapshot inactivity as a whole-session activation history.
+- Generate automatic hit-only object records, object summary and export checks in a unique Analysis folder for each replay. HTML and CSV share the normalized per-callback child/object pairing. Preserve source callback references, raw identities, ownership evidence, session context and unresolved states.
+- Per-callback ownership takes precedence over static metadata; historical maps require exact session/IDs and recorded structural compatibility. Invalid/foreign-time/session evidence is excluded explicitly rather than filled with zeros.
+
+## Explicit object-level statistics - 2026-11-16
+
+- Preserve raw child hit IDs while adding explicit ancestor statistics ownership to callback/catalogue metadata. Nearest-collider physics and independent target identities remain unchanged.
+- Add object/raw HTML views, owner-aware behavior filters, counts CSV, callback provenance columns and interval-bundle ownership/statistics. Conflicting/cyclic links are excluded; names never become automatic join keys.
+- Add same-session reviewed historical sidecars and a separate timestamped replay action that leaves original CSV/HTML untouched. Existing-study-only visual-leaf binding and read-only coverage checks are supplied separately from the reusable core.
+
 ## Offline gaze offset report — 2026-11-15
 
 - Added a left-column report below the session video with cursor-linked manual yaw/pitch, model/mount IDs, latest save context and seekable application/save/reset/binding history. A fresh usable callback identifies the actual correction; invalid/stale/missing metadata is never replaced by a valid zero.

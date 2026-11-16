@@ -34,6 +34,16 @@ namespace NeonResearch.Tests
             Assert.That(root.StartsWith(Path.GetFullPath("Library/StandaloneVerification")+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase));
             Directory.Delete(root,true);
         }
+        [Test]public void OwnershipSidecarIsSessionBoundedAndInvalidEvidenceDoesNotBlockReplay()
+        {
+            Directory.CreateDirectory(Path.Combine(root,"Analysis"));string file=Path.Combine(root,"Analysis","target-object-ownership.json");
+            var read=typeof(StudyOfflineReplay).GetMethod("ReadTargetOwnership",BindingFlags.Static|BindingFlags.NonPublic);
+            File.WriteAllText(file,new JObject{["schema"]="gazeflow-reviewed-target-ownership-v1",["session_id"]="foreign",["links"]=new JArray()}.ToString());
+            var rejected=(JObject)read.Invoke(null,new object[]{root,"expected"});Assert.That(rejected.Value<string>("warning"),Is.Not.Empty);Assert.That(rejected["links"].Count(),Is.Zero);
+            File.WriteAllText(file,new JObject{["schema"]="gazeflow-reviewed-target-ownership-v1",["session_id"]="expected",["links"]=new JArray(new JObject{["child_id"]="visual",["owner_id"]="diary",["rule"]="reviewed"})}.ToString());
+            var accepted=(JObject)read.Invoke(null,new object[]{root,"expected"});Assert.That(accepted["links"].Count(),Is.EqualTo(1));
+            File.WriteAllText(file,"invalid JSON");Assert.That(((JObject)read.Invoke(null,new object[]{root,"expected"})).Value<string>("warning"),Is.Not.Empty);
+        }
         [Test]public void DefaultsAreInertAndDoNotReuseExistingStudyConfiguration()
         {
             var settings=new NeonStudySettings();Assert.That(settings.recordOnPlay,Is.False);Assert.That(settings.enabled,Is.False);
@@ -80,6 +90,9 @@ namespace NeonResearch.Tests
                 Assert.That(html,Does.Contain("Add another annotation here"));Assert.That(html,Does.Contain("Pause &amp; mark this frame"));
                 Assert.That(html,Does.Contain("reviewClocks"));Assert.That(html,Does.Not.Contain("__STUDY_DATA__"));
                 Assert.That(html,Does.Contain("Gaze offset report"));Assert.That(html,Does.Contain("gazeflow-replay-offset-metadata-v1"));
+                string derived=StudyOfflineReplay.BuildNamedWithTemplate(folder,Resources.Load<TextAsset>("NeonResearchOfflineReplay").text,"study-replay-object-review-test.html");
+                Assert.That(File.Exists(derived),Is.True);Assert.That(File.ReadAllText(Path.Combine(folder,"Replay/study-replay.html")),Is.EqualTo(html),"Derived review never replaces the original replay.");
+                Assert.Throws<ArgumentException>(()=>StudyOfflineReplay.BuildNamedWithTemplate(folder,"__STUDY_DATA__","../outside.html"));
                 int timeline=html.IndexOf("id=\"timelinePanel\"",StringComparison.Ordinal),annotations=html.IndexOf("id=\"annotationPanel\"",StringComparison.Ordinal);
                 int interval=html.IndexOf("id=\"intervalExportPanel\"",StringComparison.Ordinal),gameLog=html.IndexOf("id=\"gameLogPanel\"",StringComparison.Ordinal);
                 Assert.That(timeline,Is.GreaterThan(0));Assert.That(annotations,Is.GreaterThan(timeline));Assert.That(interval,Is.GreaterThan(annotations));Assert.That(gameLog,Is.GreaterThan(interval));

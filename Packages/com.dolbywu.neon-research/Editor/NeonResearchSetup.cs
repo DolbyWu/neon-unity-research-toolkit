@@ -22,6 +22,8 @@ namespace NeonResearch
                 settings.outputRoot=EditorGUILayout.TextField("Output folder",settings.outputRoot);
                 if(GUILayout.Button("Choose data folder")){string selected=EditorUtility.OpenFolderPanel("Select an independent study data folder",StudyExportSession.OutputRoot,"");if(!string.IsNullOrEmpty(selected))settings.outputRoot=selected;}
                 settings.condition=EditorGUILayout.TextField("Experimental condition",settings.condition);
+                settings.analysisStartRegion=EditorGUILayout.TextField("Analysis starts at region (optional)",settings.analysisStartRegion);
+                if(!string.IsNullOrWhiteSpace(settings.analysisStartRegion))EditorGUILayout.HelpBox("Recording stays continuous. Before the first recorded entry to this region is exported as Tutorial and excluded from primary analysis. If entry is never recorded, the session is tutorial-only, not assumed study data.",MessageType.Info);
                 settings.companionIp=EditorGUILayout.TextField("Companion IPv4 (no port)",settings.companionIp);
                 settings.companionApiPort=EditorGUILayout.IntField("Companion API port",settings.companionApiPort);
                 settings.websocketPort=EditorGUILayout.IntField("Companion WebSocket port",settings.websocketPort);

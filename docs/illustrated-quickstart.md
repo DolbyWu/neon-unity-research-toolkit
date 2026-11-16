@@ -84,7 +84,7 @@ Stop Play normally and wait for media finalization. If configured, the session f
 - Check the manifest, original CSV files, optional video/audio and session identity.
 - In HTML, load the local video, inspect the shared timeline and review observation intervals with the player. Mark the current frame/time or a selected interval and add an interpretation with its evidence source.
 - The left-column **Gaze offset report** shows recorded adjustments alongside the cursor. At time zero or a signal gap it can say **Not available**, even when a later save receipt is present. This is not evidence that the whole session failed.
-- **Export annotations JSON** before closing; import it on reopening to continue. CSV is for analysis, not annotation restore. Offset JSON/CSV and interval-bundle exports remain available separately.
+- **Save JSON to session folder** after selecting and authorizing the closed session folder (containing export_manifest.json, one level above Replay). Subsequent accepted changes can save automatically as new versions beside the HTML; wait for **Last verified save**. The JSON download remains available. Reopen and import the JSON to continue, then select the folder again. See [folder saving](annotation-folder-saving.md). CSV is for analysis, not annotation restore. Offset JSON/CSV and interval-bundle exports remain separate.
 - Copy the complete session folder when transferring local video and HTML. Keep study recordings private; do not upload participant archives, credentials or local connection settings to GitHub.
 
 These screenshots document the controls; perform your own short hardware, framing, sound, stream-loss and session-isolation checks before a real study.

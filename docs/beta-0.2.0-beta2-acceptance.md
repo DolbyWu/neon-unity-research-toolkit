@@ -1,6 +1,6 @@
 # Beta.2 integration acceptance — 16 November 2026
 
-Scope: Windows Unity Editor 6000.3.23f1, matching 0.2.0-beta.2 core and adapter, official Neon XR Core 2.0.0 pinned at `f4dee47b9690a059b1c4660628596d7303ade59a`. This is a local candidate on `codex/gazeflow-beta2-integration-20261116`, not main or the store edition.
+Scope: Windows Unity Editor 6000.3.23f1, matching 0.2.0-beta.2 core and adapter, official Neon XR Core 2.0.0 pinned at `f4dee47b9690a059b1c4660628596d7303ade59a`. The maintainer approved publishing this as the main-branch beta after PR checks. It is not a stable certification, signed release or store edition.
 
 ## Integration boundary
 
@@ -16,14 +16,15 @@ Selected portable changes were reviewed from research commit `8d75437`; host sce
 | Reviewed-sample rules | PASS: 14/14 synthetic checks |
 | Offline replay/browser regressions | PASS: nine suites, including real synthetic filesystem-handle writes/read-back and synthetic local video |
 | Source isolation | PASS: no known game-script coupling or live addresses/machine paths in candidate source audit |
-| Original study projects, data, main and store tooling | Unchanged by this integration |
+| Original study projects, data and submitted store artifacts | Unchanged; no participant records are included in this publication |
 | Actual Neon + Quest scene, head movement and eye/pupil reception | PASS: independent technical sessions; wearer confirmed colored objects visible; not measured spatial accuracy |
 | Actual left/right grab/release and observer interval/note | PASS: physical grip events plus observer start/end/note persisted; no cognitive-state inference |
 | Separate participant session and clean Stop/media finalization | PASS: separate archive identities; prior manual adjustment not inherited; full physical-pixel desktop and microphone files finalized |
 | Real generated HTML and local video basic review | PASS: matching object totals, observer interval display, seek/play/pause and no script errors or network requests; not a complete annotation round-trip |
-| Controlled cross-scene and deliberate stream disconnect/recovery | NOT TESTED; operator chose to finish before these steps |
-| Full real annotation-folder / interval-export round-trip | NOT TESTED; automated synthetic regressions remain separate |
-| Native folder-picker permission granted by operator | NOT TESTED in an actual participant replay |
+| Cross-scene recording | PASS — operator-confirmed on 16 November; additional run records were not independently inspected here |
+| Stream disconnect/recovery | PASS — operator-confirmed on 16 November; additional run records were not independently inspected here |
+| Real annotation JSON save/resume | PASS — operator-confirmed on 16 November; additional saved/restored files were not independently inspected here |
+| Native folder-picker path and full real interval-export round-trip | Not separately confirmed/inspected; synthetic permissions and export regressions passed |
 | Measured spatial accuracy / hardware clock synchronization | NOT ESTABLISHED |
 
 ## Physical-device checklist
@@ -38,11 +39,11 @@ Use a new private technical session and reconfirm current endpoint and recording
 6. Open the real HTML. Pause/scrub, seek targets/events, add several annotations and player responses. Manually authorize the exact session folder and verify versioned JSON saves; reload/import; compare selected CSV and full interval bundle.
 7. Start a second technical session: participant/session separation, no inherited annotation or correction setting, clean normal finalization.
 
-Record each category as PASS / FAIL / NOT TESTED. Do not promote main or replace the store submission until required checks are complete. Store compatibility problems are tracked separately; this candidate deliberately does not alter its build tools.
+Record each category as directly inspected, operator-confirmed or not tested. The maintainer subsequently confirmed the three missing workflow checks and authorized PR-based main promotion after CI. Do not relabel those confirmations as independent file-level inspection or measured spatial precision. Store compatibility problems are tracked separately; publishing this UPM beta does not rebuild or replace the submitted store package.
 
 ## Tested archive identities
 
 - Core SHA-256: `1cfc8aabb95e7c24e4308ecd8f5e123cb51ea275e32acc760933a9ab56b4e520`.
 - Adapter SHA-256: `14f4519dd3ea86b51c44f52fe32e4811b29ecb001dee56408c8b092a6e43f655`.
 
-These identify the exact local unsigned beta.2 tarballs used by the independent installs; they are not a signed release or store approval. Rebuilds with different bytes need their own hashes and install evidence. The separate two-scene fixture was first prepared with acquisition and recording disabled, then armed after fresh endpoint confirmation and local capture consent. The basic physical-device checks above were completed; the remaining controlled checks were not. All raw technical records, endpoint/profile details and observation text stay private. Main promotion remains held; no store submission was changed.
+These identify the exact local unsigned beta.2 tarballs used by the independent installs; they are not a signed release or store approval. Rebuilds with different bytes need their own hashes and install evidence. The separate two-scene fixture was first prepared with acquisition and recording disabled, then armed after fresh endpoint confirmation and local capture consent. Basic physical-device results were inspected; the operator subsequently confirmed cross-scene recording, stream recovery and annotation save/resume. All raw technical records, endpoint/profile details and observation text stay private. No store submission was changed.

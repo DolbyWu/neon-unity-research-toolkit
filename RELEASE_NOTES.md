@@ -1,8 +1,8 @@
 # Release notes
 
-## 0.2.0-beta.2 candidate — 16 November 2026
+## 0.2.0-beta.2 — 16 November 2026
 
-Portable object ownership and matching HTML/CSV hit exports, configurable Tutorial/Study partitions, own-surface collider scope and optional versioned annotation saving to an authorized session folder. No experiment assets, participant data, case-specific analysis scripts or automatic cognitive inference are bundled. Existing physical interactions and raw recordings are preserved. Independent installed-artifact checks passed; physical-device regression remains pending. This is not an Asset Store update or a signed release.
+Portable object ownership and matching HTML/CSV hit exports, configurable Tutorial/Study partitions, own-surface collider scope and optional versioned annotation saving to an authorized session folder. No experiment assets, participant data, case-specific analysis scripts or automatic cognitive inference are bundled. Existing physical interactions and raw recordings are preserved. Independent installed-artifact and basic device/export checks passed; the operator additionally confirmed cross-scene recording, stream recovery and real annotation save/resume. See [evidence and limits](docs/beta-0.2.0-beta2-acceptance.md) for the distinction. This remains a beta, not an Asset Store update or a signed release.
 
 ## 0.2.0-beta.1 portable UPM candidate
 

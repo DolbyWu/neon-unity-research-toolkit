@@ -1,0 +1,27 @@
+{
+  "schema": "gazeflow-trial-dependency-reference-v1",
+  "snapshot_date": "2026-11-13",
+  "unity": "6000.3.23f1",
+  "core_package": "0.2.0-exp.1",
+  "optional_adapter": "0.2.0-exp.1",
+  "official_neon_xr": {
+    "package": "com.pupil-labs.neon-xr.core",
+    "version": "2.0.0",
+    "git_commit": "f4dee47b9690a059b1c4660628596d7303ade59a"
+  },
+  "host_meta_interaction": "201.0.0",
+  "head_binding": "actual tracked XR head; explicit per-scene review required",
+  "recording": {
+    "source": "entire primary monitor including visible windows",
+    "reference_capture_rectangle": {
+      "width": 2560,
+      "height": 1440,
+      "x": 0,
+      "y": 0,
+      "fps": 30
+    },
+    "microphone": "operator-selected local input; reference trial used headset microphone",
+    "note": "Configure for your own desktop and informed consent. These dimensions are not a requirement or configuration file. Capture timing is software-estimated, not hardware synchronization."
+  },
+  "private_settings": "Not exported. Re-enter current device endpoint, archive root, microphone and tool paths locally; keys must stay outside Git."
+}

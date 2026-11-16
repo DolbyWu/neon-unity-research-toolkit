@@ -1,0 +1,61 @@
+# Desktop gaze adjustment (beta)
+
+This optional Unity Editor tool keeps official Neon XR reception/mapping and adds a reversible local direction adjustment for research rays. It is **not** the official Companion Offset Correction, a replacement for mount calibration, a fixation detector or an automatic accuracy guarantee. The phone still streams; no phone interaction is required for these local controls.
+
+## Open and use
+
+The direction controls use a bright cyan cross layout with large geometric arrows, English labels and a pressed-depth effect. The centre shows the selected step. The idle preview remains visible, but controls are locked until recording and head binding are available, and while a check or fitted correction is active. Colours do not indicate permission or measured accuracy. This appearance change does not alter correction signs, step sizes, save receipts or recording.
+
+1. Work in the isolated study copy, not the original or store edition. Press Play, confirm the archive participant ID and recording consent normally.
+2. Open **Tools > GazeFlow > Desktop Gaze Adjustment**. It is the single current gaze-control menu entry; duplicate Gaze Pointer aliases were removed during the [menu cleanup](tools-menu-guide.md). It never opens automatically on Play.
+3. Choose **Show gaze pointer**. The cyan cursor uses the same callback ray as research AOI logging. Optionally create an authored **32 mm yellow visual reference** on any scene Transform through [generic XR setup](universal-neon-xr-setup.md), position it on a visible stable surface and assign it to **Optional visual reference** in this panel. Show it explicitly. The wearer looks at yellow, **not** follows cyan. It has normal depth occlusion and no Collider, Rigidbody or AOI; it does not approve accuracy. No particular task object or tutorial is required.
+4. Choose a step (default 0.10 degrees) and click **LEFT / RIGHT / UP / DOWN**. Positive horizontal moves gaze right; positive vertical moves it up, in tracked-head-local axes. A new immutable correction revision is saved per click. No target, head pose or collider is moved.
+5. Click **Save gaze adjustment**. The panel shows **Adjustment saved — you can now hide the gaze pointer.** This writes a separate immutable operator-confirmation receipt, referencing the selected correction. Repeated clicks for the unchanged binding return the same receipt. This is not a measured accuracy pass and does not hide the cursor or approve AOI quality.
+6. Click **Hide gaze pointer** and optionally **Hide visual reference** when ready. Continue your own task using its own controls. The portable plugin does not gate narration, choose a scene sequence or provide a Start tutorial action. Recording and optional media continue independently. Existing hosts can still supply custom preparation controls through the retained compatibility hook, but the generic package has no subscriber or host dependency.
+7. **Reset - use official ray without extra correction** removes the local correction immediately, cancels an active check and clears accuracy approval. Prior files remain intact. It does not undo any offset already applied on the phone.
+
+The saved confirmation is invalidated after another nudge, reset, restored model, head rebind, configuration or session change. Hiding/showing the cursor does not invalidate it. Each nudge's correction JSON is already persisted for provenance; the Save button adds an explicit operator acknowledgement for the current selection. It does not change the mount configuration or prove spatial accuracy.
+
+The combined rotation is bounded to 12 degrees as an engineering safety limit, not a scientific acceptance criterion. Different local fitted/manual corrections are not stacked. Reset a fitted model before using arrows. The exact incoming official ray is preserved alongside the adjusted ray; this baseline already includes any existing official mount or phone-side processing, not unprocessed sensor truth.
+
+## Measure separately, without automatic fitting
+
+**Show five check targets - no automatic fitting** begins one optional fresh-sample measurement. Wait for live worn gaze, ask the wearer whether all five dots are visible, then click **Targets visible - start one five-point check**. Five 32 mm dots are anchored at fixed world positions in front of the current head when valid input arrives. They are not AOIs or colliders. The cursor is hidden during the check so it is not another object for the wearer to follow.
+
+Defaults are 1 second settling and 2 seconds measuring per point, with 2-second gaps. The check reports per-point mean angular error, p95 and conservative valid coverage. Existing project tolerances (3 degrees mean, 70% coverage by default) remain explicit engineering choices, not a Neon-certified standard. This does not establish full-scene/depth accuracy or fixation/attention.
+
+There is no automatic second fitting round, tutorial hold or automatic approval. An aborted/failed/skipped check never stops usable gaze/AOI, media or the task. An explicit review checkbox plus **Approve measured mapping for this head binding** is required after a saved passing check and fresh worn signal. A manual revision, reset, head binding, configuration change or session change clears prior approval. A restored manual model needs a NEW check through this tool before approval.
+
+## Preview versus recording
+
+- Preview and AOI share the research callback ray, nearest-collider query, recorder collision mask, maximum distance and freshness policy. A non-target wall blocks the target behind it. Geometry/identity errors do not become accepted AOI.
+- With no collider, the cursor may appear at a 2 m visual fallback distance. That is display only, not a recorded target hit. Invalid/non-worn/stale samples hide the cursor; they are never filled with a valid zero ray.
+- The preview owns a temporary cyan sphere with its collider disabled on Ignore Raycast. It never invokes gameplay hit callbacks, writes target rows or starts/stops recording. Hiding/closing display controls does not reset the correction.
+- The official visualizer's visible cursor/ray is hidden when this preview is used, to avoid confusing raw and adjusted cursors. Official raycast/gameplay callbacks are otherwise left unchanged. A separate gameplay gaze-interaction system is not silently recalibrated by this research tool.
+
+## Files and session isolation
+
+### Offset report in the offline replay
+
+Newly generated replays include **Gaze offset report** below the video in the left column. Scroll within that column to see the report while keeping the shared eye-data timeline on the right. At the experiment cursor it shows the horizontal and vertical **operator-applied** angles, their signs, correction ID and mount configuration from a fresh usable `gaze_targets.csv` callback. Positive horizontal is right; positive vertical is up. The lookup uses the last callback at or before the cursor, no older than 0.1 seconds. Gaps and invalid rays display unavailable, not a valid zero. An empty correction ID on an otherwise usable current-format callback means no **extra GazeFlow** rotation, not necessarily no phone-side offset.
+
+The report also displays the latest save receipt as historical context, and an expandable list of applications, saves, resets and head-binding events. Click a timed entry to pause and seek experiment time and, where video covers it, video time. Then use the existing **Mark current frame / time** annotation action if you want to add an interpretation. A save does not establish continued use after reset/rebinding and does not approve accuracy.
+
+Export the complete offset metadata as JSON or the application/save/transition history as CSV. The complete interval JSON also includes full-session offset context under `gaze_adjustment_report`; it is explicitly full-session context, not interval-only samples. Per-row `correction_id` remains authoritative for actual recorded AOI use. Fitted rotations without a manual yaw/pitch decomposition are labelled rather than displayed as zero-degree nudges.
+
+The original Neon scene-image X/Y and pupil traces are retained unchanged. A head-local angular correction cannot be added to scene-image pixels. The report follows the experiment cursor alongside the existing traces; changing the eye-time selector does not change callback times. This is not a Neon Player integration or evidence of hardware synchronization or measured residual accuracy.
+
+The exporter reads bounded, same-session `Calibration/*/correction.json` models and `Calibration/gaze-confirmations/*.json` receipts without changing them. Missing, malformed, foreign-session or unsafe metadata is omitted with a warning while the raw replay remains available. Historical HTML is static: regenerate a replay from its complete session folder to add this panel. Missing historical records cannot be reconstructed; preserve the old HTML/annotation exports before regenerating if they are needed.
+
+- `Calibration/manual-offset-<id>/correction.json`: kind, horizontal/vertical degrees, bounded quaternion, session/configuration identity, apply time and method/limitations. Each adjustment gets a new ID; no older revision is overwritten.
+- `Calibration/gaze-confirmations/gaze-save-<id>.json`: operator save receipt, exact correction reference (or official/no-extra-correction mode), head/session/configuration, angles, save time and explicit non-approval limitation. `game_events.csv` records `gaze_adjustment_saved`. Neither the receipt nor the button grants accuracy approval or starts/stops recording.
+- Host tutorial events distinguish `tutorial_preparation_waiting`, `tutorial_start_requested` and `grabbing_tutorial_started`. The original intro delay begins after Start, not during preparation; completing the original actual-grab objectives still unlocks Next.
+- `game_events.csv`: `gaze_manual_offset_applied`, head-rebind provenance and `official_gaze_mode_selected` reset events. Adjustment/reset boundaries also write explicit waiting/gap rows, not cached hits.
+- `gaze_targets.csv`: `correction_id`, adjusted `ray_*`, unmodified official `raw_ray_*` and separate mapping-quality fields. Existing raw Neon payload/eye/pupil streams, head poses, archive layout, video/audio and HTML/annotation exports remain unchanged.
+- The HTML can review the existing ray rows and associated events. Keep the complete session folder, including `Calibration/`, with exported data to retain model provenance.
+
+In the integrated host, a manual head-local adjustment is retained across its known scene-head replacements **only in the same recording session and mount-configuration ID**. Approval is cleared and the previous report is marked as prior-binding evidence. A new session or configuration does not inherit the offset. The software cannot detect re-wearing or phone-side offset edits: explicitly reset/recheck after either, and use a new session when changing participants. No phone profile, official package file, persistent mount configuration or historical participant file is edited by this tool.
+
+## Local verification
+
+Synthetic checks cover signs/limits, immutable revisions, raw versus adjusted exports, occlusion, independent approval, reset/restore, source replacement, scene/session isolation and preview freshness/cleanup. Local results on 2026-11-14: 70/70 isolated core tests and 42/42 integrated-host targeted tests passed, including explicit save receipts, manual tutorial narration start and the new lower reference disc. An instantiated copy of the existing authored chess prefab also passed the lower-visible-surface/no-collider-edit check. These are not real-device spatial-accuracy, visual-placement or headset-audio acceptance. A new Neon + Quest run is required to confirm the perceived arrow direction, cursor alignment, cue visibility, scene continuation, narration timing and measured errors in the current wearing setup. No new device recording was started during implementation.

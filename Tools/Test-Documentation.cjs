@@ -19,5 +19,8 @@ for(const name of ['NeonResearchSetup.cs','StudyLiveMonitor.cs','StudyParticipan
  const text=fs.readFileSync(path.join(pkg,'Editor',name),'utf8');assert.ok(!/escape[\s-]?room|Tools > Study >/i.test(text),'Current project-independent menu wording: '+name);
 }
 assert.ok(!/escape[\s-]?room/i.test(fs.readFileSync(path.join(pkg,'package.json'),'utf8')),'Package metadata has standalone wording.');
-assert.equal(JSON.parse(fs.readFileSync(path.join(pkg,'package.json'),'utf8')).version,'0.1.0-preview.5');
+const candidateVersion=JSON.parse(fs.readFileSync(path.join(pkg,'package.json'),'utf8')).version;
+assert.equal(candidateVersion,'0.2.0-beta.2');
+assert.equal(JSON.parse(fs.readFileSync(path.join(root,'Packages/com.binyanxu.gazeflow.neonxr/package.json'),'utf8')).dependencies['com.dolbywu.neon-research'],candidateVersion);
+assert.ok(readme.includes('Start Here')&&readme.includes('Neon XR Setup'),'Current generic entry points are documented.');
 console.log('PASS: '+files.length+' Markdown files, '+checkedLinks+' local links, beginner milestones and standalone UI wording.');

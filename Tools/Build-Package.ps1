@@ -12,7 +12,7 @@ if (-not $stage.StartsWith($artifacts+[IO.Path]::DirectorySeparatorChar,[StringC
 $payload=Join-Path $stage 'package'
 New-Item -ItemType Directory -Path $payload | Out-Null
 try {
-    foreach ($name in @('Runtime','Editor','Tests','Samples~','Documentation~')) {
+    foreach ($name in @('Runtime','Editor','Tests','Samples~','Documentation~','Tools~')) {
         $source=Join-Path $packageRoot $name
         if (Test-Path -LiteralPath $source) {
             # OneDrive cloud placeholders can have ReparsePoint without being path links.

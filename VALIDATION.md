@@ -1,5 +1,19 @@
 # Validation and known limitations
 
+## 0.2.0-beta.2 portable integration — 16 November 2026
+
+The independent short-path project installing the two actual beta.2 tarballs passed **97/97 Unity EditMode tests** (zero failures/skips), with the pinned official Neon XR Core. A second fresh project installing only the actual core tarball, without the SDK/adapter, passed **88/88**. This includes the new ownership, surface policy, segment/export tests and the retained portable adapter/serialization checks. Reviewed-sample checks passed **14/14**. Nine synthetic browser suites passed: object ownership, object-hit evidence, annotation-folder saving, session segments, target review, gaze-offset reports, evidence review, offline replay and video/manual annotations.
+
+These are fresh beta.2 software results, not measured spatial precision. A subsequent independent Neon + Quest walk-through confirmed visible reference objects, recorded head movement, eye/pupil reception, actual left/right grips, an observer interval/note and normal media finalization. Separate participant identities did not inherit the earlier manual adjustment. The real generated HTML loaded its local full-desktop video, sought/paused correctly and displayed the matching object totals and observer interval without script errors or network requests. Unworn data remained explicitly invalid for AOI hits. On 16 November the operator additionally reported cross-scene recording, stream recovery and real annotation save/resume passed, and authorized promotion as a beta after CI. Those additional run files were not independently inspected; the native folder-picker path and complete real interval-export round-trip are not separately confirmed. [Beta.2 acceptance](docs/beta-0.2.0-beta2-acceptance.md) records the evidence levels. The previous beta.1 results below are historical. This does not establish quantitative accuracy, create a signed release or update the store submission.
+
+## 0.2.0-beta.1 portable candidate — 15 November 2026
+
+Independent core-host checks passed **72/72**. The final source host with pinned official Neon XR SDK/adapter passed **81/81**. A fresh project installed from the actual two beta tarballs also passed **81/81**, including setup guards, source ambiguity/disablement, manual-offset rebinding, non-physical references and both new public components' scene save/reopen. Five browser suites passed video/annotation, offset, AOI and evidence-review regressions. Generic-rig hardware and visual acceptance remain pending; prior study sessions do not pass those new steps automatically. See the [candidate acceptance checklist](docs/beta-0.2.0-acceptance.md).
+
+Use short Windows verification paths: an initial deeply nested worktree host hit platform limits when synthetic tests created nested session files. The same checks passed at short independent paths. Arbitrary long-path archive support is not claimed.
+
+The beta UPM workflow does not rebuild or resubmit the store candidate. Earlier acceptance records below apply to those historical versions, not automatically to this beta.
+
 This report describes measured software checks, not certification of a physical study setup.
 
 ## Published preview.4 acceptance update — 7 November 2026

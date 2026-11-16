@@ -1,0 +1,18 @@
+diff --git "a/Assets/Tests/EditMode/ReflectiveAgent/ParticipantStartTests.cs" "b/Assets/Tests/EditMode/ReflectiveAgent/ParticipantStartTests.cs"
+index 0281d8b..5379621 100644
+--- "a/Assets/Tests/EditMode/ReflectiveAgent/ParticipantStartTests.cs"
++++ "b/Assets/Tests/EditMode/ReflectiveAgent/ParticipantStartTests.cs"
+@@ -0,0 +1 @@
++using NeonResearch;
+@@ -128,11 +128,0 @@ namespace EscapeRoom.ReflectiveAgent.Tests
+-        [TestCase("C:/safe path/python.exe", true)]
+-        [TestCase("C:/bad%PATH%/python.exe", false)]
+-        [TestCase("C:/bad!PATH!/python.exe", false)]
+-        [TestCase("C:/bad\"/python.exe", false)]
+-        public void TranscriptionShortcutRejectsShellExpansion(string path, bool valid)
+-        {
+-            var method = Type.GetType("StudyTranscriptionEditor, Assembly-CSharp-Editor", true).GetMethod("LauncherQuote");
+-            if (valid) Assert.That(method.Invoke(null, new object[] { path }), Is.EqualTo("\"" + path + "\""));
+-            else Assert.Throws<TargetInvocationException>(() => method.Invoke(null, new object[] { path }));
+-        }
+-

@@ -1,0 +1,24 @@
+{
+  "schema": "gazeflow-legacy-source-replacement-v1",
+  "method": "Paths were present in the read-only local baseline but absent from the independent trial; package implementations replace these legacy types. This inventory is not an instruction to delete files.",
+  "paths": [
+    "Assets/Scripts/NeonClockSync.cs",
+    "Assets/Scripts/NeonStudyRecorder.cs",
+    "Assets/Scripts/NeonStudySettings.cs",
+    "Assets/Scripts/NeonTcpGazeClient.cs",
+    "Assets/Scripts/StudyArchivePaths.cs",
+    "Assets/Scripts/StudyAtomicFile.cs",
+    "Assets/Scripts/StudyEpisodes.cs",
+    "Assets/Scripts/StudyExportSession.cs",
+    "Assets/Scripts/StudyMonitorData.cs",
+    "Assets/Scripts/StudyOfflineReplay.cs",
+    "Assets/Scripts/StudyParticipantProfiles.cs",
+    "Assets/Scripts/StudySequence.cs",
+    "Assets/Scripts/StudySequenceAnalysis.cs",
+    "Assets/Editor/StudyArchiveEditor.cs",
+    "Assets/Editor/StudyExperienceStartup.cs",
+    "Assets/Editor/StudyLiveMonitor.cs",
+    "Assets/Editor/StudyMediaEditor.cs",
+    "Assets/Editor/StudyParticipantStartWindow.cs"
+  ]
+}

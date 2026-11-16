@@ -1,0 +1,44 @@
+diff --git "a/Assets/Scripts/Effects/MetaInitialOrientation.cs" "b/Assets/Scripts/Effects/MetaInitialOrientation.cs"
+index fd154eb..cd64bb1 100644
+--- "a/Assets/Scripts/Effects/MetaInitialOrientation.cs"
++++ "b/Assets/Scripts/Effects/MetaInitialOrientation.cs"
+@@ -22,0 +23 @@ public class MetaSpawnAndOrient : MonoBehaviour
++    private Coroutine _preRoomAlignment;
+@@ -48,0 +50,11 @@ public class MetaSpawnAndOrient : MonoBehaviour
++        // A new Room 1 rig inherits the headset's real tracking-space offset from
++        // the tutorial. Align the actual head's floor projection, not only the rig origin.
++        // Do not issue an asynchronous system recenter here: a late origin change
++        // could undo this placement or jump the view back into a wall.
++        if (initialSpawn != null && gameObject.scene.name == "Room 1")
++        {
++            if (_preRoomAlignment != null) StopCoroutine(_preRoomAlignment);
++            _preRoomAlignment = StartCoroutine(AlignPreRoomAfterTracking());
++            return;
++        }
++
+@@ -69,0 +82,25 @@ public class MetaSpawnAndOrient : MonoBehaviour
++
++    private IEnumerator AlignPreRoomAfterTracking()
++    {
++        yield return null;
++        yield return new WaitForSecondsRealtime(.15f);
++        var rig = GetComponentInChildren<OVRCameraRig>(true);
++        if (rig == null || rig.centerEyeAnchor == null)
++        { Debug.LogError("[MetaSpawnAndOrient] Cannot align pre-room: tracked head missing."); _preRoomAlignment=null; yield break; }
++        AlignTrackedHead(transform, rig.centerEyeAnchor, initialSpawn);
++        _preRoomAlignment=null;
++        if (NeonResearch.StudyEvents.Recording)
++            NeonResearch.StudyEvents.Record("player_spawn_aligned","pre_room_center","automatic","Actual tracked head XZ aligned to authored spawn; eye height retained; no system recenter.");
++        Debug.Log("[MetaSpawnAndOrient] Room 1 head aligned to pre-room center: " + rig.centerEyeAnchor.position);
++    }
++
++    public static void AlignTrackedHead(Transform playerRoot, Transform head, Transform destination)
++    {
++        var currentForward=Vector3.ProjectOnPlane(head.forward,Vector3.up);
++        var desiredForward=Vector3.ProjectOnPlane(destination.forward,Vector3.up);
++        if(currentForward.sqrMagnitude>.0001f && desiredForward.sqrMagnitude>.0001f)
++            playerRoot.RotateAround(head.position,Vector3.up,Vector3.SignedAngle(currentForward,desiredForward,Vector3.up));
++        var delta=destination.position-head.position;
++        delta.y=0; // Physical eye height and all tracked hand offsets remain unchanged.
++        playerRoot.position+=delta;
++    }

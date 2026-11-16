@@ -1,0 +1,31 @@
+diff --git "a/Assets/Scripts/DataLogging/CSVDataSaver.cs" "b/Assets/Scripts/DataLogging/CSVDataSaver.cs"
+index 89bc505..0164b98 100644
+--- "a/Assets/Scripts/DataLogging/CSVDataSaver.cs"
++++ "b/Assets/Scripts/DataLogging/CSVDataSaver.cs"
+@@ -1 +1,2 @@
+-﻿using System;
++using NeonResearch;
++using System;
+@@ -156,0 +158,4 @@ public class CSVDataSaver : MonoBehaviour
++
++        // Copy-only integration: an idle technical Play must not bypass the
++        // participant intake/recording choice or create an unowned session.
++        if (!NeonStudySettings.Load().recordOnPlay) return;
+@@ -211,0 +217 @@ public class CSVDataSaver : MonoBehaviour
++        if (string.IsNullOrEmpty(sessionFolder)) return;
+@@ -218,0 +225 @@ public class CSVDataSaver : MonoBehaviour
++        if (string.IsNullOrEmpty(sessionFolder)) return;
+@@ -228,0 +236 @@ public class CSVDataSaver : MonoBehaviour
++        if (string.IsNullOrEmpty(sessionFolder)) return;
+@@ -240,0 +249 @@ public class CSVDataSaver : MonoBehaviour
++        if (string.IsNullOrEmpty(sessionFolder)) return;
+@@ -253,0 +263 @@ public class CSVDataSaver : MonoBehaviour
++        if (string.IsNullOrEmpty(sessionFolder)) return;
+@@ -265,0 +276 @@ public class CSVDataSaver : MonoBehaviour
++        if (string.IsNullOrEmpty(sessionFolder)) return;
+@@ -293,0 +305 @@ public class CSVDataSaver : MonoBehaviour
++        if (string.IsNullOrEmpty(sessionFolder)) return;
+@@ -400,0 +413 @@ public class CSVDataSaver : MonoBehaviour
++        if (string.IsNullOrEmpty(sessionFolder)) return;
+@@ -415,0 +429 @@ public class CSVDataSaver : MonoBehaviour
++        if (string.IsNullOrEmpty(sessionFolder)) return;

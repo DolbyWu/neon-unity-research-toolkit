@@ -1,31 +1,28 @@
-# Neon Unity Research Toolkit
+# GazeFlow — Neon Research Toolkit for Unity
 
-**0.1.0-preview.5 (submission candidate)** · Unofficial Windows Unity Editor development preview.
+**0.2.0-beta.2 candidate · unofficial · Windows Unity Editor 6000.3.23f1.**
 
-This candidate standardizes Publisher/copyright metadata as Binyan Michelle Xu. Runtime code is unchanged from preview.4, which fixed serialization of the three public scene components. The preview.4 hardware results do not constitute a fresh signing/import test of this candidate. Earlier previews may leave Missing Script references after saving/reopening a scene. Back up affected scenes, re-add only the broken component, and restore its fields/callbacks. Existing broken references are not automatically migrated.
+A reusable Configure → Record → Observe → Review workflow for researchers using Pupil Labs Neon and their own Unity experiment. No specific game, scene or object is required. Installation does not start recording.
 
-Record anonymous participant sessions, head/camera pose, explicitly connected interaction events and available Neon eye/pupil data. Review finished sessions in English offline HTML with linked local video and optional manual annotations.
+## Start
 
-## Start here
+Open **Tools > GazeFlow > Start Here**. Choose a private output folder, opt into recording, confirm an anonymous participant and run a short test. The yellow Live Observation Marker records start/end intervals and observer notes. After Stop, review the generated offline HTML, video and timeline; add multiple human annotations, export JSON to save and import it to resume.
 
-1. Install with Unity Package Manager **Install/Add package from disk** and select this `package.json`. The tested Unity version is **6000.3.23f1**.
-2. Open **Tools → Neon Research → Setup and Recording Settings**.
-3. Choose a fresh output folder, enable **Record on Unity Play (opt-in)**, leave Neon/media off for your first test, then **Save project settings**.
-4. Open **Tools → Neon Research → Open Live Monitor**. Press Play, confirm an anonymous participant and click **Mark observation** during a short test.
-5. Stop normally. The session folder and HTML open when auto-open is enabled.
+Original eye/pupil fields, head pose, connected events, optional media and offsets remain separate evidence streams. Missing data remains missing. No automatic fixation, attention or cognitive-state inference is claimed.
 
-No Git, headset, Neon, Python or FFmpeg is needed for that first data-only check. Installation alone does not start acquisition.
+## Optional spatial gaze
 
-Read [the integration and workflow guide](Documentation~/workflow.md) for setup, eye-data acceptance, event wiring, optional media and annotation steps. The repository's Quick Start includes a full beginner walkthrough and troubleshooting.
+Install official Neon XR Core and matching `com.binyanxu.gazeflow.neonxr` beta. Its **Neon XR Setup** binds your actual tracked head and existing official provider, creates an independent research recorder, and optionally configures explicit cross-scene sources. Author research targets and connect behavior yourself.
 
-## Offline annotation
+Desktop Gaze Adjustment adds a reversible local direction offset and optional visual reference on any authored Transform. Save is not measured accuracy or official Companion calibration. Image-space X/Y and pupil traces are not rewritten.
 
-Pause/drag video → mark current frame → choose a label or enter a description → add the annotation. Video and experiment clocks are shown together. **Add another annotation here** preserves previous records. The order is **eye timeline → Manual annotations → interval export → Game log**.
+## Documentation
 
-Export annotation **JSON** before closing and import it to resume. CSV is for analysis only. Video and JSON remain separate local files; copy the whole session folder.
+- [Installation and Quick Start](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/codex/gazeflow-beta2-integration-20261116/QUICKSTART.md)
+- [Generic XR setup](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/codex/gazeflow-beta2-integration-20261116/docs/universal-neon-xr-setup.md)
+- [Illustrated controls](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/codex/gazeflow-beta2-integration-20261116/docs/illustrated-quickstart.md)
+- [Validation and limits](https://github.com/DolbyWu/neon-unity-research-toolkit/blob/codex/gazeflow-beta2-integration-20261116/VALIDATION.md)
 
-## Research readiness
+Core data-only checks do not require a headset SDK. Python/FFmpeg for optional local media must be installed separately; capture needs explicit consent. Standalone player/mobile/macOS/Linux support and quantitative synchronization/physical accuracy are not established by this beta.
 
-Real-device compatibility, physical pupil units, timing and full-duration capture remain unvalidated. Gaze is not mapped to Unity objects; no fixation/saccade or cognitive-state classifier is included. Interactions require explicit callbacks. Optional capture requires separately configured Python/FFmpeg and per-session confirmation.
-
-Acquisition is off by default. Settings/data are project-local. See the [MIT License](LICENSE.md) for the plugin's software licensing terms. Third-party materials retain their own licenses; demonstration media and research data are excluded. See [dependency notices](<Third Party Notices.md>) for the licensing scope. It is not an official vendor product or an approved Asset Store submission.
+This UPM line does not replace existing signed preview archives or the separate Asset Store submission. MIT; see LICENSE.md and Third Party Notices.md.

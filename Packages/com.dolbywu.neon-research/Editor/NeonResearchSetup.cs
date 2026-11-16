@@ -18,15 +18,18 @@ namespace NeonResearch
             using(new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
             {
                 settings.recordOnPlay=EditorGUILayout.Toggle("Record on Unity Play (opt-in)",settings.recordOnPlay);
+                settings.openResearchPanelsOnPlay=EditorGUILayout.Toggle("Open monitor + observer on Play",settings.openResearchPanelsOnPlay);
                 settings.enabled=EditorGUILayout.Toggle("Receive Neon gaze (opt-in)",settings.enabled);
                 settings.outputRoot=EditorGUILayout.TextField("Output folder",settings.outputRoot);
                 if(GUILayout.Button("Choose data folder")){string selected=EditorUtility.OpenFolderPanel("Select an independent study data folder",StudyExportSession.OutputRoot,"");if(!string.IsNullOrEmpty(selected))settings.outputRoot=selected;}
                 settings.condition=EditorGUILayout.TextField("Experimental condition",settings.condition);
+                settings.analysisStartRegion=EditorGUILayout.TextField("Analysis starts at region (optional)",settings.analysisStartRegion);
+                if(!string.IsNullOrWhiteSpace(settings.analysisStartRegion))EditorGUILayout.HelpBox("Recording stays continuous. Before the first recorded entry to this region is exported as Tutorial and excluded from primary analysis. If entry is never recorded, the session is tutorial-only, not assumed study data.",MessageType.Info);
                 settings.companionIp=EditorGUILayout.TextField("Companion IPv4 (no port)",settings.companionIp);
                 settings.companionApiPort=EditorGUILayout.IntField("Companion API port",settings.companionApiPort);
                 settings.websocketPort=EditorGUILayout.IntField("Companion WebSocket port",settings.websocketPort);
                 settings.archiveAutoOpen=EditorGUILayout.Toggle("Open folder + HTML after Stop",settings.archiveAutoOpen);
-                EditorGUILayout.HelpBox("Enable Eye State on the Companion for pupil values. Counts/quality, not just Connected, must be checked. Decoder units follow the documented wire format; real-device validation remains required. No gaze-to-VR-object mapping is implemented.",MessageType.Warning);
+                EditorGUILayout.HelpBox("Enable Eye State on the Companion for pupil values. Check counts/quality, not just Connected. The raw receiver uses scene-image coordinates; 3D object mapping requires the optional Neon XR adapter, actual XR head binding and mapping verification. Decoder units follow the documented wire format; validate your own device/setup.",MessageType.Warning);
                 settings.mediaRecordingEnabled=EditorGUILayout.Toggle("Enable optional media capture",settings.mediaRecordingEnabled);
                 if(settings.mediaRecordingEnabled)
                 {

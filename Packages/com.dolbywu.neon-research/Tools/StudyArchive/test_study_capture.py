@@ -60,6 +60,9 @@ class CaptureTests(unittest.TestCase):
         commands = build_commands(self.config, self.root)
         self.assertIn("desktop", commands["video"])
         self.assertIn("2560x1440", commands["video"])
+        self.assertFalse(any(value.startswith("title=") for value in commands["video"]))
+        self.assertEqual(commands["video"][commands["video"].index("-offset_x") + 1], "0")
+        self.assertEqual(commands["video"][commands["video"].index("-offset_y") + 1], "0")
         self.assertIn("-n", commands["video"])
         self.assertNotIn("-y", commands["video"])
         self.config["mediaAllowDesktopRecording"] = False
@@ -90,6 +93,9 @@ class CaptureTests(unittest.TestCase):
         self.assertTrue(result["video"]["includesMicrophoneTrack"])
         video = next(s for s in result["video"]["streams"] if s["codec_type"] == "video")
         self.assertEqual((video["width"], video["height"]), (2560, 1440))
+        self.assertEqual(result["captureScope"], "entire_configured_desktop_rectangle_including_visible_windows")
+        self.assertEqual(result["desktopRectangle"], {"x": 0, "y": 0, "width": 2560, "height": 1440})
+        self.assertIn("NOT_first_frame", result["timestampMethod"])
         self.assertTrue((folder / "Video/quest-view.mp4").is_file())
         self.assertTrue((folder / "Audio/think-aloud.wav").is_file())
         with self.assertRaises(FileExistsError):

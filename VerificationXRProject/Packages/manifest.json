@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "com.dolbywu.neon-research": "file:../../Packages/com.dolbywu.neon-research",
+    "com.binyanxu.gazeflow.neonxr": "file:../../Packages/com.binyanxu.gazeflow.neonxr",
+    "com.pupil-labs.neon-xr.core": "https://github.com/pupil-labs/neon-xr.git?path=/com.pupil-labs.neon-xr.core#f4dee47b9690a059b1c4660628596d7303ade59a",
+    "com.unity.addressables": "2.9.1",
+    "com.unity.inputsystem": "1.20.0",
+    "com.unity.ugui": "2.0.0",
+    "com.unity.test-framework": "1.6.0",
+    "com.unity.nuget.newtonsoft-json": "3.2.2",
+    "com.unity.modules.imgui": "1.0.0",
+    "com.unity.modules.physics": "1.0.0"
+  },
+  "testables": ["com.dolbywu.neon-research", "com.binyanxu.gazeflow.neonxr"]
+}

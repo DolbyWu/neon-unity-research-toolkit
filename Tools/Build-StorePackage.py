@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'Packages/com.dolbywu.neon-research'
 SUPPORT = ROOT / 'StoreSupport'
 NAME = 'individual.binyan-xu.gazeflow'
-STORE_VERSION = '0.1.0-preview.6'
+STORE_VERSION = '0.2.0-exp.1'  # Development only; submitted preview.6 remains frozen on its branch.
 
 
 def replace_once(path, old, new):

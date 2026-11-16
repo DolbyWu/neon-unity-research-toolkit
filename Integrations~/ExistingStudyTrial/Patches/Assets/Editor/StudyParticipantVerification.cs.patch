@@ -1,0 +1,7 @@
+diff --git a/Assets/Editor/StudyParticipantVerification.cs b/Assets/Editor/StudyParticipantVerification.cs
+index f95c25b..901be03 100644
+--- a/Assets/Editor/StudyParticipantVerification.cs
++++ b/Assets/Editor/StudyParticipantVerification.cs
+@@ -19 +19 @@ public static class StudyParticipantVerification
+-    [MenuItem("Tools/Study/Run Participant Checks (No Recording)")]
++    [MenuItem("Tools/GazeFlow/Advanced/Diagnostics/Run Participant Checks (No Recording)")]

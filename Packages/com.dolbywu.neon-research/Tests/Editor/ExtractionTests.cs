@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -33,6 +34,16 @@ namespace NeonResearch.Tests
             Assert.That(root.StartsWith(Path.GetFullPath("Library/StandaloneVerification")+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase));
             Directory.Delete(root,true);
         }
+        [Test]public void OwnershipSidecarIsSessionBoundedAndInvalidEvidenceDoesNotBlockReplay()
+        {
+            Directory.CreateDirectory(Path.Combine(root,"Analysis"));string file=Path.Combine(root,"Analysis","target-object-ownership.json");
+            var read=typeof(StudyOfflineReplay).GetMethod("ReadTargetOwnership",BindingFlags.Static|BindingFlags.NonPublic);
+            File.WriteAllText(file,new JObject{["schema"]="gazeflow-reviewed-target-ownership-v1",["session_id"]="foreign",["links"]=new JArray()}.ToString());
+            var rejected=(JObject)read.Invoke(null,new object[]{root,"expected"});Assert.That(rejected.Value<string>("warning"),Is.Not.Empty);Assert.That(rejected["links"].Count(),Is.Zero);
+            File.WriteAllText(file,new JObject{["schema"]="gazeflow-reviewed-target-ownership-v1",["session_id"]="expected",["links"]=new JArray(new JObject{["child_id"]="visual",["owner_id"]="diary",["rule"]="reviewed"})}.ToString());
+            var accepted=(JObject)read.Invoke(null,new object[]{root,"expected"});Assert.That(accepted["links"].Count(),Is.EqualTo(1));
+            File.WriteAllText(file,"invalid JSON");Assert.That(((JObject)read.Invoke(null,new object[]{root,"expected"})).Value<string>("warning"),Is.Not.Empty);
+        }
         [Test]public void DefaultsAreInertAndDoNotReuseExistingStudyConfiguration()
         {
             var settings=new NeonStudySettings();Assert.That(settings.recordOnPlay,Is.False);Assert.That(settings.enabled,Is.False);
@@ -40,6 +51,28 @@ namespace NeonResearch.Tests
             Assert.That(settings.outputRoot,Is.EqualTo("NeonResearchData"));
             Assert.That(NeonStudySettings.Folder.Replace('\\','/'),Does.EndWith("UserSettings/NeonResearch"));
             Assert.That(StudyEvents.Record("must_not_autostart"),Is.False);Assert.That(StudyExportSession.Folder,Is.Null);
+        }
+        [Test]public void ReplayOffsetsEmbedSessionCheckedImmutableModelsAndSaveReceipts()
+        {
+            const string session="20990101T000000000Z-abcdef01";string calibration=Path.Combine(root,"Calibration"),modelFolder=Path.Combine(calibration,"manual-test"),receiptFolder=Path.Combine(calibration,"gaze-confirmations");Directory.CreateDirectory(modelFolder);Directory.CreateDirectory(receiptFolder);
+            var q=StudyGazeCorrection.ManualRotation(3.7f,2.7f);
+            var model=new StudyGazeCorrection.Model{id="manual-test",session_id=session,calibration_id="mount",correction_kind="manual_yaw_pitch",horizontal_degrees=3.7f,vertical_degrees=2.7f,applied_session_s=1,quaternion_xyzw=new[]{q.x,q.y,q.z,q.w}};
+            string original=Newtonsoft.Json.JsonConvert.SerializeObject(model),modelPath=Path.Combine(modelFolder,"correction.json");File.WriteAllText(modelPath,original);
+            File.WriteAllText(Path.Combine(receiptFolder,"save.json"),new JObject{["schema"]="gazeflow-desktop-adjustment-save-v1",["id"]="save-test",["session_id"]=session,["calibration_id"]="mount",["mode"]="manual_yaw_pitch",["correction_id"]="manual-test",["saved_session_s"]=2,["horizontal_degrees"]=3.7,["vertical_degrees"]=2.7,["accuracy_approval_granted"]=false}.ToString());
+            var report=(JObject)typeof(StudyOfflineReplay).GetMethod("ReadGazeAdjustments",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{root,session,10d});
+            Assert.That(report["models"].Count(),Is.EqualTo(1));Assert.That(report["confirmations"].Count(),Is.EqualTo(1));Assert.That(report["models"][0].Value<float>("horizontal_degrees"),Is.EqualTo(3.7f));Assert.That(report["warnings"].Count(),Is.Zero);Assert.That(File.ReadAllText(modelPath),Is.EqualTo(original));
+        }
+        [Test]public void ReplayOffsetsOmitWrongSessionUnsafeAnglesAndCorruptFilesWithoutBlockingReplay()
+        {
+            const string session="20990101T000000000Z-abcdef01";string calibration=Path.Combine(root,"Calibration");
+            foreach(string name in new[]{"bad","foreign","unsafe"})Directory.CreateDirectory(Path.Combine(calibration,name));
+            File.WriteAllText(Path.Combine(calibration,"bad","correction.json"),"not json");
+            var model=new StudyGazeCorrection.Model{id="foreign",session_id="another-session",calibration_id="mount",correction_kind="manual_yaw_pitch",horizontal_degrees=1,quaternion_xyzw=new[]{0f,0f,0f,1f}};
+            File.WriteAllText(Path.Combine(calibration,"foreign","correction.json"),Newtonsoft.Json.JsonConvert.SerializeObject(model));model.session_id=session;model.id="unsafe";model.horizontal_degrees=99;
+            File.WriteAllText(Path.Combine(calibration,"unsafe","correction.json"),Newtonsoft.Json.JsonConvert.SerializeObject(model));
+            var report=(JObject)typeof(StudyOfflineReplay).GetMethod("ReadGazeAdjustments",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{root,session,10d});
+            Assert.That(report["models"].Count(),Is.Zero);Assert.That(report["confirmations"].Count(),Is.Zero);Assert.That(report["warnings"].Count(),Is.EqualTo(3));
+            var missing=(JObject)typeof(StudyOfflineReplay).GetMethod("ReadGazeAdjustments",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{Path.Combine(root,"missing"),session,10d});Assert.That(missing["models"].Count(),Is.Zero);Assert.That(missing["warnings"].Count(),Is.Zero);
         }
         [Test]public void IndependentSessionExportsHeadEventsAndTheVideoAnnotationReplay()
         {
@@ -56,6 +89,10 @@ namespace NeonResearch.Tests
                 Assert.That(html,Does.Contain("annotationsImport"));Assert.That(html,Does.Contain("Choose local video"));
                 Assert.That(html,Does.Contain("Add another annotation here"));Assert.That(html,Does.Contain("Pause &amp; mark this frame"));
                 Assert.That(html,Does.Contain("reviewClocks"));Assert.That(html,Does.Not.Contain("__STUDY_DATA__"));
+                Assert.That(html,Does.Contain("Gaze offset report"));Assert.That(html,Does.Contain("gazeflow-replay-offset-metadata-v1"));
+                string derived=StudyOfflineReplay.BuildNamedWithTemplate(folder,Resources.Load<TextAsset>("NeonResearchOfflineReplay").text,"study-replay-object-review-test.html");
+                Assert.That(File.Exists(derived),Is.True);Assert.That(File.ReadAllText(Path.Combine(folder,"Replay/study-replay.html")),Is.EqualTo(html),"Derived review never replaces the original replay.");
+                Assert.Throws<ArgumentException>(()=>StudyOfflineReplay.BuildNamedWithTemplate(folder,"__STUDY_DATA__","../outside.html"));
                 int timeline=html.IndexOf("id=\"timelinePanel\"",StringComparison.Ordinal),annotations=html.IndexOf("id=\"annotationPanel\"",StringComparison.Ordinal);
                 int interval=html.IndexOf("id=\"intervalExportPanel\"",StringComparison.Ordinal),gameLog=html.IndexOf("id=\"gameLogPanel\"",StringComparison.Ordinal);
                 Assert.That(timeline,Is.GreaterThan(0));Assert.That(annotations,Is.GreaterThan(timeline));Assert.That(interval,Is.GreaterThan(annotations));Assert.That(gameLog,Is.GreaterThan(interval));
@@ -86,6 +123,8 @@ namespace NeonResearch.Tests
         [TestCase(typeof(StudyHeadPoseSource))]
         [TestCase(typeof(StudyRegion))]
         [TestCase(typeof(StudyInteractionAdapter))]
+        [TestCase(typeof(StudyResearchTarget))]
+        [TestCase(typeof(StudyGazeTargetRecorder))]
         public void PublicComponentsHavePersistentScriptsAndRetainFieldsAfterSceneReopen(Type type)
         {
             if(!Application.isBatchMode && !IsIsolatedSceneTestHost())
@@ -103,6 +142,8 @@ namespace NeonResearch.Tests
                 if(component is StudyRegion region){region.regionId="ROUNDTRIP-REGION";region.regionCollider=go.AddComponent<BoxCollider>();}
                 if(component is StudyHeadPoseSource head){head.head=go.transform;}
                 if(component is StudyInteractionAdapter interaction){interaction.objectId="ROUNDTRIP-OBJECT";}
+                if(component is StudyResearchTarget target){target.targetId="ROUNDTRIP-TARGET";target.targetGroup="test";}
+                if(component is StudyGazeTargetRecorder recorder){recorder.maxDistance=13;recorder.collisionMask=3;}
                 var script=MonoScript.FromMonoBehaviour(component);
                 Assert.That(script,Is.Not.Null);Assert.That(script.GetClass(),Is.EqualTo(type));
                 string scriptPath=AssetDatabase.GetAssetPath(script);
@@ -115,6 +156,8 @@ namespace NeonResearch.Tests
                 if(restored is StudyRegion restoredRegion){Assert.That(restoredRegion.regionId,Is.EqualTo("ROUNDTRIP-REGION"));Assert.That(restoredRegion.regionCollider,Is.Not.Null);}
                 if(restored is StudyHeadPoseSource restoredHead){Assert.That(restoredHead.head,Is.EqualTo(restoredHead.transform));}
                 if(restored is StudyInteractionAdapter restoredInteraction){Assert.That(restoredInteraction.objectId,Is.EqualTo("ROUNDTRIP-OBJECT"));}
+                if(restored is StudyResearchTarget restoredTarget){Assert.That(restoredTarget.targetId,Is.EqualTo("ROUNDTRIP-TARGET"));Assert.That(restoredTarget.targetGroup,Is.EqualTo("test"));}
+                if(restored is StudyGazeTargetRecorder restoredRecorder){Assert.That(restoredRecorder.maxDistance,Is.EqualTo(13));Assert.That(restoredRecorder.collisionMask.value,Is.EqualTo(3));}
             }
             finally
             {

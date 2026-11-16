@@ -1,0 +1,6 @@
+diff --git "a/Assets/Editor/NeonTransportVerification.cs" "b/Assets/Editor/NeonTransportVerification.cs"
+index 1d9ca36..4ec1b23 100644
+--- "a/Assets/Editor/NeonTransportVerification.cs"
++++ "b/Assets/Editor/NeonTransportVerification.cs"
+@@ -0,0 +1 @@
++using NeonResearch;

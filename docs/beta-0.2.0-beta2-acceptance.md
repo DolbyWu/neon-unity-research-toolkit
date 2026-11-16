@@ -17,7 +17,12 @@ Selected portable changes were reviewed from research commit `8d75437`; host sce
 | Offline replay/browser regressions | PASS: nine suites, including real synthetic filesystem-handle writes/read-back and synthetic local video |
 | Source isolation | PASS: no known game-script coupling or live addresses/machine paths in candidate source audit |
 | Original study projects, data, main and store tooling | Unchanged by this integration |
-| New physical Neon + Quest run | NOT TESTED |
+| Actual Neon + Quest scene, head movement and eye/pupil reception | PASS: independent technical sessions; wearer confirmed colored objects visible; not measured spatial accuracy |
+| Actual left/right grab/release and observer interval/note | PASS: physical grip events plus observer start/end/note persisted; no cognitive-state inference |
+| Separate participant session and clean Stop/media finalization | PASS: separate archive identities; prior manual adjustment not inherited; full physical-pixel desktop and microphone files finalized |
+| Real generated HTML and local video basic review | PASS: matching object totals, observer interval display, seek/play/pause and no script errors or network requests; not a complete annotation round-trip |
+| Controlled cross-scene and deliberate stream disconnect/recovery | NOT TESTED; operator chose to finish before these steps |
+| Full real annotation-folder / interval-export round-trip | NOT TESTED; automated synthetic regressions remain separate |
 | Native folder-picker permission granted by operator | NOT TESTED in an actual participant replay |
 | Measured spatial accuracy / hardware clock synchronization | NOT ESTABLISHED |
 
@@ -40,4 +45,4 @@ Record each category as PASS / FAIL / NOT TESTED. Do not promote main or replace
 - Core SHA-256: `1cfc8aabb95e7c24e4308ecd8f5e123cb51ea275e32acc760933a9ab56b4e520`.
 - Adapter SHA-256: `14f4519dd3ea86b51c44f52fe32e4811b29ecb001dee56408c8b092a6e43f655`.
 
-These identify the exact local unsigned beta.2 tarballs used by the independent installs; they are not a signed release or store approval. Rebuilds with different bytes need their own hashes and install evidence. The separate two-scene hardware fixture was compiled/prepared with acquisition, Play recording and media disabled; actual operator testing is still pending.
+These identify the exact local unsigned beta.2 tarballs used by the independent installs; they are not a signed release or store approval. Rebuilds with different bytes need their own hashes and install evidence. The separate two-scene fixture was first prepared with acquisition and recording disabled, then armed after fresh endpoint confirmation and local capture consent. The basic physical-device checks above were completed; the remaining controlled checks were not. All raw technical records, endpoint/profile details and observation text stay private. Main promotion remains held; no store submission was changed.
